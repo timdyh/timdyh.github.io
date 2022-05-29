@@ -29,7 +29,7 @@
 
     <meta name="description" content="C++ 中应使用 const（而不是 #define）定义符号常量  能够明确指定类型 自带 static 特性，能够将定义限制在特定的函数或文件中（定义在头文件中被多个文件包含） 能够将 const 用于更复杂的类型（如数组和结构） C++ 中可以用 const 值来声明数组长度">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[Notes] C++ Primer Plus">
+<meta property="og:title" content="[Note] C++ Primer Plus">
 <meta property="og:url" content="http://example.com/2020/04/28/cpp-primer-plus/index.html">
 <meta property="og:site_name" content="TimDyh">
 <meta property="og:description" content="C++ 中应使用 const（而不是 #define）定义符号常量  能够明确指定类型 自带 static 特性，能够将定义限制在特定的函数或文件中（定义在头文件中被多个文件包含） 能够将 const 用于更复杂的类型（如数组和结构） C++ 中可以用 const 值来声明数组长度">
@@ -39,7 +39,7 @@
 <meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2021-09-06-153246.png">
 <meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2021-12-19-075452.jpg">
 <meta property="article:published_time" content="2020-04-28T15:34:38.000Z">
-<meta property="article:modified_time" content="2022-05-15T12:02:07.973Z">
+<meta property="article:modified_time" content="2022-05-29T17:13:52.819Z">
 <meta property="article:author" content="Yuheng Ding">
 <meta property="article:tag" content="C++">
 <meta name="twitter:card" content="summary">
@@ -50,10 +50,10 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2020/04/28/cpp-primer-plus/","path":"2020/04/28/cpp-primer-plus/","title":"[Notes] C++ Primer Plus"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2020/04/28/cpp-primer-plus/","path":"2020/04/28/cpp-primer-plus/","title":"[Note] C++ Primer Plus"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>[Notes] C++ Primer Plus | TimDyh</title>
+<title>[Note] C++ Primer Plus | TimDyh</title>
   
 
 
@@ -146,7 +146,7 @@ const（而不是 #define）定义符号常量</span></a></li><li class="nav-ite
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-count">31</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -223,12 +223,12 @@ const（而不是 #define）定义符号常量</span></a></li><li class="nav-ite
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="[Notes] C++ Primer Plus | TimDyh">
+      <meta itemprop="name" content="[Note] C++ Primer Plus | TimDyh">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          [Notes] C++ Primer Plus
+          [Note] C++ Primer Plus
         </h1>
 
         <div class="post-meta-container">
@@ -247,7 +247,7 @@ const（而不是 #define）定义符号常量</span></a></li><li class="nav-ite
       </span>
       <span class="post-meta-item-text">In</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Notes/" itemprop="url" rel="index"><span itemprop="name">Notes</span></a>
+          <a href="/categories/Note/" itemprop="url" rel="index"><span itemprop="name">Note</span></a>
         </span>
     </span>
 
@@ -376,12 +376,12 @@ Specialization）：专门为某类型显式地定义函数定义，其语法是
 <p>注：不能在同一个文件（或转换单元）中使用同一种类型的显式实例化和显式具体化。</p>
 <h4 id="关键字-decltype">关键字 decltype</h4>
 <p>解决声明类型不确定的问题：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> T1, <span class="keyword">class</span> T2&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">ft</span><span class="params">(T1 x, T2 y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">decltype</span>(x + y) xpy = x + y;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> T1, <span class="keyword">class</span> T2&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">ft</span><span class="params">(T1 x, T2 y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">decltype</span>(x + y) xpy = x + y;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>多次声明，结合使用 <code>typedef</code> 和 <code>decltype</code>
 ：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> T1, <span class="keyword">class</span> T2&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">ft</span><span class="params">(T1 x, T2 y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	...</span><br><span class="line">    <span class="function"><span class="keyword">typedef</span> <span class="title">decltype</span><span class="params">(x + y)</span> xytype</span>;</span><br><span class="line">    xytype xpy = x + y;</span><br><span class="line">    xytype arr[<span class="number">10</span>];</span><br><span class="line">    xytype &amp; rxy = arr[<span class="number">2</span>];</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> T1, <span class="keyword">class</span> T2&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">ft</span><span class="params">(T1 x, T2 y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">		...</span><br><span class="line">    <span class="function"><span class="keyword">typedef</span> <span class="title">decltype</span><span class="params">(x + y)</span> xytype</span>;</span><br><span class="line">    xytype xpy = x + y;</span><br><span class="line">    xytype arr[<span class="number">10</span>];</span><br><span class="line">    xytype &amp; rxy = arr[<span class="number">2</span>];</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>但无法直接用于声明函数返回类型，需结合关键字 auto 后置返回类型：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> T1, <span class="keyword">class</span> T2&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">gt</span><span class="params">(T1 x, T2 y)</span> -&gt; <span class="title">decltype</span><span class="params">(x + y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	...</span><br><span class="line">    <span class="keyword">return</span> x + y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> T1, <span class="keyword">class</span> T2&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">gt</span><span class="params">(T1 x, T2 y)</span> -&gt; <span class="title">decltype</span><span class="params">(x + y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">return</span> x + y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>类型推断规则（以 <code>decltype(expr) var</code> 为例）：</p>
 <ol type="1">
 <li>若 <code>expr</code> 是一个没有用括号括起的标识符，则
@@ -470,7 +470,7 @@ using
 </ul>
 <h4 id="类中的枚举">类中的枚举</h4>
 <p>在类声明中声明的枚举的作用域为整个类，能被所有对象共享（类似静态类成员），例如：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Bakery</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">enum</span> &#123;Months = <span class="number">12</span>&#125;;</span><br><span class="line">    <span class="type">double</span> costs[Months];</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Bakery</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="keyword">enum</span> &#123;Months = <span class="number">12</span>&#125;;</span><br><span class="line">	<span class="type">double</span> costs[Months];</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这里 <code>Months</code>
 只是一个符号名称，并不会创建类数据成员。在作用域为整个类的代码中遇到它时，编译器将用
 12
@@ -901,14 +901,14 @@ lambda 表达式。例如：</p>
       <i class="fa fa-chart-line"></i>
     </span>
       <span>Symbols count total: </span>
-    <span title="Symbols count total">191k</span>
+    <span title="Symbols count total">234k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span>Reading time total &asymp;</span>
-    <span title="Reading time total">2:53</span>
+    <span title="Reading time total">3:33</span>
   </span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
