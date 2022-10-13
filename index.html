@@ -134,7 +134,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -197,6 +197,231 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/28/memory-alignment-in-cpp-practice/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/08/28/memory-alignment-in-cpp-practice/" class="post-title-link" itemprop="url">C++ 中的内存对齐——实践篇</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-08-28 16:16:30" itemprop="dateCreated datePublished" datetime="2022-08-28T16:16:30+08:00">2022-08-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Essay/" itemprop="url" rel="index"><span itemprop="name">Essay</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>6.2k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>6 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>本文为《C++ 中的内存对齐》系列之下篇，<a
+target="_blank" rel="noopener" href="https://timdyh.github.io/2022/07/30/memory-alignment-in-cpp-theory/">上篇</a>介绍内存对齐的理论基础，建议优先食用~</p>
+</blockquote>
+<h3 id="tldr">TL;DR</h3>
+<ul>
+<li>编译器可能会在结构体中填充字节，以满足所有成员的对齐要求；</li>
+<li>可以通过预处理指令 <code>#pragma pack</code> 及 <code>alignas</code>
+标识符自定义内存对齐；</li>
+<li>对于栈上及静态变量，编译器保证遵循其类型的对齐要求；</li>
+<li>对于堆上构造的对象，只有在 C++17
+后才能保证任何情况下动态申请的内存都满足对齐要求。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/08/28/memory-alignment-in-cpp-practice/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/30/memory-alignment-in-cpp-theory/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/07/30/memory-alignment-in-cpp-theory/" class="post-title-link" itemprop="url">C++ 中的内存对齐——理论篇</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-07-30 15:42:53" itemprop="dateCreated datePublished" datetime="2022-07-30T15:42:53+08:00">2022-07-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Essay/" itemprop="url" rel="index"><span itemprop="name">Essay</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>3.8k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>3 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>本文作为上篇主要介绍内存对齐的理论基础，后续的下篇将侧重于 C++
+语言层面的实践，敬请期待！</p>
+</blockquote>
+<h3 id="tldr">TL;DR</h3>
+<ul>
+<li>处理器以若干字节的块而不是单字节的粒度访问内存，因此对于未对齐的内存需要额外的访存及计算开销，导致性能更差。</li>
+<li>原子操作和矢量运算指令要求内存地址必须是对齐的，否则可能导致程序死循环和数据错误。</li>
+<li>编译器通过 padding
+自动对结构中的字段进行对齐，用以向后兼容以及提高效率。</li>
+<li>内存对齐在某种意义上扩大了可使用的地址空间范围，甚至影响计算机系统的物理设计。</li>
+<li>内存对齐使得处理器能够更好地利用 cache，包括减少 cache line
+访问，以及避免多核一致性问题引发的 cache miss。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/07/30/memory-alignment-in-cpp-theory/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/25/custom-deleter-for-unique_ptr/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -234,7 +459,7 @@
       </span>
       <span class="post-meta-item-text">In</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Note/" itemprop="url" rel="index"><span itemprop="name">Note</span></a>
+          <a href="/categories/Essay/" itemprop="url" rel="index"><span itemprop="name">Essay</span></a>
         </span>
     </span>
 
@@ -308,7 +533,7 @@ std::unique_ptr 对象的大小，其中 std::function
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/08/crypto-trading-review/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/28/effective-stl/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
@@ -326,7 +551,7 @@ std::unique_ptr 对象的大小，其中 std::function
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/06/08/crypto-trading-review/" class="post-title-link" itemprop="url">亏快链复盘记录 (Updating)</a>
+          <a href="/2021/11/28/effective-stl/" class="post-title-link" itemprop="url">[Note] Effective STL</a>
         </h2>
 
         <div class="post-meta-container">
@@ -337,7 +562,7 @@ std::unique_ptr 对象的大小，其中 std::function
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2022-06-08 10:28:37" itemprop="dateCreated datePublished" datetime="2022-06-08T10:28:37+08:00">2022-06-08</time>
+      <time title="Created: 2021-11-28 22:49:19" itemprop="dateCreated datePublished" datetime="2021-11-28T22:49:19+08:00">2021-11-28</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -345,7 +570,7 @@ std::unique_ptr 对象的大小，其中 std::function
       </span>
       <span class="post-meta-item-text">In</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Essay/" itemprop="url" rel="index"><span itemprop="name">Essay</span></a>
+          <a href="/categories/Note/" itemprop="url" rel="index"><span itemprop="name">Note</span></a>
         </span>
     </span>
 
@@ -356,14 +581,14 @@ std::unique_ptr 对象的大小，其中 std::function
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">Symbols count in article: </span>
-      <span>1.2k</span>
+      <span>56k</span>
     </span>
     <span class="post-meta-item" title="Reading time">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">Reading time &asymp;</span>
-      <span>1 mins.</span>
+      <span>51 mins.</span>
     </span>
 </div>
 
@@ -375,11 +600,18 @@ std::unique_ptr 对象的大小，其中 std::function
     
     <div class="post-body" itemprop="articleBody">
           <blockquote>
-<p>知行合一，做时间的朋友。</p>
+<p>Only you know enough about the software you’re writing, the
+environment in which it will run, and the context in which it’s being
+created to determine whether it’s reasonable to violate the guidelines I
+present. Most of the time, it won’t be, and the discussions that
+accompany each Item explain why. In a few cases, it will. Slavish
+devotion to the guidelines isn’t appropriate, but neither is cavalier
+disregard. Before venturing off on your own, you should make sure you
+have a good reason.</p>
 </blockquote>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/06/08/crypto-trading-review/#more" rel="contents">
+              <a class="btn" href="/2021/11/28/effective-stl/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1035,221 +1267,6 @@ guidelines without a good reason.</p>
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/07/19/django-library-management-system/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="Yuheng Ding">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="TimDyh">
-      <meta itemprop="description" content="Per aspera, ad astra.">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | TimDyh">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/07/19/django-library-management-system/" class="post-title-link" itemprop="url">基于 Django 的图书馆借阅系统</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-07-19 14:23:00" itemprop="dateCreated datePublished" datetime="2020-07-19T14:23:00+08:00">2020-07-19</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Schoolwork/" itemprop="url" rel="index"><span itemprop="name">Schoolwork</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="Symbols count in article">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">Symbols count in article: </span>
-      <span>2.2k</span>
-    </span>
-    <span class="post-meta-item" title="Reading time">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">Reading time &asymp;</span>
-      <span>2 mins.</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h3
-id="项目-github-仓库"><a href="https://github.com/TimDyh/library-management-system" target="_blank">项目
-GitHub 仓库</a></h3>
-<h2 id="项目需求">项目需求</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/19/django-library-management-system/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/07/19/network-sniffing-and-prevention-experiment/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="Yuheng Ding">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="TimDyh">
-      <meta itemprop="description" content="Per aspera, ad astra.">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | TimDyh">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/07/19/network-sniffing-and-prevention-experiment/" class="post-title-link" itemprop="url">网络嗅探与防范实验</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-07-19 13:32:00" itemprop="dateCreated datePublished" datetime="2020-07-19T13:32:00+08:00">2020-07-19</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Schoolwork/" itemprop="url" rel="index"><span itemprop="name">Schoolwork</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="Symbols count in article">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">Symbols count in article: </span>
-      <span>1.5k</span>
-    </span>
-    <span class="post-meta-item" title="Reading time">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">Reading time &asymp;</span>
-      <span>1 mins.</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h3 id="实验工具与环境配置">实验工具与环境配置</h3>
-<ul>
-<li>服务器操作系统：macOS Catalina 10.15.2</li>
-<li>客户端操作系统：macOS High Sierra 10.13.6</li>
-<li>FTP 服务器：QuickFTP Server 1.0.4</li>
-<li>FTP 客户端：ForkLift 2.6.6</li>
-<li>浏览器：Chrome 83.0.4103.61</li>
-<li>Sniffer 工具：Wireshark 3.2.3</li>
-</ul>
-<h3 id="邮箱登录嗅探">邮箱登录嗅探</h3>
-<p>我们知道，现在绝大多数网页访问都是基于安全的 HTTPS 协议，本实验选择的
-QQ 邮箱也不例外。不同于 HTTP 协议，HTTPS 使用的是 443
-端口。因此，为了更方便地分析报文，我们直接过滤 443 端口。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/19/network-sniffing-and-prevention-experiment/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
@@ -1275,14 +1292,14 @@ QQ 邮箱也不例外。不同于 HTTP 协议，HTTPS 使用的是 443
       <i class="fa fa-chart-line"></i>
     </span>
       <span>Symbols count total: </span>
-    <span title="Symbols count total">255k</span>
+    <span title="Symbols count total">320k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span>Reading time total &asymp;</span>
-    <span title="Reading time total">3:52</span>
+    <span title="Reading time total">4:51</span>
   </span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>

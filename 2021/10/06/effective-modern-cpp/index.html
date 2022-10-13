@@ -35,7 +35,7 @@
 <meta property="og:description" content="The Items in this book are guidelines, not rules, because guidelines have exceptions. The most important part of each Item is not the advice it offers, but the rationale behind the advice. Once you’v">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-10-06T13:15:58.000Z">
-<meta property="article:modified_time" content="2022-06-26T13:18:20.784Z">
+<meta property="article:modified_time" content="2022-07-04T03:39:53.895Z">
 <meta property="article:author" content="Yuheng Ding">
 <meta property="article:tag" content="C++">
 <meta name="twitter:card" content="summary">
@@ -165,8 +165,8 @@ capture modes.</span></a></li><li class="nav-item nav-level-3"><a class="nav-lin
 32: Use init capture to move objects into closures.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-33-use-decltype-on-auto-parameters-to-stdforward-them."><span class="nav-number">33.</span> <span class="nav-text">Item
 33: Use decltype on auto&amp;&amp;
 parameters to std::forward them.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-34-prefer-lambdas-to-stdbind."><span class="nav-number">34.</span> <span class="nav-text">Item 34: Prefer lambdas to
-std::bind.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-35-prefer-task-based-programming-to-thread--based."><span class="nav-number">35.</span> <span class="nav-text">Item
-35: Prefer task-based programming to thread- based.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-36-specify-stdlaunchasync-if-asynchronicity-is-essential."><span class="nav-number">36.</span> <span class="nav-text">Item
+std::bind.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-35-prefer-task-based-programming-to-thread-based."><span class="nav-number">35.</span> <span class="nav-text">Item 35:
+Prefer task-based programming to thread-based.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-36-specify-stdlaunchasync-if-asynchronicity-is-essential."><span class="nav-number">36.</span> <span class="nav-text">Item
 36: Specify std::launch::async if asynchronicity is essential.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-37-make-stdthreads-unjoinable-on-all-paths."><span class="nav-number">37.</span> <span class="nav-text">Item 37: Make
 std::threads unjoinable on all paths.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-38-be-aware-of-varying-thread-handle-destructor-behavior."><span class="nav-number">38.</span> <span class="nav-text">Item
 38: Be aware of varying thread handle destructor behavior.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-39-consider-void-futures-for-one-shot-event-communication."><span class="nav-number">39.</span> <span class="nav-text">Item
@@ -189,7 +189,7 @@ Consider emplacement instead of insertion.</span></a></li></ol></div>
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -699,8 +699,8 @@ efficient than using std::bind.</li>
 <li>In C++11 only, std::bind may be useful for implementing move capture
 or for binding objects with templatized function call operators.</li>
 </ul>
-<h3 id="item-35-prefer-task-based-programming-to-thread--based.">Item
-35: Prefer task-based programming to thread- based.</h3>
+<h3 id="item-35-prefer-task-based-programming-to-thread-based.">Item 35:
+Prefer task-based programming to thread-based.</h3>
 <ul>
 <li>The std::thread API offers no direct way to get return values from
 asynchronously run functions, and if those functions throw, the program
@@ -833,8 +833,8 @@ rejected by insertion functions.</li>
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2022/06/08/crypto-trading-review/" rel="next" title="亏快链复盘记录 (Updating)">
-                  亏快链复盘记录 (Updating) <i class="fa fa-chevron-right"></i>
+                <a href="/2021/11/28/effective-stl/" rel="next" title="[Note] Effective STL">
+                  [Note] Effective STL <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -869,14 +869,14 @@ rejected by insertion functions.</li>
       <i class="fa fa-chart-line"></i>
     </span>
       <span>Symbols count total: </span>
-    <span title="Symbols count total">255k</span>
+    <span title="Symbols count total">320k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span>Reading time total &asymp;</span>
-    <span title="Reading time total">3:52</span>
+    <span title="Reading time total">4:51</span>
   </span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>

@@ -35,10 +35,9 @@
 <meta property="og:description" content="TL;DR  使用无状态的函数对象作为 std::unique_ptr 的删除器不会占用额外的内存空间；而使用函数指针或有状态的函数对象则会增加 std::unique_ptr 对象的大小，其中 std::function 的内存开销最大，应尽量避免使用。 MSVC 使用 compressed pair 来存储 std::unique_ptr 的原始指针和删除器，利用 Empty Base Cla">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2022-06-25T11:17:46.000Z">
-<meta property="article:modified_time" content="2022-07-02T18:12:14.717Z">
+<meta property="article:modified_time" content="2022-07-30T07:44:51.173Z">
 <meta property="article:author" content="Yuheng Ding">
 <meta property="article:tag" content="C++">
-<meta property="article:tag" content="C++20">
 <meta property="article:tag" content="unique_ptr">
 <meta name="twitter:card" content="summary">
 
@@ -142,7 +141,7 @@ EBO?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -243,7 +242,7 @@ EBO?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#
       </span>
       <span class="post-meta-item-text">In</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Note/" itemprop="url" rel="index"><span itemprop="name">Note</span></a>
+          <a href="/categories/Essay/" itemprop="url" rel="index"><span itemprop="name">Essay</span></a>
         </span>
     </span>
 
@@ -286,7 +285,7 @@ std::unique_ptr 对象的大小，其中 std::function
 </ul>
 <span id="more"></span>
 <h3 id="motivation">Motivation</h3>
-<p>最近因为遇到一些问题翻阅《Effective Modern
+<p>最近因为遇到一些问题查阅《Effective Modern
 C++》的时候，发现了一个之前没有仔细推敲的细节。在 Item 18
 中，作者提到：</p>
 <blockquote>
@@ -312,7 +311,7 @@ preferable.</p>
 lambda 表达式），是不会导致额外内存开销的。</li>
 </ol>
 <p>第一点好理解，显然增加的大小来源于函数指针所占的空间。</p>
-<p>而第二点是令我比较疑惑的地方。我们知道，即使是一个不带任何数据成员的空类，其对象也至少要占一个字节，否则编译器无法在内存中进行寻址。而作者却说使用无状态的函数对象作为删除器，不会增加
+<p>而第二点是令我比较疑惑的地方。我们知道，即使是一个不带任何数据成员的空类，其对象也至少要占一个字节，用以相互区别。而作者却说使用无状态的函数对象作为删除器，不会增加
 std::unique_ptr 的大小。</p>
 <p>笔者写了个 case 验证了下，在 gcc 8.3.0 和 clang 13.1.6
 下输出结果都一样：</p>
@@ -320,7 +319,7 @@ std::unique_ptr 的大小。</p>
 <p>可以看到，使用函数指针作为删除器产生的 std::unique_ptr 对象大小为 16
 字节，使用 std::function 则为 40 字节，而使用无状态 lambda
 和默认删除器均为 8 字节，果真没有引入额外的内存开销。</p>
-<p>这究竟是如何做到的呢？作者在书中没有详细解释，笔者通过查阅资料弄清了其背后的秘密：<strong>Empty
+<p>这究竟是如何做到的呢？作者在书中没有详细解释，笔者查阅资料后终于弄清了其背后的秘密：<strong>Empty
 Base Class Optimisation</strong>。</p>
 <h3 id="empty-base-class-optimisation-ebo">Empty Base Class Optimisation
 (EBO)</h3>
@@ -357,8 +356,8 @@ target="_blank" rel="noopener" href="https://github.com/microsoft/STL/blob/main/
 中。乍一看这好像有点不伦不类，毕竟从概念上来说
 <code>_Compressed_pair</code> 和 <code>_Ty1</code>
 似乎不应该是继承的关系。但注意这里用的是 private 继承，相较于 public
-继承表达的 <code>is-a</code> 关系，private 继承隐含的意思其实是
-<code>is-implemented-in-terms-of</code>，即「由…实现出」。这就说得通了，<code>_Ty1</code>
+继承表达的 <strong>is-a</strong> 关系，private 继承隐含的意思其实是
+<strong>is-implemented-in-terms-of</strong>，即「由…实现出」。这就说得通了，<code>_Ty1</code>
 是组成 <code>_Compressed_pair</code> 的一部分，反过来
 <code>_Compressed_pair</code> 是由 <code>_Ty1</code>
 实现的。这也是为什么很多情况下，组合和 private
@@ -367,7 +366,7 @@ target="_blank" rel="noopener" href="https://github.com/microsoft/STL/blob/main/
 <p>回到正题，这里的关键在于，通过 private
 继承（而不是作为成员进行组合），我们既获得了空基类 <code>_Ty2</code>
 的接口，同时又做到了不因此增加 <code>_Compressed_pair</code>
-的大小。简直是成年人我都要！</p>
+的大小。简直就是成年人我都要！</p>
 <p>另外，细心的读者可能注意到了，由于模板中 <code>_Ty1</code> 和
 <code>_Ty2</code> 的顺序是固定的，这意味着该实现只考虑 <code>_Ty1</code>
 是空类的情况。有兴趣的话还可以研究一下 boost 库实现的
@@ -376,7 +375,7 @@ EBO 技术：<a
 target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_73_0/libs/utility/doc/html/compressed_pair.html">Compressed_Pair
 - Boost 1.73.0</a></p>
 <h3 id="one-more-thing">One More Thing</h3>
-<p>通过上文 <code>_Compressed_pair</code> 我们可以看到，想要应用 EBO
+<p>通过 <code>_Compressed_pair</code> 的实现我们可以看到，想要应用 EBO
 技术还是挺麻烦的，又要用到模板偏特化又要用到继承，还要通过 traits
 判断某个类是不是空类。如果要自己实现的话，需要对 metaprogramming
 比较熟悉。然而到了 C++20 这儿，基本上就没你什么事儿了。</p>
@@ -433,7 +432,6 @@ target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/
 
           <div class="post-tags">
               <a href="/tags/C/" rel="tag"># C++</a>
-              <a href="/tags/C-20/" rel="tag"># C++20</a>
               <a href="/tags/unique-ptr/" rel="tag"># unique_ptr</a>
           </div>
 
@@ -441,11 +439,14 @@ target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2022/06/08/crypto-trading-review/" rel="prev" title="亏快链复盘记录 (Updating)">
-                  <i class="fa fa-chevron-left"></i> 亏快链复盘记录 (Updating)
+                <a href="/2021/11/28/effective-stl/" rel="prev" title="[Note] Effective STL">
+                  <i class="fa fa-chevron-left"></i> [Note] Effective STL
                 </a>
             </div>
             <div class="post-nav-item">
+                <a href="/2022/07/30/memory-alignment-in-cpp-theory/" rel="next" title="C++ 中的内存对齐——理论篇">
+                  C++ 中的内存对齐——理论篇 <i class="fa fa-chevron-right"></i>
+                </a>
             </div>
           </div>
     </footer>
@@ -479,14 +480,14 @@ target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/
       <i class="fa fa-chart-line"></i>
     </span>
       <span>Symbols count total: </span>
-    <span title="Symbols count total">255k</span>
+    <span title="Symbols count total">320k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span>Reading time total &asymp;</span>
-    <span title="Reading time total">3:52</span>
+    <span title="Reading time total">4:51</span>
   </span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
