@@ -27,12 +27,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="第 2 章 编译和链接 被隐藏了的过程  使用 GCC 编译 Hello World 程序 gcc hello.c，可以分解为 4 个步骤，分别是预处理（Preprocessing）、编译（Compilation）、汇编（Assembly）和链接（Linking）  预编译  源代码文件 hello.c 和相关的头文件（如 stdio.h 等）被预编译器 cpp 预编译成一个 .i 文件 第一步预">
+    <meta name="description" content="第 2 章 编译和链接 被隐藏了的过程  使用 GCC 编译 Hello World 程序 gcc hello.c，可以分解为 4 个步骤，分别是预处理（Preprocessing）、编译（Compilation）、汇编（Assembly）和链接（Linking）">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[Note] 程序员的自我修养——第 2 部分 静态链接">
 <meta property="og:url" content="http://example.com/2022/04/07/programmers-self-cultivation-part-2/index.html">
 <meta property="og:site_name" content="TimDyh">
-<meta property="og:description" content="第 2 章 编译和链接 被隐藏了的过程  使用 GCC 编译 Hello World 程序 gcc hello.c，可以分解为 4 个步骤，分别是预处理（Preprocessing）、编译（Compilation）、汇编（Assembly）和链接（Linking）  预编译  源代码文件 hello.c 和相关的头文件（如 stdio.h 等）被预编译器 cpp 预编译成一个 .i 文件 第一步预">
+<meta property="og:description" content="第 2 章 编译和链接 被隐藏了的过程  使用 GCC 编译 Hello World 程序 gcc hello.c，可以分解为 4 个步骤，分别是预处理（Preprocessing）、编译（Compilation）、汇编（Assembly）和链接（Linking）">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150749.jpg">
 <meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150746.jpg">
@@ -41,7 +41,7 @@
 <meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150751.jpg">
 <meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150748.jpg">
 <meta property="article:published_time" content="2022-04-07T12:12:50.000Z">
-<meta property="article:modified_time" content="2022-11-19T07:18:16.830Z">
+<meta property="article:modified_time" content="2022-11-19T07:27:35.497Z">
 <meta property="article:author" content="Yuheng Ding">
 <meta property="article:tag" content="OS">
 <meta property="article:tag" content="C&#x2F;C++">
@@ -283,7 +283,8 @@ PE&#x2F;COFF</span></a></li><li class="nav-item nav-level-4"><a class="nav-link"
 <li><p>使用 GCC 编译 Hello World 程序
 <code>gcc hello.c</code>，可以分解为 4
 个步骤，分别是预处理（Preprocessing）、编译（Compilation）、汇编（Assembly）和链接（Linking）</p>
-<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150749.jpg" style="zoom: 50%;" /></p></li>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150749.jpg" style="zoom: 50%;" /></p>
+<p><span id="more"></span></p></li>
 <li><p><strong>预编译</strong></p>
 <ul>
 <li><p>源代码文件 hello.c 和相关的头文件（如 stdio.h 等）被预编译器 cpp
