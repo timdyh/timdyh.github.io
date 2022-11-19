@@ -134,7 +134,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-count">41</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -145,7 +145,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-count">38</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -278,6 +278,239 @@ guidelines without a good reason.</p>
             </div>
           <!--/noindex-->
         
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/19/lsm-tree-overview/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/12/19/lsm-tree-overview/" class="post-title-link" itemprop="url">LSM-Tree 存储模型概述</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-12-19 17:04:00" itemprop="dateCreated datePublished" datetime="2020-12-19T17:04:00+08:00">2020-12-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Essay/" itemprop="url" rel="index"><span itemprop="name">Essay</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>3.7k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>3 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h3 id="overview">Overview</h3>
+<p>传统关系型数据库使用 B-Tree
+或一些变体作为存储结构，能高效进行查找。但保存在磁盘中时它也有一个明显的缺陷，那就是逻辑上相离很近但物理却可能相隔很远，这就可能造成大量的磁盘随机读写。随机读写比顺序读写慢很多，为了提升
+IO 性能，我们需要一种能将随机操作变为顺序操作的机制，于是便有了 LSM
+树。其主要思想是将磁盘看作一个大的日志，先内存更新后合并落盘形成多个有序文件，每次都将新的数据及其索引结构添加到日志的最末端，以实现对磁盘的顺序操作，从而大幅提升写操作。而对于读则需合并磁盘已有历史数据和当前驻于内存中的未落盘更新，因而作为代价牺牲了一些读性能。</p>
+<p>当今很多主流 DB 都使用了 LSM 树的存储模型，包括 Google
+BigTable、LevelDB、HBase、RocksDB、Cassandra 等。</p>
+<h3 id="background">Background</h3>
+<p>Log-Structured 的思想最早由 Rosenblum 和 Ousterhout 于 1992
+年在研究日志结构的文件系统时提出，它基于这样的假设：文件被缓存在主内存中，并且不断增加的内存大小将使缓存在满足读取请求方面越来越有效。在这种情况下，写入将在磁盘流量中占主导地位。日志结构的文件系统将所有新信息以日志的顺序结构写入磁盘。通过消除几乎所有寻道，该方法可显着提高写入性能，并可以实现更快的崩溃恢复。日志结构的文件系统将日志作为唯一的数据结构永久存储在磁盘上，同时该日志也包含索引信息，从而能够高效地从日志中读取文件。</p>
+<p>O’Neil 等人受到这种思想的启发，借鉴了 Log
+不断追加（而不是修改）的特点，结合B-Tree的数据结构，提出了一种延迟更新、批量写入硬盘的数据结构
+LSM-Tree
+及其算法，旨在为长期记录插入（和删除）率很高的文件提供低成本索引。LSM
+树使用一种推迟和分批索引更改的算法，以一种类似于合并排序的方式，将更新从内存到磁盘进行多层级联。与传统的访问方法（例如
+B
+树）相比，该算法大大减少了磁盘臂的移动。但是在某些情况下，需要立即响应的索引查找将失去
+I/O 效率，因此 LSM 树在索引插入比检索条目更常见的应用程序中最有用。</p>
+<h3 id="the-log-structured-merge-tree-lsm-tree">The Log-Structured
+Merge-Tree (LSM-Tree)</h3>
+<p>LSM
+树由两个或以上的存储结构组成，比如在论文中为了方便说明使用了最简单的两个存储结构。一个存储结构常驻内存中，称为
+C0 tree，具体可以是任何方便健值查找的数据结构，比如红黑树、map
+之类，甚至可以是跳表。另外一个存储结构常驻在硬盘中，称为 C1
+tree，具体结构类似 B 树。</p>
+<p>下图为包含 2 个结构的LSM树：</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2021-01-03-105412.jpg" style="zoom:50%;" /></p>
+<p>在 LSM 树中，最低一级即最小的 C0 树位于内存，而更高级的
+C1、C2…树都位于磁盘里。数据会先写入内存中的 C0
+树，当它的大小达到一定阈值之后，C0 树中的全部或部分数据就会刷入磁盘中的
+C1 树，如下图所示。</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2021-01-03-105416.jpg" style="zoom: 33%;" /></p>
+<p>由于内存读写速率比外存要快非常多，因此数据写入 C0
+树的效率很高。且数据从内存刷入磁盘时是预排序的，也就是说，LSM
+树将原本随机写操作转化成了顺序写操作，写性能大幅提升。不过，它的
+tradeoff
+就是牺牲了一部分读性能，因为读取时需将内存中数据和磁盘中的数据合并。总体上讲这种权衡还是值得的，因为：</p>
+<ul>
+<li>可以先读取内存中 C0
+树的缓存数据。内存效率高且根据局部性原理，最近写入的数据命中率也高；</li>
+<li>写入数据未刷到磁盘时不会占用磁盘的
+I/O，不会与读取竞争。读取操作就能取得更长的磁盘时间，变相地弥补了读性能差距。</li>
+</ul>
+<p>在实际应用中，为防止内存因断电等原因丢失数据，写入内存的数据同时会顺序在磁盘上写日志，类似于预写日志（WAL），这就是
+LSM 这个词中 Log
+一词的来历。另外，如有多级树，低级的树在达到大小阈值后也会在磁盘中进行合并，如下图所示。</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2021-01-03-105420.jpg" style="zoom:50%;" /></p>
+<h3 id="bigtable">Bigtable</h3>
+<p>2006年，Google 发表了著名的 Bigtable
+论文，将LSM应用于大规模数据存储。Bigtable
+是一个用于管理结构化数据的分布式存储系统，能够扩展到数千台服务器上 PB
+级的数据规模。在 Google，包括 Web 索引、Google Earth 和 Google Financial
+在内的许多项目都将数据存储于 Bigtable，这些应用在数据量和延迟要求上对
+Bigtable 提出了千差万别的需求。尽管如此，Bigtable 仍然成功地对所有这些
+Google 产品提供了灵活且高性能的解决方法。</p>
+<p>Bigtable 不是关系型数据库，但是却沿用了很多关系型数据库的术语，像
+table（表）、row（行）、column（列）等。这容易让读者误入歧途，将其与关系型数据库的概念对应起来，从而难以理解论文。<a
+target="_blank" rel="noopener" href="https://dzone.com/articles/understanding-hbase-and-bigtab">Understanding
+HBase and BigTable</a>
+是篇很优秀的文章，可以帮助读者从关系型数据模型的思维定势中走出来。</p>
+<h4 id="data-model">Data Model</h4>
+<p>本质上说，Bigtable
+是一个键值（key-value）映射。按作者的说法，Bigtable
+是一个“稀疏的、分布式的、持久化的多维度排序 Map”。Bigtable
+的键有三维，分别是行键（row key）、列键（column
+key）和时间戳（timestamp），行键和列键都是字节串，时间戳是 64
+位整型；而值是一个字节串。可以用
+<code>(row:string, column:string, time:int64)-&gt;string</code>
+来表示一条键值对记录。若干列键聚合在一起形成一个列族，以
+<code>family:qualifier</code> 的形式命名列键。</p>
+<p>下图是 Bigtable 论文里给出的例子，Webtable
+表存储了大量的网页和相关信息。在 Webtable
+中，每一行存储一个网页，其反转的 url 作为行键，比如
+maps.google.com/index.html 的数据存储在键为 com.google.maps/index.html
+的行里，反转的原因是为了让同一个域名下的子域名网页能聚集在一起。图中的列族
+<code>anchor</code> 保存了该网页的引用站点（比如引用了 CNN
+主页的站点），<code>qualifier</code>
+是引用站点的名称，而数据是链接文本；列族 <code>contents</code>
+保存的是网页的内容，这个列族只有一个空列
+<code>contents:</code>，该列下保存了网页的三个版本，我们可以用
+<code>("com.cnn.www", "contents:", t5)</code> 来找到CNN主页在 t5
+时刻的内容。</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2021-01-03-105423.jpg" style="zoom: 50%;" /></p>
+<h4 id="implementation">Implementation</h4>
+<p>Bigtable
+按照行键的字典序存储数据，表会根据行键自动划分为片（tablet），作为负载均衡的单元。片的数据最终会写到
+GFS（Google File System），片在 GFS 里的物理形态就是若干个 SSTable
+文件。下图展示了读写操作的基本情况。</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2021-01-03-105426.jpg" style="zoom:50%;" /></p>
+<p>当片服务器收到一个写请求，片服务器首先检查请求是否合法。如果合法，先将写请求提交到日志去，然后将数据写入内存中的
+memtable。memtable 是内存中的有序 buffer，相当于 SSTable
+的缓存，存储最近提交的数据。当 memtable 成长到一定规模会被冻结，Bigtable
+随之创建一个新的 memtable，并且将冻结的 memtable 转换为 SSTable 格式写入
+GFS，这个操作称为 <strong>minor compaction</strong>。</p>
+<p>当片服务器收到一个读请求，同样要检查请求是否合法。如果合法，这个读操作会查看所有
+SSTable 文件和 memtable 的合并视图。因为 SSTable 和 memtable
+本身都是已排序的，所以合并相当快。</p>
+<p>每一次 minor compaction 都会产生一个新的 SSTable 文件，SSTable
+文件太多读操作的效率就降低了，所以 Bigtable 定期执行 <strong>merging
+compaction</strong> 操作，将几个 SSTable 和 memtable 合并为一个新的
+SSTable。如果一次 merging compaction 将所有 SSTable 合并为一个
+SSTable，则该操作称为 <strong>major compaction</strong>。</p>
+<h3 id="references">References</h3>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://people.eecs.berkeley.edu/~brewer/cs262/LFS.pdf">The
+Design and Implementation of a Log-Structured File System</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cs.umb.edu/~poneil/lsmtree.pdf">The
+Log-Structured Merge-Tree (LSM-Tree)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/bigtable-osdi06.pdf">Bigtable:
+A Distributed Storage System for Structured Data</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/247953550">关于数据存储引擎结构，没有比这篇更详细的</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/siegfang/archive/2013/01/12/lsm-tree.html">日志结构的合并树
+The Log-Structured Merge-Tree</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/las723/article/details/93767240">LSM树</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/114906516">分布式——吞吐量巨强、Hbase的承载者
+LSMT</a></li>
+<li><a
+target="_blank" rel="noopener" href="http://www.benstopford.com/2015/02/14/log-structured-merge-trees/">Log
+Structured Merge Trees</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.igvita.com/2012/02/06/sstable-and-log-structured-storage-leveldb/">SSTable
+and Log Structured Storage: LevelDB</a></li>
+<li><a
+href="%5Bhttps://ggaaooppeenngg.github.io/zh-CN/2017/03/31/从朴素解释出发解释leveldb的设计/%5D()">从朴素解释出发解释leveldb的设计</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://dzone.com/articles/understanding-hbase-and-bigtab">Understanding
+HBase and BigTable</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.scylladb.com/2018/01/17/compaction-series-space-amplification/">Scylla’s
+Compaction Strategies Series: Space Amplification in Size-Tiered
+Compaction</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.scylladb.com/2018/01/31/compaction-series-leveled-compaction/">Scylla’s
+Compaction Strategies Series: Write Amplification in Leveled
+Compaction</a></li>
+</ol>
+
       
     </div>
 
@@ -1130,119 +1363,8 @@ QQ 邮箱也不例外。不同于 HTTP 协议，HTTPS 使用的是 443
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/07/15/http-https-analysis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="Yuheng Ding">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="TimDyh">
-      <meta itemprop="description" content="Per aspera, ad astra.">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | TimDyh">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/07/15/http-https-analysis/" class="post-title-link" itemprop="url">HTTP 与 HTTPS 协议分析</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-07-15 23:12:00" itemprop="dateCreated datePublished" datetime="2020-07-15T23:12:00+08:00">2020-07-15</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Schoolwork/" itemprop="url" rel="index"><span itemprop="name">Schoolwork</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="Symbols count in article">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">Symbols count in article: </span>
-      <span>3k</span>
-    </span>
-    <span class="post-meta-item" title="Reading time">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">Reading time &asymp;</span>
-      <span>3 mins.</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>万维网客户程序与万维网服务器程序之间的交互遵守严格的协议，这就是超文本传输协议
-HTTP（HyperText Transfer Protocol）。HTTP 是一个应用层协议，它使用 TCP
-连接进行可靠的传送。</p>
-<p>安全套接字层 SSL（Secure Socket Layer） 和运输层安全 TLS（Transport
-Layer Security）是现在广泛使用的两个安全协议，作用在端系统应用层的 HTTP
-和运输层之间，在 TCP 之上建立起一个安全通道，为通过 TCP
-传输的应用层数据提供安全保障。</p>
-<p>超文本传输安全协议 HTTPS（Hyper Text Transfer Protocol over Secure
-Socket Layer）在 HTTP 的基础上加入 SSL
-层，通过传输加密和身份认证保证了传输过程的安全性。</p>
-<p>本次实验使用 Wireshark 报文分析软件，分别通过分析 HTTP 和 HTTPS
-协议的交互过程和报文内容，研究二者的工作原理及异同之处。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/15/http-https-analysis/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 </div>
@@ -1266,14 +1388,14 @@ Socket Layer）在 HTTP 的基础上加入 SSL
       <i class="fa fa-chart-line"></i>
     </span>
       <span>Symbols count total: </span>
-    <span title="Symbols count total">362k</span>
+    <span title="Symbols count total">366k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span>Reading time total &asymp;</span>
-    <span title="Reading time total">5:29</span>
+    <span title="Reading time total">5:32</span>
   </span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
