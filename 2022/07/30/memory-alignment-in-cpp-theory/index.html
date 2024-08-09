@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="null//null" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="x_9IHIiVX0aZQfKSCtN7gy8_1UhN7guVmZAmA4gv1EE">
+  <meta name="msvalidate.01" content="AC8F448726B8A8742C6DFFA7640E7DBF">
+  <meta name="baidu-site-verification" content="code-2qEdijyCxz">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本文作为上篇主要介绍内存对齐的理论基础，后续的下篇将侧重于 C++ 语言层面的实践，敬请期待！  TL;DR  处理器以若干字节的块而不是单字节的粒度访问内存，因此对于未对齐的内存需要额外的访存及计算开销，导致性能更差。 原子操作和矢量运算指令要求内存地址必须是对齐的，否则可能导致程序死循环和数据错误。 编译器通过 padding 自动对结构中的字段进行对齐，用以向后兼容以及提高效率。 内存对齐">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++ 中的内存对齐——理论篇">
+<meta property="og:url" content="http://example.com/2022/07/30/memory-alignment-in-cpp-theory/index.html">
+<meta property="og:site_name" content="TimDyh">
+<meta property="og:description" content="本文作为上篇主要介绍内存对齐的理论基础，后续的下篇将侧重于 C++ 语言层面的实践，敬请期待！  TL;DR  处理器以若干字节的块而不是单字节的粒度访问内存，因此对于未对齐的内存需要额外的访存及计算开销，导致性能更差。 原子操作和矢量运算指令要求内存地址必须是对齐的，否则可能导致程序死循环和数据错误。 编译器通过 padding 自动对结构中的字段进行对齐，用以向后兼容以及提高效率。 内存对齐">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180234.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180240.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180237.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180242.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180241.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180238.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180239.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180233.jpg">
+<meta property="article:published_time" content="2022-07-30T07:42:53.000Z">
+<meta property="article:modified_time" content="2022-11-19T07:17:35.620Z">
+<meta property="article:author" content="Yuheng Ding">
+<meta property="article:tag" content="C&#x2F;C++">
+<meta property="article:tag" content="Memory">
+<meta property="article:tag" content="Compiler">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180234.jpg">
+
+
+<link rel="canonical" href="http://example.com/2022/07/30/memory-alignment-in-cpp-theory/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/07/30/memory-alignment-in-cpp-theory/","path":"2022/07/30/memory-alignment-in-cpp-theory/","title":"C++ 中的内存对齐——理论篇"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>C++ 中的内存对齐——理论篇 | TimDyh</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">TimDyh</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#tldr"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E8%AE%BF%E9%97%AE%E7%9A%84%E7%B2%92%E5%BA%A6"><span class="nav-number">2.</span> <span class="nav-text">内存访问的粒度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%A7%E8%83%BD"><span class="nav-number">3.</span> <span class="nav-text">性能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E5%AD%90%E6%80%A7"><span class="nav-number">4.</span> <span class="nav-text">原子性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%A2%E9%87%8F%E8%BF%90%E7%AE%97altivec"><span class="nav-number">5.</span> <span class="nav-text">矢量运算（Altivec）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E5%AF%B9%E9%BD%90"><span class="nav-number">6.</span> <span class="nav-text">结构对齐</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4%E8%8C%83%E5%9B%B4"><span class="nav-number">7.</span> <span class="nav-text">地址空间范围</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cache"><span class="nav-number">8.</span> <span class="nav-text">Cache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#references"><span class="nav-number">9.</span> <span class="nav-text">References</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yuheng Ding"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Yuheng Ding</p>
+  <div class="site-description" itemprop="description">Per aspera, ad astra.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/timdyh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dyh0701@gmail.com" title="E-Mail → mailto:dyh0701@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/tim_dyh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;tim_dyh" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/timdyh" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/30/memory-alignment-in-cpp-theory/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="C++ 中的内存对齐——理论篇 | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C++ 中的内存对齐——理论篇
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-07-30 15:42:53" itemprop="dateCreated datePublished" datetime="2022-07-30T15:42:53+08:00">2022-07-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Essay/" itemprop="url" rel="index"><span itemprop="name">Essay</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>3.8k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>3 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>本文作为上篇主要介绍内存对齐的理论基础，后续的下篇将侧重于 C++
+语言层面的实践，敬请期待！</p>
+</blockquote>
+<h3 id="tldr">TL;DR</h3>
+<ul>
+<li>处理器以若干字节的块而不是单字节的粒度访问内存，因此对于未对齐的内存需要额外的访存及计算开销，导致性能更差。</li>
+<li>原子操作和矢量运算指令要求内存地址必须是对齐的，否则可能导致程序死循环和数据错误。</li>
+<li>编译器通过 padding
+自动对结构中的字段进行对齐，用以向后兼容以及提高效率。</li>
+<li>内存对齐在某种意义上扩大了可使用的地址空间范围，甚至影响计算机系统的物理设计。</li>
+<li>内存对齐使得处理器能够更好地利用 cache，包括减少 cache line
+访问，以及避免多核一致性问题引发的 cache miss。</li>
+</ul>
+<span id="more"></span>
+<p>作为 C++
+程序员，总是免不了直接与内存打交道，尤其是开发数据库、嵌入式系统、设备驱动这类较为底层的软件时，经常会遇到需要进行内存对齐的情况，这对于
+C++
+来说并非难事。不过在进入语言层面之前，我们最好追本溯源，从计算机的底层机制出发，先弄明白内存到底为什么需要对齐？</p>
+<h3 id="内存访问的粒度">内存访问的粒度</h3>
+<p>内存之所以有“对齐”的概念，本质上源于程序员（或者说高级编程语言）和处理器看待内存访问的粒度不同。在程序员眼中，内存基本上等同于“字节的数组”，一般用来逐字节访问，也就是说编程时内存访问的粒度是字节（bitfield、位运算除外）。比如在
+C++ 中，我们往往用 <code>char*</code> 或 <code>uint8_t*</code>
+来操作裸的内存。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180234.jpg"
+alt="howProgrammersSeeMemory" />
+<figcaption aria-hidden="true">howProgrammersSeeMemory</figcaption>
+</figure>
+<p>然而对于计算机的处理器来说，内存并非以字节为单位来读写，而是以二的幂次字节的
+chunk 形式进行访问，例如 2、4、8、16 甚至 32 个字节。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180240.jpg"
+alt="howProcessorsSeeMemory" />
+<figcaption aria-hidden="true">howProcessorsSeeMemory</figcaption>
+</figure>
+<p>我们通过一个例子来看不同的访存粒度如何影响处理器的操作。假设现在需要从地址
+0 处读四字节到寄存器，然后再从地址 1 处读四字节到同一个寄存器。</p>
+<ul>
+<li><p>如果处理器的访存粒度为 1
+字节（也就是程序员眼中的模型），那么从地址 0 处和从地址 1
+处开始读一样，都需要 4 次访存。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180237.jpg"
+alt="singleByteAccess" />
+<figcaption aria-hidden="true">singleByteAccess</figcaption>
+</figure></li>
+<li><p>如果访存粒度为 2 字节（如 68000 处理器），那么显然从地址 0
+处开始读需只要 2
+次访存，相比之前少了一半的访存次数，而由于每次访存操作的开销是固定的，因此这里的性能相比之前提升了一倍。然而，对于从地址
+1 处开始读的情况，由于该地址和处理器访存的边界不匹配（不是 2
+的倍数），导致处理器需要进行 3 次访存操作（0-1, 2-3, 4-5），最后只取其中
+1-4 的部分。因此，这种未对齐的地址就会导致处理器的额外开销。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180242.jpg"
+alt="doubleByteAccess" />
+<figcaption aria-hidden="true">doubleByteAccess</figcaption>
+</figure></li>
+<li><p>如果访存粒度为 4 字节（如 68030 或 PowerPC
+601），从对齐的地址开始读 4 字节仅需 1
+次访存，而未对齐的地址则会导致两倍的访存次数。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180241.jpg"
+alt="quadByteAccess" />
+<figcaption aria-hidden="true">quadByteAccess</figcaption>
+</figure></li>
+</ul>
+<p>由此我们不难理解，访存粒度所带来的内存对齐问题会给程序带来不可小觑的影响。事实上，如果使用了未对齐的内存，轻则会使得程序性能变差、卡死，重则引发操作系统崩溃，甚至悄悄引发程序数据错误，最终导致不可预期的结果。下面逐一来阐述。</p>
+<h3 id="性能">性能</h3>
+<p>为了深入理解处理器如何处理未对齐的内存，我们仔细来看一下上面的例子中
+4 字节访存粒度的处理器从地址 1 处读取 4 字节时究竟发生了什么：</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180238.jpg"
+alt="unalignedAccess" />
+<figcaption aria-hidden="true">unalignedAccess</figcaption>
+</figure>
+<p>如图所示，处理器首先需要读取未对齐内存的高位部分所在的内存块，并通过位移操作去掉不要的
+1 个字节；然后，再读取低位部分，同样位移掉不要的 3
+个字节；最后，通过或运算将两部分内存合并起来，存入寄存器中。可以看到，除了额外的一次访存，未对齐内存还会带来更多的计算开销。</p>
+<p>有些早期的处理器干脆不支持未对齐的内存。例如，前文提到的 2
+字节粒度处理器 68000
+就没有处理未对齐地址的元件，当遇到这样的地址时，它会直接抛出一个异常。如果操作系统未能处理好这种异常，就只能重启机器。</p>
+<p>后来的处理器虽然取消了这种限制，能够为你处理好未对齐的内存，但显然这会导致额外的开销。PowerPC
+针对未对齐的 32
+位整数访问提供了专门的硬件支持，以尽可能减少性能损耗。但另一方面，对于未对齐的
+64 位浮点数访问，现代的 PowerPC
+会抛出一个异常并交由操作系统进行对齐操作。尽管如此，在软件层进行内存对齐还是比在硬件层处理慢得多。</p>
+<p>总而言之，未对齐内存带来的性能损耗终归是无法避免的。如果你想知道究竟会差多少，<a
+target="_blank" rel="noopener" href="https://web.archive.org/web/20080607055623/http://www.ibm.com/developerworks/library/pa-dalign/#:~:text=Back%20to%20top-,Speed,-Writing%20some%20tests">这里</a>有一个测试可以参考。</p>
+<h3 id="原子性">原子性</h3>
+<p>所有的现代处理器都提供原子操作指令，顾名思义，这种指令是不可分割的，即不能被抢占，这对于并发程序的同步至关重要。而要实现这一点的，传递给原子指令的地址必须至少是
+4 字节对齐的，这是因为原子指令和虚拟内存之间存在一种微妙的关联。</p>
+<p>如前所述，一个未对齐的地址至少需要两次访存操作，那么如果要访问的数据跨越了两个虚存页呢？考虑第一个页在内存中而第二个页不在的情况，当原子指令访存到一半时发生了缺页中断，此时处理器转而执行内存页换入换出的代码，于是该指令的原子性也就被破坏了。为了避免这种情况，最简单的办法就是要求地址必须是对齐的。</p>
+<p>然而不幸的是，当遇到原子变量存储到一个未对齐的地址时，PowerPC
+并不会抛出异常，而是表现出总是存储失败。由于多数原子操作的代码被写成失败时循环重试的形式，这就会导致程序陷入死循环。</p>
+<h3 id="矢量运算altivec">矢量运算（Altivec）</h3>
+<blockquote>
+<p>Altivec is all about speed.</p>
+</blockquote>
+<p>我们已经知道，未对齐的内存会拖慢处理器的速度，这自然与矢量运算的初衷相悖。因此，Altivec
+被简单地设计成不支持未对齐的内存访问。由于 Altivec 指令一次使用 16
+字节的内存块，所以传递给 Altivec 的所有地址都必须是 16
+字节对齐的。类似原子指令，如果你一定要传给它未对齐的地址，它同样也不会抛出异常，而只是简单地忽略未对齐的部分并继续在错误的地址上执行运算。这意味着你的程序会默默地导致内存被破坏，然而返回错误的结果。这样做换来的好处是不需要对地址做截断等操作，从而节省了一两条指令。</p>
+<blockquote>
+<p>实际上 Altivec 是可以处理未对齐内存的，只是需要更多工作，详见
+<em>Altivec Programming Environments Manual</em>.</p>
+</blockquote>
+<h3 id="结构对齐">结构对齐</h3>
+<p>考虑这样一个简单的结构：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Struct</span> &#123;</span><br><span class="line">	<span class="type">char</span> a;</span><br><span class="line">	<span class="type">long</span> b;</span><br><span class="line">	<span class="type">char</span> c;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这个结构的大小是多少字节？有人可能会回答 6 字节，毕竟 1 + 4 + 1 =
+6，类似这样：</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180239.jpg" style="zoom:50%;" /></p>
+<p>然而，如果你问编译器 <code>sizeof(Struct)</code>
+是多少，大概率得到的答案大于 6，也许是 8 甚至 24 字节。以 8 字节为例，则
+Struct 的内存布局是这样的：</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-31-180233.jpg" style="zoom: 50%;" /></p>
+<p>可以看到，编译器通过增加未使用的 padding
+空间实现字段的内存对齐，从而使得 <code>b</code> 和 <code>c</code>
+处于偶数地址上。这样做有两个原因：</p>
+<ol type="1">
+<li><strong>向后兼容：</strong>例如对于 2 字节粒度的处理器，如果
+<code>Struct</code> 中的字段未经对齐，则会引发硬件异常；</li>
+<li><strong>效率</strong>：晶体管比内存更宝贵，对齐虽会浪费一些内存，但能减轻处理器的额外负担，本质上是空间换时间。</li>
+</ol>
+<h3 id="地址空间范围">地址空间范围</h3>
+<p>如果内存地址均为 4 字节对齐的，则所有地址的最低 2 bits 始终为
+0（例如在 32 位机器上），那么每次地址递增时，实际上是在递增 bit
+2，而不是 bit 0。这就意味着理论上我们可以访问 4
+倍的内存地址空间，省下来的 2 bits 可以代表 4
+个不同的状态，或者用于标志之类的东西。</p>
+<p>这甚至会影响计算机系统的物理设计。如果地址总线需要少 2 bits，CPU
+上的引脚可以少 2 个，同时 CPU 上的走线也可以少 2 个。</p>
+<h3 id="cache">Cache</h3>
+<p>内存对齐还与 cache 有着紧密的联系。</p>
+<p>如前所示，现代的处理器不会逐字节访问内存，而是通常以 64
+字节的块（称为 cache line）获取内存。当你读取一个特定的内存位置时，整个
+cache line 会先从主内存提取到 cache 中，在这之后从同一 cache line
+中访问其他值是很快的。而内存是否对齐决定了一个操作会触及一个还是两个
+cache line，显然访问一个 cache line 会比访问两个快得多。</p>
+<p>此外，在多核机器上，通常 L1 cache 是 per-core
+的，由此带来了一致性的问题：当一个核修改其缓存中的值时，其他核就不能再使用旧值，导致该内存位置在所有
+cache 中失效。又由于 cache 在 cache line 的粒度上运行，因此整个 cache
+line 会在所有 cache 中失效，进而引发其他核下次访问相关数据时的 cache
+miss。</p>
+<p>在这种情况下，将需要高频并发访问的数据按 cache line
+大小对齐或许是比较好的做法。一方面，对于小于 64
+字节的数据可以做到只触及一个 cache line；另一方面，相当于独占了整个
+cache line，避免其他数据可能修改同一 cache line 导致其他核 cache miss
+的开销。</p>
+<p>关于 cache 还有一些很有意思的实验，感兴趣的读者可以参考<a
+target="_blank" rel="noopener" href="http://igoro.com/archive/gallery-of-processor-cache-effects/">这篇文章</a>。</p>
+<h3 id="references">References</h3>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://stackoverflow.com/questions/381244/purpose-of-memory-alignment">https://stackoverflow.com/questions/381244/purpose-of-memory-alignment</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://web.archive.org/web/20080607055623/http://www.ibm.com/developerworks/library/pa-dalign/">https://web.archive.org/web/20080607055623/http://www.ibm.com/developerworks/library/pa-dalign/</a></li>
+<li><a
+target="_blank" rel="noopener" href="http://igoro.com/archive/gallery-of-processor-cache-effects/">http://igoro.com/archive/gallery-of-processor-cache-effects/</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Yuheng Ding WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Yuheng Ding Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/C-C/" rel="tag"># C/C++</a>
+              <a href="/tags/Memory/" rel="tag"># Memory</a>
+              <a href="/tags/Compiler/" rel="tag"># Compiler</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/06/25/custom-deleter-for-unique_ptr/" rel="prev" title="std::unique_ptr 的自定义删除器">
+                  <i class="fa fa-chevron-left"></i> std::unique_ptr 的自定义删除器
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/08/28/memory-alignment-in-cpp-practice/" rel="next" title="C++ 中的内存对齐——实践篇">
+                  C++ 中的内存对齐——实践篇 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yuheng Ding</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Symbols count total: </span>
+    <span title="Symbols count total">370k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>Reading time total &asymp;</span>
+    <span title="Reading time total">5:37</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"timdyh","repo":"gitalk-comments","client_id":"0babcb65af364dd08a90","client_secret":"22090e837380d49040a73f2ed1db4f9541b29379","admin_user":"timdyh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"d11db912a8261749741da669845bfde7"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

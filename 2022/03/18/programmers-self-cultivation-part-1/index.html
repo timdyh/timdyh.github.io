@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="null//null" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="x_9IHIiVX0aZQfKSCtN7gy8_1UhN7guVmZAmA4gv1EE">
+  <meta name="msvalidate.01" content="AC8F448726B8A8742C6DFFA7640E7DBF">
+  <meta name="baidu-site-verification" content="code-2qEdijyCxz">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="第 1 章 温故而知新 Hello World  程序为什么要被编译器编译了之后才可以运行？ 编译器在把 C 语宫程序转换成可以执行的机器码的过程中做了什么，怎么做的？ 最后编译出来的可执行文件里面是什么？除了机器码还有什么？它们怎么存放的，怎么组织的？ #include &lt;stdio.h&gt; 是什么意思？把 stdio.h 包含进来意味着什么？C语言库又是什么？它怎么实现的？ 不同的编">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Note] 程序员的自我修养——第 1 部分 简介">
+<meta property="og:url" content="http://example.com/2022/03/18/programmers-self-cultivation-part-1/index.html">
+<meta property="og:site_name" content="TimDyh">
+<meta property="og:description" content="第 1 章 温故而知新 Hello World  程序为什么要被编译器编译了之后才可以运行？ 编译器在把 C 语宫程序转换成可以执行的机器码的过程中做了什么，怎么做的？ 最后编译出来的可执行文件里面是什么？除了机器码还有什么？它们怎么存放的，怎么组织的？ #include &lt;stdio.h&gt; 是什么意思？把 stdio.h 包含进来意味着什么？C语言库又是什么？它怎么实现的？ 不同的编">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150051.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150055.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150049.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150053.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150056.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150052.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150054.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150050.jpg">
+<meta property="article:published_time" content="2022-03-18T14:20:50.000Z">
+<meta property="article:modified_time" content="2022-12-16T14:55:55.098Z">
+<meta property="article:author" content="Yuheng Ding">
+<meta property="article:tag" content="OS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150051.jpg">
+
+
+<link rel="canonical" href="http://example.com/2022/03/18/programmers-self-cultivation-part-1/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/03/18/programmers-self-cultivation-part-1/","path":"2022/03/18/programmers-self-cultivation-part-1/","title":"[Note] 程序员的自我修养——第 1 部分 简介"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[Note] 程序员的自我修养——第 1 部分 简介 | TimDyh</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">TimDyh</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC-1-%E7%AB%A0-%E6%B8%A9%E6%95%85%E8%80%8C%E7%9F%A5%E6%96%B0"><span class="nav-number">1.</span> <span class="nav-text">第 1 章 温故而知新</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#hello-world"><span class="nav-number">1.1.</span> <span class="nav-text">Hello World</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A1%AC%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="nav-number">1.2.</span> <span class="nav-text">计算机硬件结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#smp-%E4%B8%8E%E5%A4%9A%E6%A0%B8"><span class="nav-number">1.3.</span> <span class="nav-text">SMP 与多核</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E8%BD%AF%E4%BB%B6%E7%9A%84%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84"><span class="nav-number">1.4.</span> <span class="nav-text">系统软件的层次结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%81%9A%E4%BB%80%E4%B9%88"><span class="nav-number">1.5.</span> <span class="nav-text">操作系统做什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E4%B8%8D%E5%A4%9F%E6%80%8E%E4%B9%88%E5%8A%9E"><span class="nav-number">1.6.</span> <span class="nav-text">内存不够怎么办</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B"><span class="nav-number">1.7.</span> <span class="nav-text">线程</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yuheng Ding"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Yuheng Ding</p>
+  <div class="site-description" itemprop="description">Per aspera, ad astra.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/timdyh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dyh0701@gmail.com" title="E-Mail → mailto:dyh0701@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/tim_dyh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;tim_dyh" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/timdyh" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/18/programmers-self-cultivation-part-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[Note] 程序员的自我修养——第 1 部分 简介 | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [Note] 程序员的自我修养——第 1 部分 简介
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-03-18 22:20:50" itemprop="dateCreated datePublished" datetime="2022-03-18T22:20:50+08:00">2022-03-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Note/" itemprop="url" rel="index"><span itemprop="name">Note</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>6.6k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>6 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="第-1-章-温故而知新">第 1 章 温故而知新</h3>
+<h4 id="hello-world">Hello World</h4>
+<ul>
+<li>程序为什么要被编译器编译了之后才可以运行？</li>
+<li>编译器在把 C
+语宫程序转换成可以执行的机器码的过程中做了什么，怎么做的？</li>
+<li>最后编译出来的可执行文件里面是什么？除了机器码还有什么？它们怎么存放的，怎么组织的？</li>
+<li>#include &lt;stdio.h&gt; 是什么意思？把 stdio.h
+包含进来意味着什么？C语言库又是什么？它怎么实现的？</li>
+<li>不同的编译器（Microsoft VC、GCC）和不同的硬件平台（x86、 SPARC、
+MIPS、 ARM），以及不同的操作系统（Windows、 Linux、 UNIX、
+Solaris），最终编译出来的结果一样吗？为什么？</li>
+<li>Hello World
+程序是怎么运行起来的？操作系统是怎么裝载它的？它从哪儿开始执行，到哪儿结束？main
+函数之前发生了什么？main 函数结束以后又发生了什么？</li>
+<li>如果没有操作系统，Hello World
+可以运行吗？如果要在一台没有操作系统的机器上运行 Hello Worid
+需要什么？应该怎么实现？</li>
+<li>printf
+是怎么实现的？它为什么可以有不定数最的参数？为什么它能够在终端上输出字符串？</li>
+<li>Hello World 程序在运行时，它在内存中是什么样子的？</li>
+</ul>
+<span id="more"></span>
+<h4 id="计算机硬件结构">计算机硬件结构</h4>
+<ul>
+<li>早期所有设备连在一根总线（BUS）上</li>
+<li>南桥（Southbridge）专门处理低速设备，北桥（Northbridge, PCI
+Bridge）连接所有高速部件</li>
+<li>AGP、PCI Express 等诸多总线结构和相应控制芯片</li>
+<li>基本结构万变不离其宗：CPU、内存、I/O 控制芯片</li>
+</ul>
+<h4 id="smp-与多核">SMP 与多核</h4>
+<ul>
+<li>对称多处理器（SMP, Symmetrical Multi-Processing）：每个 CPU
+在系统中所处的地位和所发挥的功能都一样，相互对称</li>
+<li>多核处理器（Multi-core Processor）：SMP
+的简化版，“被打包”的处理器之间共享比较昂贵的缓存部件，只保留多个核心</li>
+</ul>
+<h4 id="系统软件的层次结构">系统软件的层次结构</h4>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150051.jpg" style="zoom:50%;" /></p>
+<ul>
+<li><strong>"Any problem in computer science can be solved by another
+layer of indirection."</strong></li>
+<li>接口（Interface）：每个层次之间通信的协议</li>
+<li>每个中间层都是对它下面的那层的包装和扩展，使得应用程序和硬件之间保持相对的独立（虚拟机技术）</li>
+<li>应用程序编程接口（Application Programming
+Interface）：什么样的运行库提供什么样的 API，比如 Linux 下的 Glibc
+库提供 POSIX 的 API；Windows 的运行库提供 Windows API</li>
+<li>运行库使用操作系统提供的系统调用接口（System
+callInterface），往往以软件中断（Software Interrupt）的方式提供</li>
+<li>硬件规格（Hardware
+Specification）：决定操作系统内核，即驱动程序如何操作硬件，如何与硬件进行通信</li>
+</ul>
+<h4 id="操作系统做什么">操作系统做什么</h4>
+<ul>
+<li><strong>提供抽象的接口，管理硬件资源</strong></li>
+<li>不要让 CPU 打盹
+<ul>
+<li>多道程序（Multiprogramming）
+<ul>
+<li>充分利用 CPU</li>
+<li>调度策略粗糙，不分轻重缓急</li>
+</ul></li>
+<li>分时系统（Time-Sharing System）
+<ul>
+<li>协作模式，每个程序运行一段时间后主动让出 CPU，适合交互式任务</li>
+<li>如果一个程序一直霸占着 CPU
+不放，操作系统也没有办法，其他程序只能等着</li>
+</ul></li>
+<li>多任务（Multi-tasking）系统
+<ul>
+<li>操作系统接管所有硬件资源，运行在受硬件保护的级别，应用程序以进程的方式运行在权限更低的级别</li>
+<li>每个进程有独立的地址空间，相互隔离</li>
+<li>抢占式（Preemptive）：每个进程根据优先级都有机会得到
+CPU，操作系统可以强制剥夺 CPU 资源并分配给它认为目前最需要的进程</li>
+<li>CPU
+在多进程间快速切换，造成多进程同时运行的假象，现代操作系统几乎都采用这种方式</li>
+</ul></li>
+</ul></li>
+<li>设备驱动
+<ul>
+<li>硬件被抽象成概念
+<ul>
+<li>UNIX：硬件设备以普通文件的形式访问</li>
+<li>Windows：图形硬件被抽象 GDI，声音和多媒体设备被抽象成 Directx
+对象，磁盘被抽象成普通文件系统</li>
+</ul></li>
+<li>硬件细节交给操作系统中的硬件驱动（Device Driver）
+<ul>
+<li>驱动程序与内核一起运行在特权级，但二者之间又有一定的独立性，灵活性好</li>
+<li>驱动程序通常由硬件生产厂商开发，操作系统开发者提供一系列接口和框架</li>
+</ul></li>
+</ul></li>
+</ul>
+<h4 id="内存不够怎么办">内存不够怎么办</h4>
+<ul>
+<li><p>早期的计算机中，程序直接运行在物理内存上，内存分配策略问题很多：地址空间不隔离、内存使用效率低、程序运行的地址不确定</p></li>
+<li><p>解决思路：增加中间层，把程序给出的地址看做是一种虚拟地址（Virtual
+Address），通过某种映射将其转换成实际的物理地址</p></li>
+<li><p>关于隔离</p>
+<ul>
+<li>物理地址空间（Physical Address
+Space）：真实存在的，对于每一台计算机来说只有唯一一个，比如 32
+位的机器物理空间就有 2^32 字节（4GB），但只装了 512MB
+的内存，那么物理地址的真正有效部分只有 0x00000000 ~ 0x1FFFFFFF</li>
+<li>虚拟地址空间（Virtual Address
+Space）：想象出来的，其实并不存在，每个进程都有独立的虚拟空间，且只能访问自己的地址空间，从而做到进程的隔离</li>
+</ul></li>
+<li><p><strong>分段（Segmentation）</strong></p>
+<ul>
+<li>把一段与程序所需要的内存空间大小的虚拟空间映射到某个地址空间，操作系统设置映射函数，实际的地址转换由硬件完成</li>
+<li>做到了地址隔离，超出虚拟空间地址范围的请求会被硬件判断为非法访问</li>
+<li>物理地址对程序透明，程序不关心物理地址的变化，不需要重定位</li>
+<li>没有解决内存使用效率的问题：映射以程序为单位，粒度较大，如果内存不足，整个程序被换入换出到磁盘，造成大量磁盘访问</li>
+<li>根据局部性原理，一个程序在运行时的某个时间段内，只频繁用到一小部分数据，因此更小粒度的内存分割和映射方法效率更高</li>
+</ul></li>
+<li><p><strong>分页（Paging）</strong></p>
+<ul>
+<li><p>把地址空间人为地等分成固定大小的页，每一页的大小由硬件决定，或硬件支持多种大小的页，由操作系统选择决定页的大小</p></li>
+<li><p>目前几乎所有的 PC 上的操作系统都使用 4KB 大小的页</p></li>
+<li><p>把常用的数据和代码页装载到内存中，
+把不常用的代码和数据保存在磁盘里，当需要用到的时候再把它从磁盘里取出来</p></li>
+<li><p>虚拟空间的页叫做虚拟页（VP, Virtual
+Page），物理内存中的页叫做物理页（PP, Physical
+Page），磁盘中的页叫做磁盘页（DP，Disk Page）</p></li>
+<li><p>不同程序虚拟空间的页可以被映射到同一个物理页，实现内存共享</p></li>
+<li><p>当进程需要用到不在内存中的页时，硬件会捕获到这个消息，即页错误（Page
+Fault），此时操作系统接管进程，负责从磁盘中读出页并装入内存，然后将其与虚拟页建立映射关系</p></li>
+<li><p>每个页可以设置权限属性（谁可以修改，谁可以访问等），而只有操作系统有权限修改这些属性，从而做到保护自己和保护进程</p></li>
+<li><p>虚拟存储的实现需要依靠硬件的支持，几乎所有的硬件都采用一个叫
+MMU（Memory Management Unit）的部件来进行页映射，一般集成在 CPU 内部</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150055.jpg" /></p></li>
+</ul></li>
+</ul>
+<h4 id="线程">线程</h4>
+<ul>
+<li><p>程序执行流的最小单元，有时被称为轻量级进程（Lightweight Process,
+LWP）</p></li>
+<li><p>一个标准的线程由线程
+ID、当前指令指针（PC）、寄存器集合和堆栈组成</p></li>
+<li><p>一个进程由一个到多个线程组成，各个线程之间共享程序的内存空间（包括代码段、数据段、堆等）及一些进程级的资源（如打开文件和信号）</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150049.jpg" style="zoom: 50%;" /></p></li>
+<li><p>使用多线程的原因</p>
+<ul>
+<li>某个操作可能会陷入长时间等待，多线程可以有效利用等待的时间，例如等待网络响应</li>
+<li>某个操作（常常是计算）会消耗大量的时间，多线程可以让一个线程负责与用户交互，另一个线程负责计算</li>
+<li>程序逻辑本身就要求并发操作，例如多端下载软件 Bittorrent</li>
+<li>多 CPU
+或多核计算机本身具备多线程能力，单线程程序无法全面地发挥计算机的能力</li>
+<li>相对于多进程应用，多线程在数据共享方面效率要高很多</li>
+</ul></li>
+<li><p>线程的访问权限</p>
+<ul>
+<li>可以访问进程内存里的所有数据，甚至包括其他线程的堆栈（如果知道其地址的话，很少见）</li>
+<li>也拥有私有存储空间，包括栈、线程局部存储（Thread Local Storage,
+TLS）、寄存器（包括 PC 寄存器）</li>
+</ul>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150053.jpg" style="zoom: 50%;" /></p></li>
+<li><p>线程调度与优先级</p>
+<ul>
+<li><p>在单处理器对应多线程的情况下，多线程程序轮流执行，每次执行一小段时间（通常是几十到几百毫秒），称为线程调度（Thread
+Schedule）</p></li>
+<li><p>线程通常拥有至少三种状态，分别是：</p>
+<ul>
+<li><strong>运行（Running）：</strong>此时线程正在执行</li>
+<li><strong>就绪（Ready）：</strong>此时线程可以立刻运行，但 CPU
+已经被占用</li>
+<li><strong>等待（Waiting）：</strong>此时线程正在等待某一事件（通常是
+I/O 或同步）发生，无法执行</li>
+</ul>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150056.jpg" style="zoom: 50%;" /></p></li>
+<li><p>线程调度算法</p>
+<ul>
+<li><strong>轮转法（Round
+Robin）：</strong>即之前提到的让各个线程轮流执行一小段时间的方法，这决定了线程之间交错执行的特点</li>
+<li><strong>优先级调度（Priority
+Schedule）：</strong>决定了线程按照什么顺序轮流执行。线程都拥有各自的线程优先级（Thread
+Priority)，高优先级的线程会更早地执行，而低优先级的线程常常要等待到系统中已经没有高优先级的可执行的线程存在时才能够执行</li>
+</ul></li>
+<li><p>在 Windows 中，可以通过使用 <code>SetThreadPriority</code>
+来设置优先级，而 Linux 下与线程相关的操作可以通过 pthread
+库来实现</p></li>
+<li><p>除了用户手动设置，系统还会根据不同线程的表现自动调整优先级。频繁等待的线程称为
+IO 密集型线程（IO Bound Thread），很少等待的线程称为 CPU 密集型线程（CPU
+Bound Thread），前者比后者容易得到优先级的提升</p></li>
+<li><p>饿死（Starvation）：一个线程优先级较低，在它执行之前，总是有较高优先级的线程试图执行，因此它始终无法执行</p></li>
+<li><p>为了避免饿死现象，调度系统常常会逐步提升那些等待了过长时间的得不到执行的线程的优先级</p></li>
+</ul></li>
+<li><p>可抢占线程和不可抢占线程</p>
+<ul>
+<li>在不可抢占线程中，必须手动发出一个放弃执行的命令，才能让其他的线程得到执行，包括两种情况：
+<ul>
+<li>当线程试图等待某事件时（I/O 等)</li>
+<li>线程主动放弃时间片</li>
+</ul></li>
+<li>不可抢占线程调度的时机是确定的，可以避免一些因为抢占式线程里调度时机不确定而产生的问题</li>
+</ul></li>
+<li><p>Linux 的多线程</p>
+<ul>
+<li>Linux 对多线程的支持颇为贫乏，并不存在真正意义上的线程概念</li>
+<li>Linux
+将所有的执行实体（无论是线程还是进程）都称为任务（Task），每一个任务概念上都类似于一个单线程的进程，具有内存空间、执行实体、文件资源等；不过，不同任务之间可以选择共享内存空间，因而在实际意义上，共享了同一个内存空间的多
+个任务构成了一个进程，这些任务也就成了这个进程里的线程</li>
+<li>创建一个新的任务有以下方法
+<ul>
+<li><code>fork</code>：复制当前进程，和原任务共享一个写时复制（Copy on
+Write, Cow）的内存空间，因此速度非常快</li>
+<li><code>exec</code>：使用新的可执行映像覆盖当前可执行映像，可以在
+<code>fork</code> 产生新任务之后调用，用于产生新任务</li>
+<li><code>clone</code>：创建子进程并从指定位置开始执行，用于产生新线程（选择共享当前进程的内存空间和文件等）</li>
+</ul></li>
+</ul></li>
+<li><p>线程安全</p>
+<ul>
+<li><p>原子操作</p>
+<ul>
+<li>单指令的操作称为原子的（Atomic），不会被打断的，很多体系结构都提供了一些常用操作的原子指令</li>
+<li>仅适用于比较简单特定的场合，在复杂的场合下（比如保证复杂数据结构更改的原子性）需要更加通用的手段：锁</li>
+</ul></li>
+<li><p>同步与锁</p>
+<ul>
+<li><p>同步（Synchronization）：在一个线程访问数据未结束的时候，其他线程不得对同一个数据进行访问</p></li>
+<li><p>锁（Lock）：一种非强制机制，每一个线程在访问数据或资源之前首先试图获取（Acquire）锁，并在访问结束之后释放（Release）锁，在锁已经被占用的时候试图获取锁时，线程会等待，直到锁重新可用</p></li>
+<li><p><strong>二元信号量（Binary
+Seraphore）：</strong>最简单的一种锁，只有两种状态：占用与非占用，适合只能被唯一一个线程独占访问的资源</p></li>
+<li><p><strong>多元信号量（简称信号量，Semaphore）：</strong>对于允许多个线程并发访问的资源是很好的选择，一个初始值为
+N 的信号量允许 N 个线程并发访问：</p>
+<ul>
+<li>访问资源时首先获取信号量，将信号量的值减 1，如果值小于
+0，则进入等待状态，否则继续执行</li>
+<li>访问完资源后，线程释放信号量，将信号量的值加 1，如果值小于
+1，唤醒一个等待中的线程</li>
+</ul></li>
+<li><p><strong>互斥量（Mutex）：</strong>和二元信号量很类似，资源仅同时允许一个线程访问，但不同的是：</p>
+<ul>
+<li>信号量在整个系统可以被任意线程获取并释放，即同一个信号量可以被一个线程获取之后由另一个线程释放</li>
+<li>而互斥量则要求哪个线程获取了互斥量，哪个线程就要负责释放这个锁，其他线程越俎代庖去释放互斥量是无效的</li>
+</ul></li>
+<li><p><strong>临界区（Critical
+Section）：</strong>比互斥量更加严格的同步手段。临界区的锁的获取称为进入临界区，锁的释放称为离开临界区。临界区和互斥量与信号最的区别在于：</p>
+<ul>
+<li>互斥量和信号量在系统的任何进程里都是可见的，即一个进程创建了一个互斥量或信号量，另一个进程试图去获取该锁是合法的</li>
+<li>而临界区的作用范围仅限于本进程，其他的进程无法获取该锁</li>
+</ul></li>
+<li><p><strong>读写锁（Read-Write
+Lock）：</strong>对于读取频繁而仅仅偶尔写入的情况更加高效。同一个读写锁有两种获取方式，共享的（Shared）或独占的（Exclusive）：</p>
+<ul>
+<li>当锁处于自由状态时，试图以任何一种方式获取锁都能成功，并将锁置于对应的状态</li>
+<li>当锁处于共享状态时，其他线程以共享的方式获取锁仍然会成功，此时这个锁分配给了多个线程；如果其他线程试图以独占的方式获取已经处于共享状态的锁，那么它将必须等待锁被所有的线程释放</li>
+<li>当锁处于独占状态时，将阻止任何其他线程获取该锁，不论它们试图以哪种方式获取</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>读写锁状态</th>
+<th>以共享方式获取</th>
+<th>以独占方式获取</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>自由</td>
+<td>成功</td>
+<td>成功</td>
+</tr>
+<tr class="even">
+<td>共享</td>
+<td>成功</td>
+<td>等待</td>
+</tr>
+<tr class="odd">
+<td>独占</td>
+<td>等待</td>
+<td>等待</td>
+</tr>
+</tbody>
+</table></li>
+<li><p><strong>条件变量（Condition
+Variable）：</strong>作用类似于一个栅栏，可以让许多线程一起等待某个事件的发生，有两种操作：</p>
+<ul>
+<li>等待条件变量，一个条件变量可以被多个线程等待</li>
+<li>唤醒条件变量，此时某个或所有等待此条件变量的线程都会被唤醒并继续执行</li>
+</ul></li>
+</ul></li>
+<li><p>可重入（Reentrant）与线程安全</p>
+<ul>
+<li>一个数被重入，表示这个函数没有执行完成，由于外部因素或内部调用，又一次进入该函数执行</li>
+<li>一个函数要被重入，只有两种情况：
+<ul>
+<li>多个线程同时执行这个函数</li>
+<li>函数自身（可能是经过多层调用之后）调用自身</li>
+</ul></li>
+<li>一个函数被称为可重入的，表明该函数被重入之后不会产生任何不良后果</li>
+<li>一个函数要成为可重入的，必须具有如下几个特点：
+<ul>
+<li>不使用任何（局部）静态或全局的非 const 变量</li>
+<li>不返回任何（局部）静态或全局的非 const 变量的指针</li>
+<li>仅依赖于调用方提供的参数</li>
+<li>不依赖任何单个资源的锁（mutex 等）</li>
+<li>不调用任何不可重入的函数</li>
+</ul></li>
+<li>可重入是并发安全的强力保障，一个可重入的函数可以在多线程环境下放心使用</li>
+</ul></li>
+<li><p>过度优化</p>
+<ul>
+<li>即使合理地使用了锁，也不一定能保证线程安全，这是源于落后的编译器技术已经无法满足日益增长的并发需求</li>
+<li>很多看似无错的代码在优化和并发面前又产生了麻烦，例如：
+<ul>
+<li>编译器为了提高速度将一个变量缓存到寄存器内而不写回（可以使用
+volatile 关键字阻止）</li>
+<li>CPU 动态调度以及编译器优化可能交换指令的顺序（volatile
+只能阻止编译器调整顺序）</li>
+</ul></li>
+<li>现在并不存在可移植的阻止 CPU 换序的方法，通常情况下是调用 CPU 提供的
+barrier 指令，阻止 CPU 将该指令之前的指令交换到 barrier
+之后，反之亦然</li>
+</ul></li>
+</ul></li>
+<li><p>三种线程模型</p>
+<ul>
+<li><p><strong>一对一模型</strong></p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150052.jpg" style="zoom: 33%;" /></p>
+<ul>
+<li>对于直接支持线程的系统是最为简单的模型，一个用户使用的线程唯一对应一个内核使用的线程（但反过来不一定）</li>
+<li>一般直接使用 API 或系统调用创建的线程均为一对一的线程，例如：
+<ul>
+<li>在 Linux 里，使用 clone（带有 CLONE_VM 参数）产生的线程</li>
+<li>在 Windows 里，使用 API CreateThread</li>
+</ul></li>
+<li>优点
+<ul>
+<li>用户线程和内核线程一致，线程之间的并发是真正的并发，一个线程因为某原因阻塞时，其他线程执行不会受到影响</li>
+<li>让多线程程序在多处理器的系统上有更好的表现</li>
+</ul></li>
+<li>缺点
+<ul>
+<li>由于许多操作系统限制了内核线程的数量，因此一对一线程会让用户的线程数量受到限制</li>
+<li>许多操作系统内核线程调度时，上下文切换的开销较大，导致用户线程的执行效率下降</li>
+</ul></li>
+</ul></li>
+<li><p><strong>多对一模型</strong></p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150054.jpg" style="zoom:33%;" /></p>
+<ul>
+<li>将多个用户线程映射到一个内核线程上，线程之间的切换由用户态的代码来进行</li>
+<li>优点
+<ul>
+<li>相对于一对一模型，多对一模型的线程切换要快速许多</li>
+<li>线程数量几乎无限制</li>
+</ul></li>
+<li>缺点
+<ul>
+<li>如果其中一个用户线程阻塞，那么所有的线程都将无法执行，因为此时内核里的线程也随之阻塞了</li>
+<li>在多处理器系统上，处理器的增多对多对一模型的线程性能也不会有明显的帮助</li>
+</ul></li>
+</ul></li>
+<li><p><strong>多对多模型</strong></p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-07-25-150050.jpg" style="zoom:33%;" /></p>
+<ul>
+<li>结合了多对一模型和一对一模型的特点，将多个用户线程映射到少数但不止一个内核线程上</li>
+<li>一个用户线程阻寒并不会使得所有的用户线程阻塞，因为此时还有别的线程可以被调度来执行</li>
+<li>对用户线程的数量也没什么限制</li>
+<li>在多处理器系统上，多对多模型的线程也能得到一定的性能提升，不过提升的幅度不如一对一模型高</li>
+</ul></li>
+</ul></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Yuheng Ding WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Yuheng Ding Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/OS/" rel="tag"># OS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/11/28/effective-stl/" rel="prev" title="[Note] Effective STL">
+                  <i class="fa fa-chevron-left"></i> [Note] Effective STL
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/04/07/programmers-self-cultivation-part-2/" rel="next" title="[Note] 程序员的自我修养——第 2 部分 静态链接">
+                  [Note] 程序员的自我修养——第 2 部分 静态链接 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yuheng Ding</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Symbols count total: </span>
+    <span title="Symbols count total">370k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>Reading time total &asymp;</span>
+    <span title="Reading time total">5:37</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"timdyh","repo":"gitalk-comments","client_id":"0babcb65af364dd08a90","client_secret":"22090e837380d49040a73f2ed1db4f9541b29379","admin_user":"timdyh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"7a0181330e7284a3da9eef507ff0299d"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

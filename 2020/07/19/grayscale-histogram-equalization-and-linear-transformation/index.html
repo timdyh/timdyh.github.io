@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="null//null" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="x_9IHIiVX0aZQfKSCtN7gy8_1UhN7guVmZAmA4gv1EE">
+  <meta name="msvalidate.01" content="AC8F448726B8A8742C6DFFA7640E7DBF">
+  <meta name="baidu-site-verification" content="code-2qEdijyCxz">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="灰度变换是指根据某种目标条件，按一定变换关系逐点改变源图像中每一个像素灰度值的方法，目的是为了改善画质，使图像的显示效果更加清晰。图像的灰度变换处理是图像增强处理技术中的一种非常基础、直接的空间域图像处理方法，也是图像数字化软件和图像显示软件的一个重要组成部分。 本文通过实现直方图均衡和线性变换分别对图像进行处理，研究其原理及效果。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图像灰度直方图均衡和线性变换">
+<meta property="og:url" content="http://example.com/2020/07/19/grayscale-histogram-equalization-and-linear-transformation/index.html">
+<meta property="og:site_name" content="TimDyh">
+<meta property="og:description" content="灰度变换是指根据某种目标条件，按一定变换关系逐点改变源图像中每一个像素灰度值的方法，目的是为了改善画质，使图像的显示效果更加清晰。图像的灰度变换处理是图像增强处理技术中的一种非常基础、直接的空间域图像处理方法，也是图像数字化软件和图像显示软件的一个重要组成部分。 本文通过实现直方图均衡和线性变换分别对图像进行处理，研究其原理及效果。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-015756.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-015819.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-015901.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-015929.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020000.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020023.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020042.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020056.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020133.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020149.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020207.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020222.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020240.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020258.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020314.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020328.jpg">
+<meta property="article:published_time" content="2020-07-19T02:15:00.000Z">
+<meta property="article:modified_time" content="2022-12-16T11:58:42.041Z">
+<meta property="article:author" content="Yuheng Ding">
+<meta property="article:tag" content="Image Processing">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-015756.jpg">
+
+
+<link rel="canonical" href="http://example.com/2020/07/19/grayscale-histogram-equalization-and-linear-transformation/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2020/07/19/grayscale-histogram-equalization-and-linear-transformation/","path":"2020/07/19/grayscale-histogram-equalization-and-linear-transformation/","title":"图像灰度直方图均衡和线性变换"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>图像灰度直方图均衡和线性变换 | TimDyh</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">TimDyh</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B4%E6%96%B9%E5%9B%BE%E5%9D%87%E8%A1%A1"><span class="nav-number">1.</span> <span class="nav-text">1. 直方图均衡</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B"><span class="nav-number">1.1.</span> <span class="nav-text">算法流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E4%BB%A3%E7%A0%81"><span class="nav-number">1.2.</span> <span class="nav-text">主要代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90"><span class="nav-number">1.3.</span> <span class="nav-text">运行结果分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E5%8F%98%E6%8D%A2"><span class="nav-number">2.</span> <span class="nav-text">2. 线性变换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B-1"><span class="nav-number">2.1.</span> <span class="nav-text">算法流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E4%BB%A3%E7%A0%81-1"><span class="nav-number">2.2.</span> <span class="nav-text">主要代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90-1"><span class="nav-number">2.3.</span> <span class="nav-text">运行结果分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E4%B8%80k-3.4-b--280.0"><span class="nav-number">2.3.1.</span> <span class="nav-text">图像一：k &#x3D; 3.4
+b &#x3D; -280.0</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E4%BA%8Ck-3.2-b--350.0"><span class="nav-number">2.3.2.</span> <span class="nav-text">图像二：k &#x3D; 3.2
+b &#x3D; -350.0</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E5%8F%82%E6%95%B0"><span class="nav-number">2.3.3.</span> <span class="nav-text">关于参数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">3. 总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yuheng Ding"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Yuheng Ding</p>
+  <div class="site-description" itemprop="description">Per aspera, ad astra.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/timdyh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dyh0701@gmail.com" title="E-Mail → mailto:dyh0701@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/tim_dyh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;tim_dyh" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/timdyh" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/07/19/grayscale-histogram-equalization-and-linear-transformation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="图像灰度直方图均衡和线性变换 | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          图像灰度直方图均衡和线性变换
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-07-19 10:15:00" itemprop="dateCreated datePublished" datetime="2020-07-19T10:15:00+08:00">2020-07-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Project/" itemprop="url" rel="index"><span itemprop="name">Project</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>2.6k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>2 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>灰度变换是指根据某种目标条件，按一定变换关系逐点改变源图像中每一个像素灰度值的方法，目的是为了改善画质，使图像的显示效果更加清晰。图像的灰度变换处理是图像增强处理技术中的一种非常基础、直接的空间域图像处理方法，也是图像数字化软件和图像显示软件的一个重要组成部分。</p>
+<p>本文通过实现<strong>直方图均衡</strong>和<strong>线性变换</strong>分别对图像进行处理，研究其原理及效果。</p>
+<span id="more"></span>
+<h2 id="直方图均衡">1. 直方图均衡</h2>
+<h3 id="算法流程">算法流程</h3>
+<ol type="1">
+<li>统计各灰度级的像素点个数，并计算从 0 到 255 的累积值。</li>
+<li>根据频率的累积分布计算得到各灰度级变换后的灰度级。</li>
+<li>对原图像的每个像素点进行映射变换。</li>
+</ol>
+<h3 id="主要代码">主要代码</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">equalizeHist</span><span class="params">(<span class="type">const</span> Mat &amp;srcImg, Mat &amp;dstImg)</span> </span>&#123;</span><br><span class="line">    dstImg.<span class="built_in">create</span>(srcImg.<span class="built_in">size</span>(), srcImg.<span class="built_in">type</span>());</span><br><span class="line">    </span><br><span class="line">    uchar *srcImgData = srcImg.data;</span><br><span class="line">    uchar *dstImgData = dstImg.data;</span><br><span class="line">    </span><br><span class="line">    <span class="type">int</span> *hist = <span class="keyword">new</span> <span class="type">int</span>[<span class="number">256</span>];</span><br><span class="line">    <span class="built_in">memset</span>(hist, <span class="number">0</span>, <span class="number">256</span> * <span class="built_in">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">    <span class="type">int</span> pixNum = srcImg.cols * srcImg.rows;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; pixNum; i++)</span><br><span class="line">        hist[srcImgData[i]]++;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; <span class="number">256</span>; i++)</span><br><span class="line">        hist[i] += hist[i<span class="number">-1</span>];</span><br><span class="line">    </span><br><span class="line">    uchar *map = <span class="keyword">new</span> uchar[<span class="number">256</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">256</span>; i++)</span><br><span class="line">        map[i] = <span class="built_in">cvRound</span>((<span class="type">double</span>)hist[i] / pixNum * <span class="number">255</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; pixNum; i++)</span><br><span class="line">        dstImgData[i] = map[srcImgData[i]];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>参数说明：</p>
+<ul>
+<li><code>srcImg</code>：原图像</li>
+<li><code>dstImg</code>：直方图均衡后的图像</li>
+</ul>
+<h3 id="运行结果分析">运行结果分析</h3>
+<p>首先对 Lena
+的这张经典人物肖像进行测试，可以看到直方图均衡后的图片有了明显的变化，亮度分布更加均匀，对比度得到增强。</p>
+<p>为了更加直观地观察灰度的变化，把均衡前后的直方图也生成出来，发现灰度的分布的确变得均匀了。</p>
+<table>
+<tr>
+<td>
+<center>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-015756.jpg">
+<center>
+原图像
+</center>
+</center>
+</td>
+<td>
+<center>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-015819.jpg">
+<center>
+直方图均衡后的图像
+</center>
+</center>
+</td>
+</tr>
+</table>
+<table>
+<tr>
+<td>
+<center>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-015901.jpg">
+<center>
+原图像的直方图
+</center>
+</center>
+</td>
+<td>
+<center>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-015929.jpg">
+<center>
+均衡后的直方图
+</center>
+</center>
+</td>
+</tr>
+</table>
+<p>在这张风景图上，直方图均衡的效果更加明显，原本像是蒙了一层纱的画面变得清晰，更多局部细节被显现出来。</p>
+<table>
+<tr>
+<td>
+<center>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020000.jpg">
+<center>
+原图像
+</center>
+</center>
+</td>
+<td>
+<center>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020023.jpg">
+<center>
+直方图均衡后的图像
+</center>
+</center>
+</td>
+</tr>
+</table>
+<table>
+<tr>
+<td>
+<center>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020042.jpg">
+<center>
+原图像的直方图
+</center>
+</center>
+</td>
+<td>
+<center>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020056.jpg">
+<center>
+均衡后的直方图
+</center>
+</center>
+</td>
+</tr>
+</table>
+<h2 id="线性变换">2. 线性变换</h2>
+<h3 id="算法流程-1">算法流程</h3>
+<ol type="1">
+<li>计算各灰度级做线性变换后的灰度级。</li>
+<li>对原图像的每个像素点进行映射变换。</li>
+</ol>
+<h3 id="主要代码-1">主要代码</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">linearTransform</span><span class="params">(<span class="type">const</span> Mat &amp;srcImg, Mat &amp;dstImg, <span class="type">double</span> k, <span class="type">double</span> b)</span> </span>&#123;</span><br><span class="line">    dstImg.<span class="built_in">create</span>(srcImg.<span class="built_in">size</span>(), srcImg.<span class="built_in">type</span>());</span><br><span class="line">    </span><br><span class="line">    uchar *srcImgData = srcImg.data;</span><br><span class="line">    uchar *dstImgData = dstImg.data;</span><br><span class="line">    </span><br><span class="line">    uchar *map = <span class="keyword">new</span> uchar[<span class="number">256</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">256</span>; i++) &#123;</span><br><span class="line">        <span class="type">int</span> temp = <span class="built_in">cvRound</span>(k * i + b);</span><br><span class="line">        <span class="keyword">if</span> (temp &gt; <span class="number">255</span>) temp = <span class="number">255</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (temp &lt; <span class="number">0</span>) temp = <span class="number">0</span>;</span><br><span class="line">        map[i] = temp;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="type">int</span> pixNum = srcImg.cols * srcImg.rows;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; pixNum; i++)</span><br><span class="line">        dstImgData[i] = map[srcImgData[i]];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>参数说明：</p>
+<ul>
+<li><code>srcImg</code>：原图像</li>
+<li><code>dstImg</code>：直方图均衡后的图像</li>
+<li><code>k</code>：斜率</li>
+<li><code>b</code>：截距</li>
+</ul>
+<h3 id="运行结果分析-1">运行结果分析</h3>
+<p>观察了一些图片后不难注意到，那些视觉效果不太好的图像往往都是灰蒙蒙的，在直方图上表现出灰度大量集中在中间区域，而两边最黑和最白的等级却几乎没有。由此很自然地联想到，雾霾天拍摄的图像也是这样的质感，是否可以通过线性变换的方法拉伸灰度分布的范围，从而尽可能地还原图像的信息呢？</p>
+<p>这里用两张雾霾天的图像进行说明。</p>
+<h4 id="图像一k-3.4-b--280.0">图像一：<code>k = 3.4</code>
+<code>b = -280.0</code></h4>
+<table>
+<tr>
+<td>
+<center>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020133.jpg">
+<center>
+原图像
+</center>
+</center>
+</td>
+<td>
+<center>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020149.jpg">
+<center>
+线性变换后的图像
+</center>
+</center>
+</td>
+</tr>
+</table>
+<table>
+<tr>
+<td>
+<center>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020207.jpg">
+<center>
+原图像的直方图
+</center>
+</center>
+</td>
+<td>
+<center>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020222.jpg">
+<center>
+线性变换后的直方图
+</center>
+</center>
+</td>
+</tr>
+</table>
+<h4 id="图像二k-3.2-b--350.0">图像二：<code>k = 3.2</code>
+<code>b = -350.0</code></h4>
+<table>
+<tr>
+<td>
+<center>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020240.jpg">
+<center>
+原图像
+</center>
+</center>
+</td>
+<td>
+<center>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020258.jpg">
+<center>
+线性变换后的图像
+</center>
+</center>
+</td>
+</tr>
+</table>
+<table>
+<tr>
+<td>
+<center>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020314.jpg">
+<center>
+原图像的直方图
+</center>
+</center>
+</td>
+<td>
+<center>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-020328.jpg">
+<center>
+线性变换后的直方图
+</center>
+</center>
+</td>
+</tr>
+</table>
+<p>可以看到线性变换的效果还是非常明显的，原本被雾霾隐去的信息一定程度上显现了出来。</p>
+<h4 id="关于参数">关于参数</h4>
+<p>以上两张图线性变换后的图像都是经过多次试验后得到的，参数
+<code>k</code> 和 <code>b</code>
+的选择是变换后图像效果好坏的关键。在进行了更多图像的试验后，总结出以下几点：</p>
+<ul>
+<li><code>k &gt; 1</code> ，拉伸灰度分布，图像对比度增加；</li>
+<li><code>0 &lt; k &lt; 1</code> ，压缩灰度分布，图像对比度减小；</li>
+<li><code>b &gt; 0</code> ，灰度值向上平移，图像整体变亮；</li>
+<li><code>b &lt; 0</code> ，灰度值向下平移，图像整体变暗。</li>
+</ul>
+<p>对于上述两张图像，我们需要增强其对比度，因此 <code>k &gt; 1</code>
+，至于具体取多少，要根据图像原本的灰度分布。比如第一张图像灰度分布很集中，因此
+<code>k</code> 要大一些；而第二张图像灰度分布得更宽一些，因此
+<code>k</code> 应该适当取小一点。参数 <code>b</code>
+的作用是使灰度整体平移，调节由于对比度增强导致的灰度偏移，使得灰度大致分布在中央的位置。</p>
+<p>事实上第二张图像为了尽可能地增大对比度，参数 <code>k</code>
+已经取得相对过大了。由于代码中对小于 0 和大于 255
+的灰度值进行了截断，因此直方图中显示出大量的像素点集中在灰度为 0 和 255
+的两侧，而中间的灰度值却很少。在图像中表现为原本不同等级的较黑的区域全部变成最黑，同时不同等级的较白的区域全部变成最白，从而可能导致某些信息的丢失，这就是
+<code>k</code> 取值过大的弊端。</p>
+<p>总的来说，首先要根据灰度原本的分布取一个尽可能大而又不至于导致灰度两侧堆积的
+<code>k</code> ，然后通过调节 <code>b</code>
+使得灰度分布在中央。如果线性变换后灰度分布均衡地占满了所有的灰度等级，那么图像的视觉效果应当是比较好的。</p>
+<h2 id="总结">3. 总结</h2>
+<p>直方图均衡和线性变换都可以使图像的对比度得到增强，从而显示出更多的细节信息，一定程度上起到改善图像视觉效果的作用。而后者由于参数可调，因而对图像的处理更加自由，例如分段线性变换还可以根据感兴趣的灰度区间，对不同的灰度范围进行不同的映射处理。</p>
+<p><strong>完整源码请见
+<a href="https://github.com/TimDyh/grayscale-transformation" target="_blank">GitHub
+仓库</a></strong></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Yuheng Ding WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Yuheng Ding Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Image-Processing/" rel="tag"># Image Processing</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/07/15/http-https-analysis/" rel="prev" title="HTTP 与 HTTPS 协议分析">
+                  <i class="fa fa-chevron-left"></i> HTTP 与 HTTPS 协议分析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/07/19/fast-fourier-transform-and-discrete-cosine-transform/" rel="next" title="Python 实现图像快速傅里叶变换和离散余弦变换">
+                  Python 实现图像快速傅里叶变换和离散余弦变换 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yuheng Ding</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Symbols count total: </span>
+    <span title="Symbols count total">370k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>Reading time total &asymp;</span>
+    <span title="Reading time total">5:37</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"timdyh","repo":"gitalk-comments","client_id":"0babcb65af364dd08a90","client_secret":"22090e837380d49040a73f2ed1db4f9541b29379","admin_user":"timdyh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"c5806b398cd9d63a2b56644f30accc5b"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

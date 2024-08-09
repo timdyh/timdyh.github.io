@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="null//null" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="x_9IHIiVX0aZQfKSCtN7gy8_1UhN7guVmZAmA4gv1EE">
+  <meta name="msvalidate.01" content="AC8F448726B8A8742C6DFFA7640E7DBF">
+  <meta name="baidu-site-verification" content="code-2qEdijyCxz">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="第 6 章 可执行文件的装载与进程 进程虚拟地址空间   程序被运行起来后将拥有自己独立的虚拟地址空间（Virtual Address Space)，其大小由 CPU 的位数决定 进程只能使用那些操作系统分配给进程的地址，访问未经允许的空间是非法的，将会强制结束进程 Linux 下，4GB 虚拟空间被划分成两部分，操作系统使用 1GB（0xC00000000~0xFFFFFFFF），进程（原则上）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Note] 程序员的自我修养——第 3 部分 装载与动态链接">
+<meta property="og:url" content="http://example.com/2022/04/29/programmers-self-cultivation-part-3/index.html">
+<meta property="og:site_name" content="TimDyh">
+<meta property="og:description" content="第 6 章 可执行文件的装载与进程 进程虚拟地址空间   程序被运行起来后将拥有自己独立的虚拟地址空间（Virtual Address Space)，其大小由 CPU 的位数决定 进程只能使用那些操作系统分配给进程的地址，访问未经允许的空间是非法的，将会强制结束进程 Linux 下，4GB 虚拟空间被划分成两部分，操作系统使用 1GB（0xC00000000~0xFFFFFFFF），进程（原则上）">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-10-11-21403.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-10-11-021403.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-10-11-021356.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-10-11-021357.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-10-11-021402.jpg">
+<meta property="article:published_time" content="2022-04-29T15:01:47.000Z">
+<meta property="article:modified_time" content="2022-12-16T14:55:48.135Z">
+<meta property="article:author" content="Yuheng Ding">
+<meta property="article:tag" content="OS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-10-11-21403.jpg">
+
+
+<link rel="canonical" href="http://example.com/2022/04/29/programmers-self-cultivation-part-3/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/04/29/programmers-self-cultivation-part-3/","path":"2022/04/29/programmers-self-cultivation-part-3/","title":"[Note] 程序员的自我修养——第 3 部分 装载与动态链接"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[Note] 程序员的自我修养——第 3 部分 装载与动态链接 | TimDyh</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">TimDyh</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC-6-%E7%AB%A0-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD%E4%B8%8E%E8%BF%9B%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">第 6 章
+可执行文件的装载与进程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E8%99%9A%E6%8B%9F%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4"><span class="nav-number">1.1.</span> <span class="nav-text">进程虚拟地址空间</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A3%85%E8%BD%BD%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">1.2.</span> <span class="nav-text">装载的方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8E%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E8%A7%92%E5%BA%A6%E7%9C%8B%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E7%9A%84%E8%A3%85%E8%BD%BD"><span class="nav-number">1.3.</span> <span class="nav-text">从操作系统角度看可执行文件的装载</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E8%99%9A%E5%AD%98%E7%A9%BA%E9%97%B4%E5%88%86%E5%B8%83"><span class="nav-number">1.4.</span> <span class="nav-text">进程虚存空间分布</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#linux-%E5%86%85%E6%A0%B8%E8%A3%85%E8%BD%BD-elf-%E8%BF%87%E7%A8%8B%E7%AE%80%E4%BB%8B"><span class="nav-number">1.5.</span> <span class="nav-text">Linux 内核装载 ELF 过程简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#windows-pe-%E7%9A%84%E8%A3%85%E8%BD%BD"><span class="nav-number">1.6.</span> <span class="nav-text">Windows PE 的装载</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC-7-%E7%AB%A0-%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5"><span class="nav-number">2.</span> <span class="nav-text">第 7 章 动态链接</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5"><span class="nav-number">2.1.</span> <span class="nav-text">为什么要动态链接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E4%BE%8B%E5%AD%90"><span class="nav-number">2.2.</span> <span class="nav-text">简单的动态链接例子</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%B0%E5%9D%80%E6%97%A0%E5%85%B3%E4%BB%A3%E7%A0%81"><span class="nav-number">2.3.</span> <span class="nav-text">地址无关代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9Aplt"><span class="nav-number">2.4.</span> <span class="nav-text">延迟绑定（PLT）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E7%9B%B8%E5%85%B3%E7%BB%93%E6%9E%84"><span class="nav-number">2.5.</span> <span class="nav-text">动态链接相关结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E7%9A%84%E6%AD%A5%E9%AA%A4%E5%92%8C%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.6.</span> <span class="nav-text">动态链接的步骤和实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%98%BE%E5%BC%8F%E8%BF%90%E8%A1%8C%E6%97%B6%E9%93%BE%E6%8E%A5"><span class="nav-number">2.7.</span> <span class="nav-text">显式运行时链接</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC-8-%E7%AB%A0-linux-%E5%85%B1%E4%BA%AB%E5%BA%93%E7%9A%84%E7%BB%84%E7%BB%87"><span class="nav-number">3.</span> <span class="nav-text">第 8 章 Linux 共享库的组织</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E5%BA%93%E7%89%88%E6%9C%AC"><span class="nav-number">3.1.</span> <span class="nav-text">共享库版本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%A6%E5%8F%B7%E7%89%88%E6%9C%AC"><span class="nav-number">3.2.</span> <span class="nav-text">符号版本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E5%BA%93%E7%B3%BB%E7%BB%9F%E8%B7%AF%E5%BE%84"><span class="nav-number">3.3.</span> <span class="nav-text">共享库系统路径</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E5%BA%93%E6%9F%A5%E6%89%BE%E8%BF%87%E7%A8%8B"><span class="nav-number">3.4.</span> <span class="nav-text">共享库查找过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">3.5.</span> <span class="nav-text">环境变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E5%BA%93%E7%9A%84%E5%88%9B%E5%BB%BA%E5%92%8C%E5%AE%89%E8%A3%85"><span class="nav-number">3.6.</span> <span class="nav-text">共享库的创建和安装</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC-9-%E7%AB%A0-windows%E4%B8%8B%E7%9A%84%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5"><span class="nav-number">4.</span> <span class="nav-text">第 9 章 Windows下的动态链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yuheng Ding"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Yuheng Ding</p>
+  <div class="site-description" itemprop="description">Per aspera, ad astra.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/timdyh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dyh0701@gmail.com" title="E-Mail → mailto:dyh0701@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/tim_dyh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;tim_dyh" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/timdyh" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/29/programmers-self-cultivation-part-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[Note] 程序员的自我修养——第 3 部分 装载与动态链接 | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [Note] 程序员的自我修养——第 3 部分 装载与动态链接
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-04-29 23:01:47" itemprop="dateCreated datePublished" datetime="2022-04-29T23:01:47+08:00">2022-04-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Note/" itemprop="url" rel="index"><span itemprop="name">Note</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>15k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>13 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="第-6-章-可执行文件的装载与进程">第 6 章
+可执行文件的装载与进程</h3>
+<h4 id="进程虚拟地址空间">进程虚拟地址空间</h4>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-10-11-21403.jpg" style="zoom:50%;" /></p>
+<ul>
+<li>程序被运行起来后将拥有自己独立的虚拟地址空间（Virtual Address
+Space)，其大小由 CPU 的位数决定</li>
+<li>进程只能使用那些操作系统分配给进程的地址，访问未经允许的空间是非法的，将会强制结束进程</li>
+<li>Linux 下，4GB 虚拟空间被划分成两部分，操作系统使用
+1GB（0xC00000000~0xFFFFFFFF），进程（原则上）使用
+3GB（0x00000000~0xBFFFFFFF）</li>
+<li>Windows 下，操作系统占用 2GB，进程使用 2GB（可以在根目录下的
+Boot.ini 中修改参数为 3G）</li>
+<li>Intel 通过 PAE（Physical Address Extension）将 32 位地址线扩展为 36
+位，并修改了页映射的方式，从而可以访问到更多的物理内存</li>
+<li>操作系统提供一个窗口映射的方法，把这些额外的内存映射到进程地址空间中来，应用程序可以根据需要来选择申请和映射，这在
+Windows 下叫做 AWE（Address Windowing Extensions），而像 Linux 等 UNIX
+类操作系统则采用 mmap() 系统调用来实现</li>
+</ul>
+<span id="more"></span>
+<h4 id="装载的方式">装载的方式</h4>
+<ul>
+<li>动态装载：利用局部性原理，将程序最常用的部分驻留在内存中，而将一些不太常用的数据存放在磁盘
+<ul>
+<li><strong>覆盖装入（Overlay）</strong>
+<ul>
+<li>在没有发明虚拟存储之前使用比较广泛，现在已经几乎被淘汰</li>
+<li>程序员在编写程序时必须手工将程序分割成若干块，然后编写一个小的辅助代码（即所谓的覆盖管理器，Overlay
+Manager）来管理这些模块何时应该驻留内存而何时应该被替换掉</li>
+<li>速度较慢，利用时间换取空间</li>
+</ul></li>
+<li><strong>页映射（Paging）</strong>
+<ul>
+<li>虚拟存储机制的一部分，它随着虚拟存储的发明而诞生</li>
+<li>将内存和所有磁盘中的数据和指令划分成若干个页，置换算法包括 FIFO、LRU
+等</li>
+<li>目前几乎所有的主流操作系统都按照这种方式装载可执行文件</li>
+</ul></li>
+</ul></li>
+</ul>
+<h4
+id="从操作系统角度看可执行文件的装载">从操作系统角度看可执行文件的装载</h4>
+<ul>
+<li><p>进程的建立</p>
+<ul>
+<li><p><strong>创建虚拟地址空间</strong></p>
+<p>创建映射函数所需的数据结构，将虚拟空间的各个页映射至相应的物理空间。在
+i386 的 Linux 下，创建虚拟地址空间实际上只是分配一个页目录（Page
+Directory），页映射关系等到后面程序发生页错误时再进行设置</p></li>
+<li><p><strong>读取可执行文件头，并建立虚拟空间与可执行文件的映射关系</strong></p>
+<p>当程序执行发生页错误时，操作系统将从物理内存中分配一个物理页，然后将该“缺页”从磁盘中读取到内存中，再设置缺页的虚拟页和物理页的映射关系，这样程序才得以正常运行。当操作系统捕获到缺页错误时，它应知道程序当前所需要的页在可执行文件中的哪一个位置，这就是虚拟空间与可执行文件之间的映射关系。</p>
+<p>Linux 中将进程虚拟空间中的一个段叫做虚拟内存区域（VMA, Virtual Memory
+Area）；在 Windows 中将这个叫做虚拟段（Virtual
+Section）。当程序执行发生段错误时，它可以通过查找这样一个数据结构来定位错误页在可执行文件中的位置。</p></li>
+<li><p><strong>将 CPU
+的指令寄存器设置成可执行文件的入口地址，启动运行</strong></p>
+<p>操作系统通过设置 CPU
+的指令寄存器将控制权转交给进程，由此进程开始执行。可以简单地认为操作系统执行了一条跳转指令到可执行文件的入口地址（保存在
+ELF 文件头中），而实际上这一步还涉及内核堆栈和用户堆栈的切换、CPU
+运行权限的切换。</p></li>
+</ul></li>
+<li><p>页错误</p>
+<p>上面的步骤执行完以后，其实可执行文件的真正指令和数据都没有被装入到内存中。操作系统只是通过可执行文件头部的信息建立起可执行文件和进程虚存之间的映射关系而己。假设程序的入口地址为
+0x08048000，即刚好是 .text 段的起始地址。当 CPU
+开始打算执行这个地址的指令时，发现页面 0x08048000~0x08049000
+是个空页面，于是它 就认为这是一个页错误（Page Fault）。CPU
+将控制权交给操作系统，操作系统有专门的页错误处理例程来处理这种情况。操作系统将查询装载过程第二步建立的数据结构，找到空页面所在的
+VMA，计算出相应的页面在可执行文件中的偏移，然后在物理内存中分配一个物理页面，将进程中该虚拟页与分配的物理页之间建立映射关系，最后把控制权再还回给进程，进程从刚才页错误的位置重新开始执行。</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-10-11-021403.jpg" style="zoom:50%;" /></p></li>
+</ul>
+<h4 id="进程虚存空间分布">进程虚存空间分布</h4>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-10-11-021356.jpg" style="zoom:50%;" /></p>
+<ul>
+<li>ELF
+文件被映射时，以系统的页长度作为单位，当段的数量增多时，页面内部碎片就会导致空间浪费</li>
+<li>为了减少这种浪费，对于相同权限的段（Section），操作系统把它们合并成一个
+Segment 进行映射，对应虚存空间中的一个 VMA</li>
+<li>段的权限基本上是三种：
+<ul>
+<li>以代码段为代表的权限为可读可执行的段</li>
+<li>以数据段和 BSS 段为代表的权限为可读可写的段</li>
+<li>以只读数据段为代表的权限为只读的段</li>
+</ul></li>
+<li>在将目标文件链接成可执行文件时，链接器会尽量把相同权限属性的段分配在同一空间，这些属性相似、又连在一起的段叫做一个
+Segment，系统按照 Segment 而不是 Section 来映射可执行文件</li>
+<li>从链接的角度看，ELF 文件按 Section
+存储（链接视图）；从装载的角度看，ELF 文件又可以按照 Segment
+划分（执行视图）</li>
+<li>正如描述 Section 属性的结构叫做段表，描述 Segment
+的结构叫程序头（Program Header），它描述了 ELF
+文件该如何被操作系统映射到进程的虚拟空间</li>
+<li>使用 <code>readelf -l</code> 命令来查看 ELF 的 Segment，装载只关心
+LOAD 类型的 Segment，只有它需要被映射</li>
+<li>ELF 目标文件不需要被装载，所以它没有程序头表（Program Header
+Table），而可执行文件和共享库文件都有</li>
+<li>将数据 Segment 的虚存空间扩大，多余部分全部填充为 0 作为
+BSS，这样就不需要再额外设立 BSS 的 Segment，此时 Segment
+<strong>在进程虚拟地址空间中所占的长度</strong>将大于<strong>在 ELF
+文件中所占的长度</strong></li>
+<li>进程中的栈和堆分别都有一个对应的 VMA，它们没有映射到文件中，这种 VMA
+叫做匿名虚拟内存区域（Anonymous Virtual Memory Area）</li>
+<li>在 Linux下，可以通过 <code>cat /proc/$pid/maps</code>
+来查看进程的虚拟空间分布</li>
+<li>操作系统通过给进程空间划分出一个个 VMA
+来管理进程的虚拟空间，基本原则是将相同权限属性的、有相同映像文
+件的映射成一个 VMA；一个进程基本上可以分为如下几种 VMA 区域：
+<ul>
+<li>代码 VMA，权限只读、可执行；有映像文件</li>
+<li>数据 VMA，权限可读写、可执行；有映像文件</li>
+<li>堆 VMA，权限可读写、可执行；无映像文件，匿名，可向上扩展</li>
+<li>栈 VMA，权限可读写、不可执行；无映像文件，匿名，可向下扩展</li>
+</ul></li>
+<li>堆的最大申请数量小于进程虚拟空间大小，具体的数值会受到操作系统版本、程序本身大小、用到的动态/共享库数量、大小、程序栈数量、大小等，甚至有可能每次运行的结果都会不同（使用随机地址空间分布技术）</li>
+<li>为减少空间浪费，有些 UNIX
+系统让那些各个段接壤部分共享一个物理页面，然后将该物理页面分别映射两份到虚拟地址空间。这种映射方式下，一个物理页面可能同时包含多个段的数据，且各个段的虚拟地址往往就不是系统页面长度的整数倍了</li>
+<li>进程刚开始启动时，须知道系统环境变量（如
+HOME、PATH）和进程的运行参数，操作系统在进程启动前将这些信息提前保存到进程的虚拟空间的栈中；进程启动以后，程序的库部分会把堆栈里的初始化信息中的参数信息（即
+argc 和 argv）传递给 main() 函数</li>
+</ul>
+<h4 id="linux-内核装载-elf-过程简介">Linux 内核装载 ELF 过程简介</h4>
+<ul>
+<li>在 Linux 系统的 bash 下输入一个命令执行某个 ELF 程序时，bash
+进程会调用 fork() 系统调用创建一个新的进程，然后新的进程调用 execve()
+系统调用执行指定的 ELF 文件，原先的 bash
+进程继续返回等待刚才启动的新进程结束，然后继续等待用户输入命令</li>
+<li>在进入 execve() 系统调用之后，Linux 内核就开始进行真正的装载工作：
+<ul>
+<li>execve() -&gt; sys_execve() -&gt;
+do_execve()，首先查找被执行文件，读取前 128 个字节</li>
+<li>调用
+scarch_binary_handle()，通过判断文件头部的魔数确定文件格式，并调用相应的装载处理过程，比如
+ELF 可执行文件的装载处理过程叫做 load_elf_binary()，其主要步骤是：
+<ul>
+<li>检查 ELF
+可执行文件格式的有效性，如魔数、程序头表中段（Segment）的数量</li>
+<li>寻找动态链接的 .interp 段，设置动态链接器路径</li>
+<li>根据程序头表的描述，对 ELF
+文件进行映射，比如代码、数据、只读数据</li>
+<li>初始化 ELF 进程环境，比如进程启动时 EDX 寄存器的地址应该是 DT_ FINI
+的地址</li>
+<li>将系统调用的返回地址修改成 ELF
+可执行文件的入口点，对于静态链接是文件头中 e_entry
+所指的地址，对于动态链接是动态链接器</li>
+</ul></li>
+<li>返回至 do_execve() 再返回至 sys_execve()，从内核态返回到用户态，EIP
+寄存器跳转到 ELF 程序的入口地址，于是新的程序开始执行，ELF
+可执行文件装载完成</li>
+</ul></li>
+</ul>
+<h4 id="windows-pe-的装载">Windows PE 的装载</h4>
+<ul>
+<li>先读取文件的第一个页，包含 DOS 头、PE 文件头和段表</li>
+<li>检查进程地址空间中，目标地址是否可用，如果不可用，则另外选一个装载地址</li>
+<li>使用段表中提供的信息，将 PE
+文件中所有的段一一映射到地址空间中相应的位置</li>
+<li>如果装载地址不是目标地址，则进行 Rebasing</li>
+<li>装载所有 PE 文件所需要的 DLL 文件</li>
+<li>对 PE 文件中的所有导入符号进行解析</li>
+<li>根据 PE 头中指定的参数，建立初始化栈和堆</li>
+<li>建立主线程并且启动进程</li>
+</ul>
+<h3 id="第-7-章-动态链接">第 7 章 动态链接</h3>
+<h4 id="为什么要动态链接">为什么要动态链接</h4>
+<ul>
+<li>静态链接的缺点
+<ul>
+<li>浪费内存和磁盘空间：多个程序包含重复的库</li>
+<li>模块更新困难：一旦程序中有任何模块更新，整个程序就要重新链接、发布给用户</li>
+</ul></li>
+<li>动态链接（Dynamic Linking）
+<ul>
+<li>把程序的模块分割开来，形成独立的文件，将链接的过程推迟到运行时再进行</li>
+<li>要运行程序时，系统按照依赖关系将目标文件全部加载至内存进行链接，然后把控制权交给程序入口处</li>
+<li>不需要重复加载相同的目标文件，解决了内存和磁盘空间浪费的问题</li>
+<li>在内存中共享同一个模块，减少物理页面的换入换出，增加 CPU
+缓存命中率</li>
+<li>要升级程序库或程序共享的某个模块时，只需覆盖旧的目标文件，而无须将所有的程序再重新链接，当程序下一次运行时，新版本的目标文件会被自动装载到内存并且链接起来，使得升级更加容易</li>
+<li>各个模块更加独立，耦合度更小，便于不同的开发者和开发组织之间独立进行开发和测试</li>
+</ul></li>
+<li>程序可扩展性和兼容性
+<ul>
+<li>程序在运行时可以动态地选择加载各种程序模块，这个优点被人们用来制作程序的插件（Plug-in）</li>
+<li>程序在不同平台运行时可以动态地链接到由操作系统提供的动态链接库，相当于在程序和操作系统之间增加了一个中间层，从而消除程序对不同平台之间依赖的差异性，加强程序的兼容性</li>
+<li>常见问题：当程序所依赖的某个模块更新后，由于新的模块与旧的模块之间接口不兼容，导致原有程序无法运行</li>
+<li>需要一种有效的共享库版本管理机制</li>
+</ul></li>
+<li>动态链接的基本实现
+<ul>
+<li>基本思想：把程序按照模块拆分成各个相对独立部分，在程序运行时才将它们链接在一起形成一个完整的程序，而不是像静态链接一样把所有的程序模块都链接成一个个单独的可执行文件</li>
+<li>在 Linux 系统中，ELF 动态链接文件被称为动态共享对象（DSO, Dynamic
+Shared Objects)，以 .so 为扩展名</li>
+<li>在 Windows 系统中，动态链接文件被称为动态链接库（Dynamical Linking
+Library），以 .dll 为扩展名</li>
+<li>当程序被装载时，系统的动态链接器会将程序所需要的所有动态链接库（最基本的就是
+C 语言运行库
+libc.so）装载到进程的地址空间，并且将程序中所有未决议的符号绑定到相应的动态链接库中，并进行重定位工作</li>
+<li>动态链接把链接这个过程从程序<strong>装载前</strong>推迟到<strong>装载时</strong>，会导致一些性能损失（相比静态链接大约
+5% 以下），但可以通过延迟绑定等方法进行优化</li>
+</ul></li>
+</ul>
+<h4 id="简单的动态链接例子">简单的动态链接例子</h4>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gcc -fPIC -shared -o Lib.so Lib.c</span><br><span class="line">gcc -o Program1 Program1.c ./Lib.so</span><br><span class="line">gcc -o Program2 Program2.c ./Lib.so</span><br></pre></td></tr></table></figure>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-10-11-021357.jpg" style="zoom:50%;" /></p>
+<ul>
+<li>在静态链接时，整个程序最终只有一个可执行文件，是一个不可以分割的整体；但在动态链接下，一个程序被分成若干个文件，包括可执行文件（Program1）和程序所依赖的共享对象（Lib.so），都称为程序的模块</li>
+<li>如果引用的函数定义在动态共享对象中，那么链接器就会将这个符号的引用标记为一个动态链接的符号，不对它进行地址重定位，把这个过程留到装载时再进行</li>
+<li>共享对象中保存了完整的符号信息，将其作为链接的输入文件之一，链接器在解析符号时就可以知道是静态符号还是动态符号</li>
+<li>动态链接器与普通共享对象一样被映射到进程的地址空间，系统首先把控制权交给动态链接器，由它完成所有的动态链接工作以后再把控制权交给可执行文件</li>
+<li>共享对象的最终装载地址在编译时是不确定的，而是在装载时，装载器根据当前地址空间的空闲情况，动态分配一块足够大小的虚拟地址空间给相应的共享对象</li>
+</ul>
+<h4 id="地址无关代码">地址无关代码</h4>
+<ul>
+<li><p><strong>装载时重定位（Load Time Relocation）</strong></p>
+<ul>
+<li>在链接时，对所有绝对地址的引用不作重定位，而把这一步推迟到装载时再完成。一旦模块装载地址确定，即目标地址确定，系统就对程序中所有的绝对地址引用进行重定位</li>
+<li>在 Windows 中，这种装载时重定位又被叫做<strong>基址重置
+（Rebasing）</strong></li>
+<li>不适合共享对象，因为指令部分在重定位时需要被修改，无法在多个进程之间共享</li>
+<li>可修改数据部分对于不同的进程来说有多个副本，所以可以采用装载时重定位的方法</li>
+<li>Linux 和 GCC 支持装载时重定位，即在产生共享对象时只使用
+<code>-shared</code> 参数</li>
+</ul></li>
+<li><p><strong>地址无关代码（PIC, Position-independent
+Code）</strong></p>
+<ul>
+<li><p>把指令中那些需要被修改的部分分离出来，跟数据部分放在一起，这样指令部分就可以保持不变，而数据部分可以在每个进程中拥有一个副本</p></li>
+<li><p>共享对象模块中的地址引用方式</p>
+<ul>
+<li><strong>模块内调用或跳转：</strong>相对地址调用指令，不需要重定位</li>
+<li><strong>模块内数据访问（如模块中定义的静态变量）：</strong>相对于当前指令地址（PC）加上固定的偏移量</li>
+<li><strong>模块间数据访问（如其他模块中定义的全局变量）：</strong>在数据段里建立一个指向这些变量的指针数组，称为全局偏移表（Global
+Offset Table, GOT），当代码需要引用该全局变量时，通过 GOT
+中相对应的项间接引用</li>
+<li><strong>模块间调用或跳转：</strong>GOT
+中保存目标函数的地址，当模块需要调用目标函数时，通过 GOT
+中的项进行间接跳转</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>指令跳转、调用</th>
+<th>数据访问</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>模块内部</td>
+<td>相对跳转和调用</td>
+<td>相对地址访问</td>
+</tr>
+<tr class="even">
+<td>模块外部</td>
+<td>间接跳转和调用（GOT）</td>
+<td>间接访问（GOT）</td>
+</tr>
+</tbody>
+</table></li>
+<li><p>使用 GCC 的 <code>-fPIC</code> 参数产生地址无关代码；小写形式
+<code>-fpic</code>
+功能相同，产生的代码相对较小且较快，但在某些平台上会有一些限制，如全局符号数量或代码长度等</p></li>
+<li><p><code>readelf -d foo.so | grep TEXTREL</code> 有输出就不是 PIC
+的，否则是，因为 PIC 的 DSO 不会包含任何代码段重定位表，TEXTREL
+表示代码段重定位表地址</p></li>
+<li><p>地址无关代码技术也可用于可执行文件，称作地址无关可执行文件（PIE,
+Position-Independent Executable）；产生 PIE 的参数为 <code>-fPIE</code>
+或 <code>-fpie</code></p></li>
+</ul></li>
+<li><p><strong>共享模块的全局变量问题：</strong>一个模块引用一个定义在共享对象的全局变量，编译器编译引用模块时，无法根据上下文判断全局变量是定义在同一模块的其他目标文件还是定义在另一个共享对象中，即无法判断是否为跨模块间的调用</p>
+<ul>
+<li><strong>假设引用模块是程序可执行文件的一部分：</strong>非地址无关代码，不在运行时重定位，需要在编译时确定变量地址，在可执行文件
+.bss
+段创建一个变量副本，所有使用该变量的指令都指向可执行文件中的副本。ELF
+共享库在编译时，默认都把定义在模块内部的全局变量当作定义在其他模块的全局变量，通过
+GOT
+访问。当共享模块被装载时，如果某个全局变量在可执行文件中拥有副本，那么动态链接器就会把
+GOT
+中的相应地址指向该副本。如果变量在共享模块中被初始化，那么动态链接器还需要将该初始化值复制到程序主模块中的变量副本。如果该全局变量在程序主模块中没有副本，那么
+GOT 中的相应地址就指向模块内部的该变量副本。</li>
+<li><strong>假设引用模块是一个共享对象的一部分：</strong>在
+<code>-fPIC</code> 的情况下，对全局变量的引用按照跨模块模式产生代码</li>
+</ul></li>
+<li><p>共享对象中定义一个全局变量：</p>
+<ul>
+<li>共享对象被两个进程加载时，它的数据段部分在每个进程中都有独立的副本</li>
+<li>同一进程中的两个线程在同一进程地址空间里，访问的是全局变量的同一副本</li>
+</ul></li>
+<li><p>共享数据段：多进程共享全局变量，实现进程间通信</p></li>
+<li><p>线程私有存储（Thread Local
+Storage）：多线程访问不同的全局变量副本，防止相互干扰，如 C 运行库的
+errno</p></li>
+<li><p><strong>数据段地址无关性</strong></p>
+<ul>
+<li>对于共享对象，如果数据段中有绝对地址引用（如指针取地址），那么编译器和链接器就会产生一个重定位表，包含了
+R_386_RELATIVE
+类型的重定位入口，当动态链接器装载共享对象时，如果发现有这样的重定位入口，那么就会进行重定位</li>
+<li>通过编译时不使用 <code>-fPIC</code>
+参数，可以让代码段也使用这种装载时重定位的方法，优点是运行时速度比使用地址无关代码的快（省去了每次访问全局数据和函数时需要做一次计算当前地址以及间接地址寻址的过程），缺点是不能被多个进程共享，浪费内存</li>
+<li>默认情况下，如果可执行文件是动态链接的，GCC 会使用 PIC
+的方法来产生可执行文件的代码段部分，以便于不同进程能够共享代码段，节省内存，所以动态链接的可执行文件中存在
+got 段</li>
+</ul></li>
+</ul>
+<h4 id="延迟绑定plt">延迟绑定（PLT）</h4>
+<ul>
+<li>动态链接比静态链接慢的主要原因
+<ul>
+<li>对于全局、静态数据访问以及模块间调用要先定位
+GOT，然后进行间接寻址或跳转；</li>
+<li>程序开始执行时动态链接器会寻找并装载所需的共享对象，然后进行符号查找地址重定位等工作，减慢启动速度</li>
+</ul></li>
+<li>延迟绑定（Lazy Binding）
+：当函数第一次被用到时才进行绑定（符号查找、重定位等），程序开始执行时，模块间的函数调用都没有进行绑定，从而大大加快程序启动速度</li>
+<li>ELF 使用 PLT（Procedure Linkage
+Table）的方法实现延迟绑定，每个外部函数在 PLT
+中都有一个相应的项，调用函数并不直接通过 GOT 跳转，而是通过 PLT
+项再增加一层间接跳转</li>
+<li>ELF 将特 GOT 拆分成了两个表：.got
+用来保存全局变量引用的地址，got.plt 用来保存函数引用的地址</li>
+<li>PLT 在 ELF 文件中以独立的段存放，段名通常叫做
+.plt，它本身是一些地址无关的代码</li>
+</ul>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-10-11-021402.jpg" style="zoom:50%;" /></p>
+<h4 id="动态链接相关结构">动态链接相关结构</h4>
+<ul>
+<li>对于动态链接，在映射完可执行文件之后，操作系统会先启动个动态链接器（Dynamic
+Linker）。在 Linux下，动态链接器 ld.so
+实际上是一个共享对象，操作系统同样通过映射的方式将它加载到进程的地址空间中，然后将控制权交给动态链接器的入口地址，开始执行一系列自身的初始化操作，然后根据当前的环境参数，开始对可执行文件进行动态链接工作，最后将控制权转交到可执行文件的入口地址，程序开始正式执行。</li>
+<li>ELF 可执行文件中的 .interp
+段保存了动态链接器的路径，查看命令：<code>readelf -l a.out | grep interpreter</code></li>
+<li>.dynamic
+段保存了动态链接器所需要的基本信息，比如依赖于哪些共享对象、动态链接符号表的位置、动态链接重定位表的位置、共享对象初始化代码的地址等，可以看成是动态链接下
+ELF 文件的“文件头”，查看命令：<code>readelf -d Lib.so</code></li>
+<li>查看一个程序主模块或一个共享库依赖于哪些共享库：<code>ldd Program1</code></li>
+<li>.dynsym 段为动态符号表（Dynamic Symbol Table）
+，表示模块之间的符号导入导出关系，只保存与动态链接相关的符号，不保存模块内部的符号</li>
+<li>动态符号表需要一些辅助表，比如用于保存符号名的动态符号字符串表
+.dynstr （Dynamic String
+Table），以及用于在程序运行时加快符号查找过程的符号哈希表 .hash</li>
+<li>查看 ELF
+文件的动态符号表及它的哈希表：<code>readelf -sD Lib.so</code></li>
+<li>即使一个共享对象是 PIC
+模式编译的，也需要在装载时进行重定位。虽然代码段不需要重定位，但数据段还包含绝对地址的引用，因为代码段中绝对地址相关的部分被分离了出来，变成了
+GOT，而 GOT 实际上是数据段的一部分。除了 GOT
+以外，数据段还可能包含绝对地址引用</li>
+<li>动态链接的重定位表为 .rel.dyn 和 .rel.plt（分别相当于静态链接的
+.rel.text 和 .rel.data），前者是对数据引用的修正，它所修正的位置位于
+.got 以及数据段，后者是对函数引用的修正，它所修正的位置位于
+.got.plt</li>
+<li>查看一个动态链接的文件的重定位表：<code>readelf -r Lib.so</code></li>
+<li>动态链接器需要知道关于可执行文件和本进程的一些信息，比如可执行文件有几个段、每个段的属性、程序的入口地址等，这些信息往往由操作系统传递给动态链接器，保存在进程的堆栈里面</li>
+</ul>
+<h4 id="动态链接的步骤和实现">动态链接的步骤和实现</h4>
+<ul>
+<li><strong>动态链接器自举</strong>
+<ul>
+<li>动态链接器本身不可以依赖于其他任何共享对象，且其所需的全局和静态变量的重定位工作由它本身完成</li>
+<li>在动态链接器的自举代码中，不可以使用全局变量和静态变量，也不可以调用函数</li>
+</ul></li>
+<li><strong>装载共享对象</strong>
+<ul>
+<li>完成基本自举以后，动态链接器将可执行文件和链接器本身的符号表都合并到一个符号表当中，称为全局符号表（Global
+Symbol Table），然后根据 .dynamic
+段开始寻找可执行文件所依赖的共享对象，将其名字放入到一个装载集合中。然后从集合里取一个所需要的共享对象的名字，找到相应的文件后打开该文件，读取相应的
+ELF 文件头和 .dynamic
+段，然后将它相应的代码段和数据段映射到进程空间中。如果这个 ELF
+共享对象还依赖于其他共享对象，那么将所依赖的共享对象的名字放到装载集合中，如此循环直到所有依赖的共享对象都被装载进来为止（一般为广度优先）</li>
+<li>当一个新的共享对象被装载进来后，它的符号表会被合并到全局符号表中；当所有的共享对象都被装载进来后，全局符号表里面将包含进程中所有的动态链接所需要的符号</li>
+<li>全局符号介入（Global Symbol
+Interpose）：一个共享对象里的全局符号被另一个共享对象的同名全局符号覆盖</li>
+<li>当一个符号需要被加入全局符号表时，如果相同的符号名已经存在，则后加入的符号被忽略</li>
+<li>由于全局符号介入的存在，模块内部调用或跳转的函数可能被其他模块中的同名函数覆盖，此时不能采用相对地址调用，而只能当作模块外部符号处理。为了提高模块内部函数调用的效率，可以使用
+static
+关键字使其成为编译单元私有函数，这种情况下编译器确定其不被其他模块覆盖，就可以使用模块内部调用指令。</li>
+</ul></li>
+<li><strong>重定位和初始化</strong>
+<ul>
+<li>装载完成之后，链接器开始重新遍历可执行文件和每个共享对象的重定位表，将它们的
+GOT/PLT 中的每个需要重定位的位置进行修正。</li>
+<li>重定位完成之后，如果某个共享对象有 .init 段，那么动态链接器会执行
+.init 段中的代码，用以实现共享对象特有的初始化过程，比如 C++
+全局/静态对象的构造；共享对象中还可能有 .finit 段，当进程退出时会执
+.finit 段中的代码，可以用来实现类似 C++
+全局对象析构之类的操作；可执行文件中的 .init 段和 .finit
+段由程序初始化部分代码负责执行，动态链接器<strong>不会</strong>执行它</li>
+<li>完成重定位和初始化之后，所需要的共享对象都已经装载并且链接完成，这时候动态链接器将进程的控制权转交给程序的入口并且开始执行</li>
+</ul></li>
+<li>Linux 动态链接器实现
+<ul>
+<li>内核在装载完 ELF
+可执行文件以后就返回到用户空间，将控制权交给程序的入口。对于静态链接的可执行文件，程序的入口就是
+ELF 文件头里 e_entry
+指定的入口；对于动态链接的可执行文件，这时不能把控制权交给 e_entry
+指定的入口地址（因为可执行文件所依赖的共享库还没有被装载，也没有进行动态链接），而是分析它的动态链接器地址（在
+.interp
+段），将动态链接器映射至进程地址空间，然后把控制权交给动态链接器</li>
+<li>动态链接器是个非常特殊的共享对象，它不仅是个共享对象，还是个可执行的程序，可以直接在命令行下运行</li>
+<li>动态链接器本身是静态链接的，它不能依赖于其他共享对象</li>
+<li>动态链接器可以是 PIC 的也可以不是，但往往使用 PIC
+会更加简单一些，实际上 ld-linux.so.2 是 PIC 的</li>
+<li>动态链接器的装载地址跟一般的共享对象没区别，即为
+0x00000000，是一个无效的装载地址，作为一个共享库，内核在装载它时会为其选择一个合适的装载地址</li>
+</ul></li>
+</ul>
+<h4 id="显式运行时链接">显式运行时链接</h4>
+<ul>
+<li>显式运行时链接（Explicit Run-time
+Linking）：也叫运行时加载，是让程序自己在运行时控制加载指定的模块，并且可以在不需要该模块时将其卸载，这种共享对象往往被叫做动态装载库（Dynamic
+Loading Library），可以用来实现插件、驱动等功能</li>
+<li>当程序需要用到某个插件或者驱动时，才将相应的模块装载进来，而不需要从一开始就将他们全部装载进来，从而减少了程序启动时间和内存使用；并且程序可以在运行的时候重新加载某个模块，这样使得程序本身不必重新启动而实现模块的增加、删除、更新等，这对于很多需要长期运行的程序来说是很大的优势</li>
+<li>动态链接器提供 4 个 API 用来实现动态库的装载：
+<ul>
+<li>打开动态库 <code>dlopen</code></li>
+<li>查找符号 <code>dlsym</code></li>
+<li>错误处理 <code>dlerror</code></li>
+<li>关闭动态库 <code>dlclose</code></li>
+</ul></li>
+</ul>
+<h3 id="第-8-章-linux-共享库的组织">第 8 章 Linux 共享库的组织</h3>
+<h4 id="共享库版本">共享库版本</h4>
+<ul>
+<li>导致 C 语言的共享库 ABI 改变的行为：
+<ul>
+<li>导出函数的行为发生改变，也就是说调用这个函数以后产生的结果与以前不一样，不再满足旧版本规定的函数行为准则</li>
+<li>导出函数被删除</li>
+<li>导出数据的结构发生变化，比如共享库定义的结构体变量的结构发生改变：结构成员删除、顺序改变或其他引起结构体内存布局变化的行为</li>
+<li>导出函数的接口发生变化，如函数返回值、参数被更改</li>
+</ul></li>
+<li>为防止 ABI 不兼容，开发一个导出接口为 C++ 的共享库需要注意以下事项：
+<ul>
+<li>不要在接口类中使用虚函数，万不得已要使用虚函数时，不要随意删除、添加或在子类中添加新的实现函数，这样会导致类的虚函数表结构发生变化</li>
+<li>不要改变类中任何成员变量的位置和类型</li>
+<li>不要删除非内嵌的 public 或 protected 成员函数</li>
+<li>不要将非内嵌的成员函数改变成内联成员函数</li>
+<li>不要改变成员函数的访问权限</li>
+<li>不要在接口中使用模板</li>
+<li>最重要的是，不要改变接口的任何部分或干脆不要使用 C++
+作为共享库接口！</li>
+</ul></li>
+<li>共享库版本命名规则：<code>libname.so.x.y.z</code>
+<ul>
+<li><code>x</code>：主版本号（Major Version
+Number），表示库的重大升级，不同主版本号的库之间是不兼容的，依赖于旧的主版本号的程序需要改动相应的部分，并且重新编译，才可以在新版的共享库中运行：或者，系统必须保留旧版的共享库，使得那些依赖于旧版共享库的程序能够正常运行</li>
+<li><code>y</code>：次版本号（Minor Version
+Number），表示库的增量升级，即增加一些新的接口符号，且保持原来的符号不变。在主版本号相同的情况下，高的次版本号的库向后兼容低的次版本号的库。一个依赖于旧的次版本号共享库的程序，可以在新的次版本号共享库中运行。</li>
+<li><code>z</code>：发布版本号（Release Version
+Number），表示库的一些错误的修正、性能的改进等，并不添加任何新的接口，也不对接口进行更改。相同主版本号、次版本号的共享库，不同的发布版本号之间完全兼容，依赖于某个发布版本号的程序可以在任何一个其他发布版本号中正常运行，而无须做任何修改。</li>
+</ul></li>
+<li>Solaris 和 Linux 普遍采用一种叫做 SO-NAME
+的命名机制来记录共享库的依赖关系。每个共享库都有一个对应的
+SO-NAME，即共享库的文件名去掉次版本号和发布版本号，保留主版本号</li>
+<li>系统会为每个共享库在它所在的目录创建一个跟 SO-NAME
+相同的并且指向其最新版本的软链接，使得所有依赖某个共享库的模块，在编译、链接和运行时，都使用共享库的
+SO-NAME，而不使用详细的版本号</li>
+<li>Linux 中提供了一个工具叫做
+<code>ldconfig</code>，当系统中安装或更新一个共享库时，就需要运行这个工具，它会遍历所有的默认共享库目录，比如
+/lib、/usr/lib
+等，然后更新所有的软链接，使它们指向最新版的共享库；如果安装了新的共享库，那么
+<code>ldconfig</code> 会为其创建相应的软链接</li>
+<li>使用 GCC 的 <code>-l</code> 参数链接某个共享库时（例如
+libXXX.so.2.6.1），只需要在编译器命令行里面指定 <code>-lXXX</code>
+即可，编译器会根据当前环境，在系统中的相关路径（往往由 <code>-L</code>
+参数指定）查找最新版本的“XXX”库。这个“XXX”又被称为共享库的链接名（Link
+Name）。</li>
+<li>不同类型的库可能会有同样的链接名，比如 C
+语言运行库有静态版本（lbc.a）和动态版本（libc.so.x.y.z）的区别，如果在链接时使用参数
+<code>-lc</code>，那么链接器会根据输出文件的情况（动态/静态）来选择适合版本的库。比如
+ld 使用 <code>-static</code> 参数时，<code>-lc</code> 会查找
+libc.a；如果使用
+<code>-Bdynamic</code>（这也是默认情况），它会查找最新版本的
+<code>libc.so.x.y.z</code></li>
+</ul>
+<h4 id="符号版本">符号版本</h4>
+<ul>
+<li>SO-NAME
+不能解决<strong>次版本号交会问题</strong>：当某个程序依赖于较高的次版本号的共享库，而运行于较低次版本号的共享库系统时，就可能产生缺少某些符号的错误，因为次版本号不保证向前兼容</li>
+<li>基于符号的版本机制（Symbol
+Versioning）：让每个导出和导入的符号都有一个相关联的版本号，类似于名称修饰</li>
+<li>Solaris 中的符号版本机制
+<ul>
+<li>版本机制（Versioning）和范围机制（Scoping）</li>
+<li>符号版本脚本的文件：指定符号与集合之间及集合与集合之间的继承依赖关系，链接器在链接时根据符号版本脚本中指定的关系来产生共享库，并且设置符号的集合与它们之间的关系</li>
+<li>当共享库的符号都有了版本集合之后，链接器可以在程序的最终输出文件中记录下它所用到的版本符号集合</li>
+</ul></li>
+<li>Linux 中的符号版本
+<ul>
+<li>GCC 在 Solaris 系统中的符号版本机制的基础上还提供了两个扩展：
+<ul>
+<li>允许使用 .symver 汇编宏指令来指定符号的版本</li>
+<li>允许多个版本的同一个符号存在于一个共享库中</li>
+</ul></li>
+<li>使用 ld 链接一个共享库时，可以使用 <code>--version-script</code>
+参数；如果使用 GCC，则可以使用 <code>-Xlinker</code> 参数加
+<code>-version-script</code>，例如：</li>
+</ul></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gcc -shared -fPIC lib.c -Xlinker --version-script lib.ver -o lib.so</span><br><span class="line">gcc main.c ./lib.so -o main</span><br></pre></td></tr></table></figure>
+<h4 id="共享库系统路径">共享库系统路径</h4>
+<ul>
+<li>FHS（File Hierarchy Standard）标准规定了系统存放共享库的位置：
+<ul>
+<li><code>/lib</code>：主要存放系统最关键和基础的共享库，比如动态链接器、C语言运行库、数学库等，这些库主要是那些
+/bin 和 /sbin 下的程序所需要用到的库，还有系统启动时需要的库</li>
+<li><code>/usr/lib</code>：主要保存一些非系统运行时所需要的关键性的共享库，主要是一些开发时用到的共享库，一般不会被用户的程序或
+shell 脚本直接用到，还包含了开发时可能会用到的静态库、目标文件等</li>
+<li><code>/usr/local/lib</code>：放置一些跟操作系统本身并不十分相关的库，主要是一些第三方的应用程序的库，比如
+python 解释器相关的共享库可能会被放到
+/usr/local/lib/python，而它的可执行文件可能被放到 /usr/ocal/bin 下。GNU
+的标准推荐第三方的程序应该默认将库安装到 /usr/local/lib 下</li>
+</ul></li>
+</ul>
+<h4 id="共享库查找过程">共享库查找过程</h4>
+<ul>
+<li>动态链接的模块所依赖的模块路径保存在 .dynamic 段，由 DT_NEED
+类型的项表示，如果 DT_NEED
+里面保存的是绝对路径，那么动态链接器就按照这个路径去查找；如果 DT_NEED
+里面保存的是相对路径，那么动态链接器会在 /lib、/usr/lib 和由
+/etc/ld.so.conf 配置文件指定的目录中查找共享库</li>
+<li>ldconfig 程序为共享库目录下的各个共享库创建、删除或更新相应的
+SO-NAME，并将其收集起来，集中存放到 /etc/ld.so.cache 文件里，建立一个
+SO-NAME
+的缓存。当动态链接器要查找共享库时，可以直接缓存里查找，大大加快了共享库的查找过程</li>
+<li>如果在 /etc/ld.so.cache 里没有找到所需要的共享库，那么还会遍历 /lib
+和 /usr/lib 这两个目录，如果还是没找到，就宣告失败</li>
+<li>如果我们在系统指定的共享库目录下添加、删除或更新任何一个共享库，或者更改了/etc/ld.so.conf
+的配置，都应该运行 ldconfig，以便调整 SO-NAME 和 /etc/ld.so.cache</li>
+</ul>
+<h4 id="环境变量">环境变量</h4>
+<ul>
+<li><code>LD_LIBRARY_PATH</code>
+<ul>
+<li>临时改变某个应用程序的共享库查找路径，而不会影响系统中的其他程序</li>
+<li>由若干个路径组成，每个路径之间由冒号隔开，默认情况下为空</li>
+<li>为某个进程设置
+<code>LD_LIBRARY_PATH</code>，动态链接器会首先查找由其指定的目录，方便测试新的共享库或使用非标准的共享库，例如：<code>LD_LIBRARY_PATH=/home/user /bin/ls</code></li>
+<li>直接运行动态链接器来启动程序可以达到一样的效果，例如：<code>/lib/ld-linux.so.2 -library-path /home/user /bin/ls</code></li>
+<li>有了 <code>LD_LIBRARY_PATH</code> 后动态链接器查找共享库的顺序：
+<ul>
+<li>由环境变量 <code>LD_LIBRARY_PATH</code> 指定的路径</li>
+<li>由路径缓存文件 /etc/ld.so.cache 指定的路径</li>
+<li>默认共享库目录，先 /usr/lib，然后 /lib</li>
+</ul></li>
+<li>普通用户在正常情况下不应该随意设置 <code>LD_LIBRARY_PATH</code></li>
+</ul></li>
+<li><code>LD_PRELOAD</code>
+<ul>
+<li>该文件中可以指定预先装载的共享库或目标文件，在动态链接器按照固定规则搜索共享库之前装载，比
+<code>LD_LIBRARY_PATH</code>
+里面所指定的目录中的共享库还要优先，无论程序是否依赖于它们都会被裝载</li>
+<li>由于全局符号介入机制的存在，<code>LD_PRELOAD</code>
+里指定的共享库或目标文件中的全局符号会覆盖后面加载的同名全局符号，从而可以很方便地改写标准
+C 库中的某些函数而不影响其他函数，对于程序的调试或测试非常有用</li>
+<li>正常情况下应该尽量避免使用 <code>LD_PRELOAD</code></li>
+<li>系统配置文件 /etc/ld.so.preload 的作用与 <code>LD_PRELOAD</code>
+一样</li>
+</ul></li>
+<li>LD_DEBUG
+<ul>
+<li>打开动态链接器的调试功能，在运行时打印出各种有用的信息，对于开发和调试共享库有很大帮助</li>
+</ul></li>
+</ul>
+<h4 id="共享库的创建和安装">共享库的创建和安装</h4>
+<ul>
+<li><p>共享库的创建</p>
+<ul>
+<li><p><code>gcc -shared -Wl,-soname,my_soname -o library_name source_files library_files</code></p></li>
+<li><p><code>-shared</code> 表示输出结果是共享库类型的</p></li>
+<li><p><code>-fPIC</code>
+表示使用地址无关代码技术来生产输出文件</p></li>
+<li><p><code>-Wl</code> 将指定的参数传递给链接器，如
+<code>-soname,my_soname</code> 用来指定输出共享库的 SO-NAME</p></li>
+<li><p>链接器的 <code>-rpath</code> 选项（或 GCC 的
+<code>-Wl,-rpath</code>）可以指定链接产生的目标程序的共享库查找路径</p></li>
+<li><p><code>-export-dynamic</code>
+参数表示链按器在生产可执行文件时将所有全局符号导出到动态符号表（默认只将链接时被其他共享模块引用到的符号放到动态符号表，以减少动态符号表大小）</p></li>
+</ul></li>
+<li><p>清除符号信息</p>
+<ul>
+<li><p>使用 strip
+工具清除共享库或可执行文件的所有符号和调试信息：<code>strip libfoo.so</code></p></li>
+<li><p>使用 ld 的 <code>-s</code> 和 <code>-S</code>
+参数使得链接器生成输出文件时就不产生符号信息，前者消除所有符号信息，后者消除调试符号信息</p></li>
+</ul></li>
+<li><p>共享库的安装</p>
+<ul>
+<li>简单方法（需要 root 权限）：将共享库复制到某个标准的共享库目录（如
+/lib、/usr/lib 等），然后运行 ldconfig</li>
+<li>建立 SO-NAME
+软链接并指定共享库所在目录：<code>ldconfig -n shared_library_directory</code></li>
+<li>在编译程序时，GCC 的 <code>-L</code> 和 <code>-l</code>
+参数分别用于指定共享库搜索目录和共享库的路径</li>
+</ul></li>
+<li><p>共享库构造和析构函数</p>
+<ul>
+<li>在函数声明时加上 <code>_attribute__((constructor))</code>
+属性，即指定该函数为共享库构造函数，它会在共享库加载时、程序的
+<code>main()</code> 函数之前执行；如果使用 <code>dlopen()</code>
+打开共享库，共享库构造函数会在其返回之前被执行</li>
+<li>在函数声明时加上
+<code>_attribute_((destructor))</code>属性，该函数会在
+<code>main()</code> 函数执行完毕之后执行（或程序调用 <code>exit()</code>
+时执行）；如果共享库是运行时加载的，析构函数会在卸载共享库
+<code>dlclose()</code> 返回之前执行</li>
+<li>如果希望多个构造和析构函数按照一定顺序执行，可以指定属性中的优先级参数，对于构造函数，优先级数字越小的函数将会在优先级大的函数之前运行，而对于析构函数则刚好相反</li>
+</ul></li>
+<li><p>共享库脚本</p>
+<ul>
+<li>将一个或多个输入文件以一定的格式经过变换以后形成一个输出文件，也叫做动态链接脚本</li>
+<li>共享库可以是链接脚本文件，把几个现有的共享库通过一定的方式组合起来，从用户的角度看就是一个新的共享库</li>
+</ul></li>
+</ul>
+<h3 id="第-9-章-windows下的动态链接">第 9 章 Windows下的动态链接</h3>
+<p><strong>TODO</strong></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Yuheng Ding WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Yuheng Ding Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/OS/" rel="tag"># OS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/04/07/programmers-self-cultivation-part-2/" rel="prev" title="[Note] 程序员的自我修养——第 2 部分 静态链接">
+                  <i class="fa fa-chevron-left"></i> [Note] 程序员的自我修养——第 2 部分 静态链接
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/05/22/programmers-self-cultivation-part-4/" rel="next" title="[Note] 程序员的自我修养——第 4 部分 库与运行库">
+                  [Note] 程序员的自我修养——第 4 部分 库与运行库 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yuheng Ding</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Symbols count total: </span>
+    <span title="Symbols count total">370k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>Reading time total &asymp;</span>
+    <span title="Reading time total">5:37</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"timdyh","repo":"gitalk-comments","client_id":"0babcb65af364dd08a90","client_secret":"22090e837380d49040a73f2ed1db4f9541b29379","admin_user":"timdyh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"605961b0ece65d1f99485ea3bfac16e2"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="null//null" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="x_9IHIiVX0aZQfKSCtN7gy8_1UhN7guVmZAmA4gv1EE">
+  <meta name="msvalidate.01" content="AC8F448726B8A8742C6DFFA7640E7DBF">
+  <meta name="baidu-site-verification" content="code-2qEdijyCxz">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="配置实验环境 由于本人电脑的存储空间不足，无法再承担安装一个虚拟机的开销，因此在阿里云上申请了一个云服务器进行本次实验。 服务器配置如下：  1 核 - 2GB 内存 - 40GB 系统盘 操作系统：Ubuntu 18.04">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 上搭建 Snort+BASE 入侵检测系统">
+<meta property="og:url" content="http://example.com/2020/05/04/snort-base-intrusion-detection/index.html">
+<meta property="og:site_name" content="TimDyh">
+<meta property="og:description" content="配置实验环境 由于本人电脑的存储空间不足，无法再承担安装一个虚拟机的开销，因此在阿里云上申请了一个云服务器进行本次实验。 服务器配置如下：  1 核 - 2GB 内存 - 40GB 系统盘 操作系统：Ubuntu 18.04">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133010.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133011.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133012.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133013.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133014.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133015.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133016.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133017.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133018.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133020.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133021.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133022.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133024.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133025.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133027.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133030.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133032.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133033.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133034.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133035.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133037.jpg">
+<meta property="article:published_time" content="2020-05-04T13:22:00.000Z">
+<meta property="article:modified_time" content="2022-12-16T11:58:23.730Z">
+<meta property="article:author" content="Yuheng Ding">
+<meta property="article:tag" content="Network">
+<meta property="article:tag" content="Security">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133010.jpg">
+
+
+<link rel="canonical" href="http://example.com/2020/05/04/snort-base-intrusion-detection/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2020/05/04/snort-base-intrusion-detection/","path":"2020/05/04/snort-base-intrusion-detection/","title":"Linux 上搭建 Snort+BASE 入侵检测系统"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Linux 上搭建 Snort+BASE 入侵检测系统 | TimDyh</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">TimDyh</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83"><span class="nav-number">1.</span> <span class="nav-text">配置实验环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9-ubuntu-%E6%BA%90"><span class="nav-number">2.</span> <span class="nav-text">修改 Ubuntu 源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-lamp"><span class="nav-number">3.</span> <span class="nav-text">安装 Lamp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-snort"><span class="nav-number">4.</span> <span class="nav-text">安装 Snort</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-barnyard2"><span class="nav-number">5.</span> <span class="nav-text">安装 Barnyard2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-base"><span class="nav-number">6.</span> <span class="nav-text">安装 BASE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-snort"><span class="nav-number">7.</span> <span class="nav-text">使用 Snort</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yuheng Ding"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Yuheng Ding</p>
+  <div class="site-description" itemprop="description">Per aspera, ad astra.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/timdyh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dyh0701@gmail.com" title="E-Mail → mailto:dyh0701@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/tim_dyh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;tim_dyh" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/timdyh" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/05/04/snort-base-intrusion-detection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Linux 上搭建 Snort+BASE 入侵检测系统 | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux 上搭建 Snort+BASE 入侵检测系统
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-05-04 21:22:00" itemprop="dateCreated datePublished" datetime="2020-05-04T21:22:00+08:00">2020-05-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Project/" itemprop="url" rel="index"><span itemprop="name">Project</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>7.2k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>7 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="配置实验环境">配置实验环境</h2>
+<p>由于本人电脑的存储空间不足，无法再承担安装一个虚拟机的开销，因此在阿里云上申请了一个云服务器进行本次实验。</p>
+<p>服务器配置如下：</p>
+<ul>
+<li>1 核 - 2GB 内存 - 40GB 系统盘</li>
+<li>操作系统：Ubuntu 18.04</li>
+</ul>
+<span id="more"></span>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133010.jpg"
+alt="aliyun" />
+<figcaption aria-hidden="true">aliyun</figcaption>
+</figure>
+<h2 id="修改-ubuntu-源">修改 Ubuntu 源</h2>
+<p>查看 /etc/apt/sources.list
+发现已经配置好了阿里源，故不再做修改。如有需要，可自行改为阿里源或清华源，提高安装包下载速度。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133011.jpg"
+alt="aliyuan" />
+<figcaption aria-hidden="true">aliyuan</figcaption>
+</figure>
+<h2 id="安装-lamp">安装 Lamp</h2>
+<ol type="1">
+<li><p><strong>安装 Apache 2 Web 服务器</strong></p>
+<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install apache2 -y</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>安装 MySQL 数据库，并进行保护</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install mysql-server libmysqlclient-dev mysql-client autoconf libtool -y</span><br><span class="line">sudo mysql_secure_installation</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>安装 PHP 超文本预处理器</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo add-apt-repository ppa:ondrej/php </span><br><span class="line">sudo apt-get update -y</span><br><span class="line">sudo apt-get install -y libapache2-mod-php5.6 php5.6 php5.6-common php5.6-gd php5.6-cli php5.6-xml php5.6-mysql</span><br><span class="line">sudo apt-get install -y php-pear libphp-adodb</span><br></pre></td></tr></table></figure></p>
+<p>执行第一句命令时报了 sudo: add-apt-repository: command not found
+错误，查阅资料后得知需要先安装
+software-properties-common（如下），然后再执行以上命令。</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install software-properties-common</span><br></pre></td></tr></table></figure></p>
+<p>最后，重新启动 Apache Web 服务器。</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart apache2</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>测试 PHP</strong></p>
+<p>在 /var/www/html 中创建一个名为 info.php
+的新文件，写入如下内容，保存并退出。</p>
+<p><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">phpinfo</span>();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>现在浏览 http://localhost/info.php ，可以看到 PHP 信息页面，说明 PHP
+工作正常。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133012.jpg"
+alt="php" />
+<figcaption aria-hidden="true">php</figcaption>
+</figure></li>
+</ol>
+<h2 id="安装-snort">安装 Snort</h2>
+<ol type="1">
+<li><p><strong>安装 DAQ，解压编译</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tar -xvzf daq-2.0.6.tar.gz</span><br><span class="line">cd daq-2.0.6</span><br><span class="line">./configure </span><br><span class="line">sudo make &amp; make install</span><br></pre></td></tr></table></figure></p>
+<p>然而 ./configure 命令并没有成功生成 Makefile
+文件，检查输出的信息发现如下错误：</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133013.jpg"
+alt="flex_bison" />
+<figcaption aria-hidden="true">flex_bison</figcaption>
+</figure>
+<p>意思是缺少一些依赖，于是先安装 flex 和 bison。</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install flex</span><br><span class="line">sudo apt-get install bison</span><br></pre></td></tr></table></figure></p>
+<p>再次执行 ./configure，又提示 libpcap 版本太低：</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133014.jpg"
+alt="libpcap" />
+<figcaption aria-hidden="true">libpcap</figcaption>
+</figure>
+<p>重新安装 libpcap。</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libpcap-dev</span><br></pre></td></tr></table></figure></p>
+<p>此时再执行最开始的命令，DAQ 编译成功。</p></li>
+<li><p><strong>安装 Snort，解压编译</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tar -xvzf snort-2.9.12.tar.gz</span><br><span class="line">cd snort-2.9.12</span><br><span class="line">./configure --enable-sourcefire</span><br><span class="line">sudo make &amp; make install</span><br></pre></td></tr></table></figure></p>
+<p>执行 ./configure 的过程中同样因为缺少一些依赖库而报错，需要安装
+libpcre、dumbnet、luajit、libnghttp。</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libpcre3-dev</span><br><span class="line">sudo apt-get install libdumbnet-dev</span><br><span class="line">sudo apt-get install liblua5.2-dev</span><br><span class="line">sudo apt-get install libnghttp2-dev</span><br></pre></td></tr></table></figure></p>
+<p>最后修复链接。</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ldconfig</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>测试 Snort 是否安装成功</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snort -V</span><br></pre></td></tr></table></figure></p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133015.jpg"
+alt="snort" />
+<figcaption aria-hidden="true">snort</figcaption>
+</figure></li>
+<li><p><strong>配置用户和目录</strong></p>
+<p>创建用户和用户组：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo groupadd snort</span><br><span class="line">sudo useradd snort -r -s /sbin/nologin -c SNORT_IDS -g snort</span><br></pre></td></tr></table></figure></p>
+<p>创建Snort目录：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir /etc/snort</span><br><span class="line">sudo mkdir /etc/snort/rules</span><br><span class="line">sudo mkdir /etc/snort/rules/iplists</span><br><span class="line">sudo mkdir /etc/snort/preproc_rules</span><br><span class="line">sudo mkdir /usr/local/lib/snort_dynamicrules</span><br><span class="line">sudo mkdir /etc/snort/so_rules</span><br></pre></td></tr></table></figure></p>
+<p>创建文件来存储规则：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo touch /etc/snort/rules/iplists/black_list.rules</span><br><span class="line">sudo touch /etc/snort/rules/iplists/white_list.rules</span><br><span class="line">sudo touch /etc/snort/rules/local.rules</span><br></pre></td></tr></table></figure></p>
+<p>创建日志目录：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir /var/log/snort</span><br><span class="line">sudo mkdir /var/log/snort/archived_logs</span><br></pre></td></tr></table></figure></p>
+<p>修改文件权限：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod -R 5775 /etc/snort</span><br><span class="line">sudo chmod -R 5775 /var/log/snort</span><br><span class="line">sudo chmod -R 5775 /var/log/snort/archived_logs</span><br><span class="line">sudo chmod -R 5775 /etc/snort/so_rules</span><br><span class="line">sudo chmod -R 5775 /usr/local/lib/snort_dynamicrules</span><br></pre></td></tr></table></figure></p>
+<p>修改文件的归属用户：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo chown -R snort:snort /etc/snort</span><br><span class="line">sudo chown -R snort:snort /var/log/snort</span><br><span class="line">sudo chown -R snort:snort /usr/local/lib/snort_dynamicrules</span><br></pre></td></tr></table></figure></p>
+<p>复制配置文件：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cd /opt/snort-2.9.12/etc/</span><br><span class="line">sudo cp *.conf* /etc/snort</span><br><span class="line">sudo cp *.map /etc/snort</span><br><span class="line">sudo cp *.dtd /etc/snort</span><br><span class="line">cd /opt/snort-2.9.12/src/dynamic-preprocessors/build/usr/local/lib/snort_dynamicpreprocessor/</span><br><span class="line">sudo cp * /usr/local/lib/snort_dynamicpreprocessor/</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>修改配置文件</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/snort/snort.conf</span><br></pre></td></tr></table></figure></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ipvar HOME_NET 修改为本机的内部网络</span></span><br><span class="line">ipvar HOME_NET 172.25.45.23/18</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设置以下配置文件路径</span></span><br><span class="line">var RULE_PATH /etc/snort/rules</span><br><span class="line">SO_RULE_PATH /etc/snort/so_rules</span><br><span class="line">PREPROC_RULE_PATH /etc/snort/preproc_rules</span><br><span class="line">WHITE_LIST_PATH /etc/snort/rules/iplists</span><br><span class="line">BLACK_LIST_PATH /etc/snort/rules/iplists</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在 output unified2: filename merged.log, <span class="built_in">limit</span> 128, nostamp, mpls_event_types, vlan_event_types 之后添加</span></span><br><span class="line">output unified2: filename snort.u2, limit 128</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">启用 local.rules 文件，其后的 include 文件均注释掉</span></span><br><span class="line">include $RULE_PATH/local.rules</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>添加规则</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar -xzf community-rules.tar.gz</span><br><span class="line">cp community-rules/* /etc/snort/rules/</span><br></pre></td></tr></table></figure></p>
+<p>检查规则。</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snort -T -c /etc/snort/snort.conf</span><br></pre></td></tr></table></figure></p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133016.jpg"
+alt="6检查规则" />
+<figcaption aria-hidden="true">6检查规则</figcaption>
+</figure>
+<p>在规则中添加一条对 ICMP 包的规则，以便测试。</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/snort/rules/local.rules</span><br></pre></td></tr></table></figure></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alert icmp any any -&gt; $HOME_NET any (msg:&quot;ICMP Test detected!!!&quot;; classtype:icmp-event; sid:10000001; rev:001; GID:1; )</span><br></pre></td></tr></table></figure></p>
+<p>设置 sid 对应信息，添加 sid-msg 文件。</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo touch /etc/snort/sid-msg.map</span><br><span class="line">sudo vi /etc/snort/sid-msg.map</span><br></pre></td></tr></table></figure></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1 || 10000001 || 001 || icmp-event || 0 || ICMP Test detected || url,tools.ietf.org/html/rfc792</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>测试配置文件和功能</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo snort -T -c /etc/snort/snort.conf -i eth0</span><br><span class="line">sudo snort -A console -q -u snort -g snort -c /etc/snort/snort.conf -i eth0</span><br></pre></td></tr></table></figure></p>
+<p>关闭防火墙。</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ufw disable</span><br></pre></td></tr></table></figure></p>
+<p>此时用本机 ping 服务器网口 eth0 的 IP，可以看到服务器上 Snort
+在控制台打印出 alert 告警，说明添加的 ICMP 规则已生效。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133017.jpg"
+alt="test_icmp" />
+<figcaption aria-hidden="true">test_icmp</figcaption>
+</figure></li>
+</ol>
+<h2 id="安装-barnyard2">安装 Barnyard2</h2>
+<ol type="1">
+<li><p><strong>安装 Barnyard2，解压编译</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">tar zxvf barnyard2-2-1.13.tar.gz</span><br><span class="line">cd barnyard2-2-1.13</span><br><span class="line">autoreconf -fvi -I ./</span><br><span class="line">./configure --with-mysql --with-mysql-libraries=/usr/lib/x86_64-linux-gnu</span><br><span class="line">sudo make &amp; make install</span><br></pre></td></tr></table></figure></p>
+<p>这里 make 时发生错误：</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133018.jpg"
+alt="barnyard2_error" />
+<figcaption aria-hidden="true">barnyard2_error</figcaption>
+</figure>
+<p>意思是 spo_alert_fwsam.c 中存在 SOCKET
+类型的重复定义。查阅大量资料后得知，这是源码中的 bug，在 GitHub
+上已经有人给出了解决办法：将该文件中所有的 <code>SOCKET</code> 替换为
+<code>BARNYARD2_SOCKET</code>。具体可参考
+<a href="https://github.com/Gerjo/barnyard2/commit/cc53c5573ba016489518bcda69ca64ca7acee2e8#diff-c1f3b2342b04cc7ae2df530b1a871cbeL122" target="_blank">https://github.com/Gerjo/barnyard2/commit/cc53c5573ba016489518bcda69ca64ca7acee2e8#diff-c1f3b2342b04cc7ae2df530b1a871cbeL122</a></p>
+<p>然后重新执行上述指令，编译成功。</p></li>
+<li><p><strong>测试</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">barnyard2 -V</span><br></pre></td></tr></table></figure></p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133020.jpg"
+alt="barnyard2" />
+<figcaption aria-hidden="true">barnyard2</figcaption>
+</figure></li>
+<li><p><strong>设置配置文件</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo cp /opt/barnyard2-2-1.13/etc/barnyard2.conf /etc/snort/</span><br><span class="line">sudo mkdir /var/log/barnyard2</span><br><span class="line">sudo chown snort.snort /var/log/barnyard2</span><br><span class="line">sudo touch /var/log/snort/barnyard2.waldo</span><br><span class="line">sudo chown snort.snort /var/log/snort/barnyard2.waldo</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>配置数据库</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p</span><br></pre></td></tr></table></figure></p>
+<p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create database snort;</span><br><span class="line">mysql&gt; use snort;</span><br><span class="line">mysql&gt; source /opt/barnyard2-2-1.13/schemas/create_mysql;</span><br><span class="line">mysql&gt; CREATE USER &#x27;snort&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;123456&#x27;;</span><br><span class="line">mysql&gt; grant create, insert, select, delete, update on snort.* to &#x27;snort&#x27;@&#x27;localhost&#x27;;</span><br><span class="line">mysql&gt; exit;</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>添加数据库配置</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/snort/barnyard2.conf</span><br></pre></td></tr></table></figure></p>
+<p>在末尾添加数据库配置：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">output database: log, mysql, user=snort password=123456 dbname=snort host=localhost sensor name=sensor01</span><br></pre></td></tr></table></figure></p>
+<p>修改 barnyard2.conf 的权限，防止被修改。</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod 644 /etc/snort/barnyard2.conf</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>测试</strong></p>
+<p>启动 MySQL。</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service mysql start</span><br></pre></td></tr></table></figure></p>
+<p>开启 Snort，并向 eth0 发送 ping 数据包。</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo snort -q -u snort -g snort -c /etc/snort/snort.conf -i eth0</span><br></pre></td></tr></table></figure></p>
+<p>开启 Barnyard2，将日志信息存入数据库。</p>
+<ul>
+<li><p><strong>连续处理模式，设置 barnyard2.waldo 为书签</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo barnyard2 -c /etc/snort/barnyard2.conf -d /var/log/snort -f snort.u2 -w /var/log/snort/barnyard2.waldo -g snort -u snort</span><br></pre></td></tr></table></figure></p>
+<p>控制台打印出刚才 ping 的记录。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133021.jpg"
+alt="连续" />
+<figcaption aria-hidden="true">连续</figcaption>
+</figure>
+<p>/var/log/snort 目录下也生成了相应的日志文件。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133022.jpg"
+alt="连续log" />
+<figcaption aria-hidden="true">连续log</figcaption>
+</figure></li>
+<li><p><strong>文件处理模式，处理单个日志文件</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo barnyard2 -c /etc/snort/barnyard2.conf -o /var/log/snort/snort.u2.1588583079</span><br></pre></td></tr></table></figure></p>
+<p>这里选择其中一个日志文件进行处理，同样可以看到刚才的记录。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133024.jpg"
+alt="单个" />
+<figcaption aria-hidden="true">单个</figcaption>
+</figure></li>
+</ul>
+<p>再查看一下数据库条目数量，有所增加。</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u snort -p -D snort -e &quot;select count(*) from event&quot;</span><br></pre></td></tr></table></figure></p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133025.jpg"
+alt="mysql数量" />
+<figcaption aria-hidden="true">mysql数量</figcaption>
+</figure></li>
+</ol>
+<h2 id="安装-base">安装 BASE</h2>
+<ol type="1">
+<li><p><strong>安装 ADOdb</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo tar zxvf adodb-5.20.14.tar.gz -C /var/www/html</span><br><span class="line">sudo mv /var/www/html/adodb5 /var/www/html/adodb</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>安装 BASE</strong></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo tar zxvf base-1.4.5.tar.gz -C /var/www/html</span><br><span class="line">sudo mv /var/www/html/base-1.4.5 /var/www/html/base</span><br><span class="line">sudo /etc/init.d/apache2 restart</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>配置</strong></p>
+<p>修改 /etc/php/5.6/apache2/php.ini 。</p>
+<p><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">error_reporting</span> = E_ALL &amp; ~E_NOTICE</span><br></pre></td></tr></table></figure></p>
+<p>重启 Apache 使配置生效。</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /etc/init.d/apache2 restart</span><br></pre></td></tr></table></figure></p>
+<p>设置目录权限。</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chown -R root:root /var/www/html</span><br><span class="line">chmod 755 /var/www/html/adodb</span><br></pre></td></tr></table></figure></p>
+<p>打开 http://localhost/base/setup/index.php 。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133027.jpg"
+alt="index" />
+<figcaption aria-hidden="true">index</figcaption>
+</figure>
+<p>设置页面中，最好每一项都为绿色，表示通过。这里显示 Web 服务器对 BASE
+的安装目录不可写。按照提示，可以在设置完成后创建 base_conf.php。</p>
+<p>现在点击 Continue，跟着导引一步步完成设置。</p>
+<p><strong>第 1 步：</strong>选择语言 simplified_chinese ，填写 ADOdb
+所在目录 /var/www/html/adodb 。</p>
+<p><strong>第 2
+步：</strong>填入数据库的信息，按之前配置的信息填即可（Archive
+数据库的信息可以不填）。</p>
+<p><strong>第 3 步：</strong>填入管理账号：snort，密码：123456。</p>
+<p><strong>第 4 步：</strong>创建数据表。</p>
+<p><strong>第 5 步：</strong>提示将显示的信息复制到
+/var/www/html/base/base_conf.php 中。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133030.jpg"
+alt="BASE" />
+<figcaption aria-hidden="true">BASE</figcaption>
+</figure>
+<p>完成设置后，显示以上页面，代表 BASE 安装成功，可以看到 MySQL
+中的数据。</p></li>
+</ol>
+<h2 id="使用-snort">使用 Snort</h2>
+<p>Snort 有三种工作模式：Sniffer、Packet Logger 和 Network Intrusion
+Detection System 。</p>
+<ol type="1">
+<li><p><strong>Sniffer
+模式只是简单地从网络上抓取数据包并在终端显示出来。</strong></p>
+<p>如果只是想在屏幕上打印出 IP 和 TCP/UDP/ICMP 包的头信息，可以用：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snort -v</span><br></pre></td></tr></table></figure></p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133032.jpg"
+alt="sniffer" />
+<figcaption aria-hidden="true">sniffer</figcaption>
+</figure></li>
+<li><p><strong>Packet Logger 模式可把数据包保存在磁盘中。</strong></p>
+<p>如果想把数据包信息存在磁盘上，就要用 Packet Logger Mode
+。用以下命令可使 Snort 自动把数据包信息存到磁盘中：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snort -vde -l log_directory</span><br></pre></td></tr></table></figure></p>
+<p>当 Snort 运行在该模式下时，它会把所有抓取的数据包按 IP 分类地存放到
+log_directory 中。可用 -h 指定本地网络，以使 Snort
+记录与本地网络相关的数据包：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snort -vde -l log_directory -h 192.168.1.0/24</span><br></pre></td></tr></table></figure></p>
+<p>如果在一个高速网络中，或者想记录数据包以备分析，可以以二进制方式记录数据包，在这里不用指定
+-vde，因为二进制方式将记录整个包的信息。如：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snort -l log_directory -b</span><br></pre></td></tr></table></figure></p>
+<p>二进制模式把数据包存成 tcpdump
+格式，使用如下命令将二进制文件中的信息打印到屏幕上：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snort -dv -r snort.log</span><br></pre></td></tr></table></figure></p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133033.jpg"
+alt="packet_logger" />
+<figcaption aria-hidden="true">packet_logger</figcaption>
+</figure></li>
+<li><p><strong>Network Intrusion Detection
+模式最复杂，具有高可配置性。它可使 Snort
+根据用户定义的规则分析网络流量，并作出反应。</strong></p>
+<p>用以下命令开启 NIDS 模式：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snort -dev -l log_directory -h 192.168.1.0/24 -c snort.conf</span><br></pre></td></tr></table></figure></p>
+<p>snort.conf 是规则集配置文件。在 log_directory 目录下会生成 alter
+日志，记录入侵检测的警报信息。</p>
+<p>执行命令后，会有一系列的初始化信息。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133034.jpg"
+alt="初始化" />
+<figcaption aria-hidden="true">初始化</figcaption>
+</figure>
+<p>初始化成功。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133035.jpg"
+alt="初始化成功" />
+<figcaption aria-hidden="true">初始化成功</figcaption>
+</figure>
+<p>之后也会打印出包信息。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-133037.jpg"
+alt="包信息" />
+<figcaption aria-hidden="true">包信息</figcaption>
+</figure></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Yuheng Ding WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Yuheng Ding Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Network/" rel="tag"># Network</a>
+              <a href="/tags/Security/" rel="tag"># Security</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/04/28/cpp-primer-plus/" rel="prev" title="[Note] C++ Primer Plus">
+                  <i class="fa fa-chevron-left"></i> [Note] C++ Primer Plus
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/05/15/image-edge-detection/" rel="next" title="高通滤波法、微分算子法、神经网络方法实现图像边缘检测">
+                  高通滤波法、微分算子法、神经网络方法实现图像边缘检测 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yuheng Ding</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Symbols count total: </span>
+    <span title="Symbols count total">370k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>Reading time total &asymp;</span>
+    <span title="Reading time total">5:37</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"timdyh","repo":"gitalk-comments","client_id":"0babcb65af364dd08a90","client_secret":"22090e837380d49040a73f2ed1db4f9541b29379","admin_user":"timdyh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"f57d70a531edc5e579191efe88e429cb"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

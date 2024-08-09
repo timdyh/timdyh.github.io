@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="null//null" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="x_9IHIiVX0aZQfKSCtN7gy8_1UhN7guVmZAmA4gv1EE">
+  <meta name="msvalidate.01" content="AC8F448726B8A8742C6DFFA7640E7DBF">
+  <meta name="baidu-site-verification" content="code-2qEdijyCxz">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="第 2 章 编译和链接 被隐藏了的过程  使用 GCC 编译 Hello World 程序 gcc hello.c，可以分解为 4 个步骤，分别是预处理（Preprocessing）、编译（Compilation）、汇编（Assembly）和链接（Linking）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Note] 程序员的自我修养——第 2 部分 静态链接">
+<meta property="og:url" content="http://example.com/2022/04/07/programmers-self-cultivation-part-2/index.html">
+<meta property="og:site_name" content="TimDyh">
+<meta property="og:description" content="第 2 章 编译和链接 被隐藏了的过程  使用 GCC 编译 Hello World 程序 gcc hello.c，可以分解为 4 个步骤，分别是预处理（Preprocessing）、编译（Compilation）、汇编（Assembly）和链接（Linking）">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150749.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150746.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150747.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150750.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150751.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150748.jpg">
+<meta property="article:published_time" content="2022-04-07T12:12:50.000Z">
+<meta property="article:modified_time" content="2022-12-16T14:55:52.581Z">
+<meta property="article:author" content="Yuheng Ding">
+<meta property="article:tag" content="OS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150749.jpg">
+
+
+<link rel="canonical" href="http://example.com/2022/04/07/programmers-self-cultivation-part-2/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/04/07/programmers-self-cultivation-part-2/","path":"2022/04/07/programmers-self-cultivation-part-2/","title":"[Note] 程序员的自我修养——第 2 部分 静态链接"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[Note] 程序员的自我修养——第 2 部分 静态链接 | TimDyh</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">TimDyh</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC-2-%E7%AB%A0-%E7%BC%96%E8%AF%91%E5%92%8C%E9%93%BE%E6%8E%A5"><span class="nav-number">1.</span> <span class="nav-text">第 2 章 编译和链接</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A2%AB%E9%9A%90%E8%97%8F%E4%BA%86%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-number">1.1.</span> <span class="nav-text">被隐藏了的过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%99%A8%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88"><span class="nav-number">1.2.</span> <span class="nav-text">编译器做了什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%93%BE%E6%8E%A5%E7%9A%84%E5%8E%86%E5%8F%B2"><span class="nav-number">1.3.</span> <span class="nav-text">链接的历史</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%E6%8B%BC%E6%8E%A5%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5"><span class="nav-number">1.4.</span> <span class="nav-text">模块拼接——静态链接</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC-3-%E7%AB%A0-%E7%9B%AE%E6%A0%87%E6%96%87%E4%BB%B6%E9%87%8C%E6%9C%89%E4%BB%80%E4%B9%88"><span class="nav-number">2.</span> <span class="nav-text">第 3 章 目标文件里有什么</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E6%96%87%E4%BB%B6%E7%9A%84%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.1.</span> <span class="nav-text">目标文件的格式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E6%96%87%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88%E6%A0%B7%E7%9A%84"><span class="nav-number">2.2.</span> <span class="nav-text">目标文件是什么样的</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8C%96%E6%8E%98-simplesection.o"><span class="nav-number">2.3.</span> <span class="nav-text">挖掘 SimpleSection.o</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#elf-%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E6%8F%8F%E8%BF%B0"><span class="nav-number">2.4.</span> <span class="nav-text">ELF 文件结构描述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%93%BE%E6%8E%A5%E7%9A%84%E6%8E%A5%E5%8F%A3%E7%AC%A6%E5%8F%B7"><span class="nav-number">2.5.</span> <span class="nav-text">链接的接口——符号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E4%BF%A1%E6%81%AF"><span class="nav-number">2.6.</span> <span class="nav-text">调试信息</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC-4-%E7%AB%A0-%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">第 4 章 静态链接</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A9%BA%E9%97%B4%E4%B8%8E%E5%9C%B0%E5%9D%80%E5%88%86%E9%85%8D"><span class="nav-number">3.1.</span> <span class="nav-text">空间与地址分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%A6%E5%8F%B7%E8%A7%A3%E6%9E%90%E4%B8%8E%E9%87%8D%E5%AE%9A%E4%BD%8D"><span class="nav-number">3.2.</span> <span class="nav-text">符号解析与重定位</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#common-%E5%9D%97"><span class="nav-number">3.3.</span> <span class="nav-text">COMMON 块</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#c-%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98"><span class="nav-number">3.4.</span> <span class="nav-text">C++ 相关问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E5%BA%93%E9%93%BE%E6%8E%A5"><span class="nav-number">3.5.</span> <span class="nav-text">静态库链接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%93%BE%E6%8E%A5%E8%BF%87%E7%A8%8B%E6%8E%A7%E5%88%B6"><span class="nav-number">3.6.</span> <span class="nav-text">链接过程控制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#bfd-%E5%BA%93"><span class="nav-number">3.7.</span> <span class="nav-text">BFD 库</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC-5-%E7%AB%A0-windows-pecoff"><span class="nav-number">4.</span> <span class="nav-text">第 5 章 Windows PE&#x2F;COFF</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#windows-%E7%9A%84%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F-pecoff"><span class="nav-number">4.1.</span> <span class="nav-text">Windows 的二进制文件格式
+PE&#x2F;COFF</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pe-%E7%9A%84%E5%89%8D%E8%BA%ABcoff"><span class="nav-number">4.2.</span> <span class="nav-text">PE 的前身——COFF</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#elf-%E6%96%87%E4%BB%B6%E4%B8%AD%E4%B8%8D%E5%AD%98%E5%9C%A8%E7%9A%84%E6%AE%B5"><span class="nav-number">4.3.</span> <span class="nav-text">ELF 文件中不存在的段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#windows-%E4%B8%8B%E7%9A%84-elfpe"><span class="nav-number">4.4.</span> <span class="nav-text">Windows 下的 ELF——PE</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yuheng Ding"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Yuheng Ding</p>
+  <div class="site-description" itemprop="description">Per aspera, ad astra.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/timdyh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dyh0701@gmail.com" title="E-Mail → mailto:dyh0701@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/tim_dyh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;tim_dyh" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/timdyh" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/07/programmers-self-cultivation-part-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[Note] 程序员的自我修养——第 2 部分 静态链接 | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [Note] 程序员的自我修养——第 2 部分 静态链接
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-04-07 20:12:50" itemprop="dateCreated datePublished" datetime="2022-04-07T20:12:50+08:00">2022-04-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Note/" itemprop="url" rel="index"><span itemprop="name">Note</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>14k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>13 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="第-2-章-编译和链接">第 2 章 编译和链接</h3>
+<h4 id="被隐藏了的过程">被隐藏了的过程</h4>
+<ul>
+<li><p>使用 GCC 编译 Hello World 程序
+<code>gcc hello.c</code>，可以分解为 4
+个步骤，分别是预处理（Preprocessing）、编译（Compilation）、汇编（Assembly）和链接（Linking）</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150749.jpg" style="zoom: 50%;" /></p>
+<p><span id="more"></span></p></li>
+<li><p><strong>预编译</strong></p>
+<ul>
+<li><p>源代码文件 hello.c 和相关的头文件（如 stdio.h 等）被预编译器 cpp
+预编译成一个 .i 文件</p></li>
+<li><p>第一步预编译的过程相当于如下命令（-E 表示只进行预编译）：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -E hello.c -o hello.i</span><br></pre></td></tr></table></figure></p>
+<p>或者：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cpp hello.c &gt; hello.i</span><br></pre></td></tr></table></figure></p></li>
+<li><p>预编译过程主要处理那些源代码文件中的以 <code>#</code>
+开始的预编译指令，主要处理规则如下：</p>
+<ul>
+<li>将所有的 <code>#define</code> 删除，并且展开所有的宏定义</li>
+<li>处理所有条件预编译指令，比如
+<code>#if</code>、<code>#ifdef</code>、<code>#elif</code>、<code>#else</code>、<code>#endif</code></li>
+<li>处理 <code>#include</code>
+预编译指令，将被包含的文件插入到该预编译指令的位置，这个过程是递归进行的</li>
+<li>删除所有的注释 <code>//</code> 和 <code>/* */</code></li>
+<li>添加行号和文件名标识，比如 #2 “hello.c”
+2，以便于编译时编译器产生调试用的行号信息，及用于编译时产生编译错误或警告时能够显示行号</li>
+<li>保留所有的 <code>#pragma</code>
+编译器指令，因为编译器须要使用它们</li>
+</ul></li>
+<li><p>经过预编译后的 .i
+文件不包含任何宏定义，并且包含的文件也己经被插入到 .i 文件中</p></li>
+<li><p>无法判断宏定义是否正确或头文件包含是否正确时，可以查看预编译后的文件来确定问题</p></li>
+</ul></li>
+<li><p><strong>编译</strong></p>
+<ul>
+<li><p>把预处理完的文件进行一系列词法分析、语法分析、语义分析及优化后生产相应的汇编代码文件</p></li>
+<li><p>编译过程相当于如下命令：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -S hello.i -o hello.s</span><br></pre></td></tr></table></figure></p></li>
+<li><p>现在版本的 GCC 使用一个叫做 cc1
+的程序，把预编译和编译两个步骤合并成一个步骤：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -S hello.c -o hello.s</span><br></pre></td></tr></table></figure></p>
+<p>可以直接调用 cc1：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/lib/gcc/i486-linux-gnu/4.1/cc1 hello.c</span><br></pre></td></tr></table></figure></p></li>
+<li><p>对于 C 语言，这个预编译和编译的程序是 cc1；对于 C++，对应的程序是
+cc1plus；Objective-C 是 cc1obj；fortran 是 f771；Java 是 jc1。gcc
+这个命令只是这些后台程序的包装，它会根据不同的参数要求去调用预编译编译程序
+cc1、汇编器 as、 链接器 ld</p></li>
+</ul></li>
+<li><p><strong>汇编</strong></p>
+<ul>
+<li><p>将汇编代码转变成机器可以执行的指令，每一个汇编语句几乎都对应一条机器指令</p></li>
+<li><p>汇编过程可以调用汇编器 as 来完成：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">as hello.s -o hello.o</span><br></pre></td></tr></table></figure></p>
+<p>或者：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -c hello.s -o hello.o</span><br></pre></td></tr></table></figure></p>
+<p>或者使用 gcc 命令从 C
+源代码文件开始，经过预编译、编译和汇编直接输出目标文件（Object
+File）：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -c hello.c -o hello.o</span><br></pre></td></tr></table></figure></p></li>
+</ul></li>
+<li><p><strong>链接</strong></p>
+<ul>
+<li><p>怎样调用 ld 才可以产生一个能够正常运行的 HelloWorld 程序：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ld -static /usr/lib/crt1.o /usr/lib/crti.o /usr/lib/gcc/i486-linux-gnu/4.1.3/crtbeginT.o -L /usr/lib/gcc/i486-linux-gnu/4.1.3 -L /usr/lib -L /lib hello.o --start-group -lgcc -lgcc_eh -lc --end-group /usr/lib/gcc/i486-linux-gnu/4.1.3/crtend.o /usr/lib/crtn.o</span><br></pre></td></tr></table></figure></p></li>
+</ul></li>
+</ul>
+<h4 id="编译器做了什么">编译器做了什么</h4>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150746.jpg" style="zoom: 50%;" /></p>
+<ul>
+<li>编译过程一般可以分为 6
+步：扫描、语法分析、语义分析、源代码优化、代码生成和目标代码优化</li>
+<li><strong>词法分析</strong>
+<ul>
+<li>首先源代码程序被输入到扫描器（Scanner）进行词法分析，运用一种类似于有限状态机（Finite
+State Machine）的算法将源代码的字符序列分割成一系列的记号（Token）</li>
+<li>词法分析产生的记号一般可以分为：关键字、标识符、字面量（包含数字、字符串等）和特殊符号（如加号、等号）</li>
+<li>同时，将标识符存放到符号表，将数字、字符串常量存放到文字表等，以备后面的步骤使用</li>
+<li>lex
+程序按照用户描述好的词法进行扫描，由此编译器的开发者无须为每个编译器开发一个独立的词法扫描器，只需改变词法规则即可</li>
+</ul></li>
+<li><strong>语法分析</strong>
+<ul>
+<li>接下来语法分析器（Grammar
+Parser）将对由扫描器产生的记号进行语法分析，采用上下文无关语法（Context-free
+Grarmar）的分析手段，生成语法树（Syntax
+Tree），即以表达式（Expression）为节点的树</li>
+<li>在语法分析的同时，很多运算符号的优先级和含义也被确定下来。如果出现了表达式不合法，编译器就会报告语法分析阶段的错误</li>
+<li>类似 lex，yacc ( Yet Another Compiler
+Compiler）根据用户给定的语法规则对输入的记号序列进行解析，从而构建出一棵语法树。对于不同的编程语言，编译器的开发者只须改变语法规则，而无须为每个编译器编写一个语法分析器</li>
+</ul></li>
+<li><strong>语义分析</strong>
+<ul>
+<li>由语以分析器（Semantic Analyzer）完成，分析的是静态语义（Static
+Semantic），通常包括声明和类型的匹配，类型的转换</li>
+<li>经过语义分析后，整个语法树的表达式都被标识了类型，如果有些类型需要做隐式转换，会在语法树中插入相应的转换节点</li>
+<li>语义分析器还对符号表里的符号类型也做了更新</li>
+</ul></li>
+<li><strong>中间语言生成</strong>
+<ul>
+<li>源码级优化器（Source Code
+Optimizer）往往将整个语法树转换成中间代码（Intermediate
+Code），它是语法树的顺序表示，非常接近目标代码，但一般跟目标机器和运行时环境无关</li>
+<li>比较常见的中间代码类型：三地址码（Three-address Code）和
+P-代码（P-Code）</li>
+<li>中间代码使得编译器可以被分为前端和后端，前端负责产生机器无关的中间代码，后端将中间代码转换成目标机器代码</li>
+<li>对于一些可以跨平台的编译器而言，它们可以针对不同的平台使用同一个前端和针对不同机器平台的数个后端</li>
+</ul></li>
+<li><strong>目标代码生成与优化</strong>
+<ul>
+<li>中间代码之后的过程都属于编译器后端，主要包括代码生成器（Code
+Generator）和目标代码优化器（Target Code Optimizer）</li>
+<li>代码生成器将中间代码转换成目标机器代码，这个过程十分依赖于目标机器</li>
+<li>目标代码优化器对目标代码进行优化，比如选择合适的寻址方式、使用位移来代替乘法运算、删除多余的指令等</li>
+</ul></li>
+</ul>
+<h4 id="链接的历史">链接的历史</h4>
+<ul>
+<li>定义其他模块的全局变量和函数在最终运行时的绝对地址都要在最终链接的时候才能确定</li>
+<li>由于程序被修改，重新计算各个目标的地址过程被叫做重定位（Relocation）</li>
+<li>汇编语言使用接近人类的各种符号和标记来帮助记忆，使用符号来标记位置，使得人们从具体的指令地址中逐步解放出来</li>
+<li>汇编器在每次汇编程序的时候会重新计算符号（Symbol）地址，然后把所有引用到该符号的指令修正到正确的地址</li>
+<li>一个程序被分割成多个模块，模块间依靠符号来通信（函数调用、变量访问），模块的拼接过程就是链接</li>
+</ul>
+<h4 id="模块拼接静态链接">模块拼接——静态链接</h4>
+<ul>
+<li>链接的主要内容就是把各个模块之间相互引用的部分都处理好，使得各个模块之间能够正确地衔接</li>
+<li>链接器的工作就是把一些指令对其他符号地址的引用加以修正</li>
+<li>链接过程主要包括地址和空间分配（Address and Storage
+Allocation)、符号决议（Symbol Resolution）和重定位（Relocation）等</li>
+<li>地址修正的过程也被叫做重定位，每个要被修正的地方叫一个重定位入口（Relocation
+Entry），重定位所做的就是给程序中每个绝对地址引用的位置“打补丁”，使它们指向正确的地址</li>
+<li>每个模块的源代码文件文件经过编译器编译成目标文件，目标文件和库（Library）一起链接形成最终可执行文件</li>
+<li>库是一组目标文件的包，最常见的库就是运行时库（Runtime
+Library），它是支持程序运行的基本函数的集合</li>
+</ul>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150747.jpg" style="zoom: 50%;" /></p>
+<h3 id="第-3-章-目标文件里有什么">第 3 章 目标文件里有什么</h3>
+<h4 id="目标文件的格式">目标文件的格式</h4>
+<ul>
+<li>现在 PC 平台流行的可执行文件格式主要是 Windows 下的 PE（Portable
+Executable）和 Linux 的 ELF（Executable Linkable Format），它们都是 COFF
+(Common file format）格式的变种</li>
+<li>目标文件就是源代码编译后但未进行链接的那些中间文件（Windows 的.obj
+和 Linux 的
+.o），它跟可执行文件的内容与结构很相似，所以一般跟可执行文件格式一起采用一种格式存储</li>
+<li>可执行文件（Windows 的.exe 和 Linux 下的 ELF
+可执行文件）、动态链接库（DLL，Dynamic Linking Library，Windows 的 .dll
+和 Linux 的 .so）及静态链接库（Static Linking Library，Windows 的 .lib
+和 Linux 的 .a）文件都按照可执行文件格式存储</li>
+<li>静态链接库稍有不同，它把很多目标文件捆绑在一起形成一个文件，再加上一些索引</li>
+<li>ELF 格式的文件可归为 4 类：</li>
+</ul>
+<table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 45%" />
+<col style="width: 28%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>ELF 文件类型</th>
+<th>说明</th>
+<th>实例</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>可重定位文件<br/>Relocatable File</td>
+<td>包含代码和数据，可以被用来链接成可执行文件或共享目标文件，静态链接库也可归为此类</td>
+<td>Linux 的 .o<br/>Windows 的 .obj</td>
+</tr>
+<tr class="even">
+<td>可执行文件<br/>Executable File</td>
+<td>包含可以直接执行的程序，它的代表就是 ELF
+可执行文件，一般都没有扩展名</td>
+<td>如 /bin/bash 文件<br/>Windows 的 .exe</td>
+</tr>
+<tr class="odd">
+<td>共享目标文件<br/>Shared Object File</td>
+<td>包含代码和数据，可以在两种情况下使用：(1)
+链接器可以使用这种文件跟其他的可重定位文件和共享目标文件链接，产生新的目标文件；(2)
+动态链接器可以将几个这种共享目标文件与可执行文件结合，作为进程映像的一部分来运行</td>
+<td>Linux 的 .so<br/>Windows 的 DLL</td>
+</tr>
+<tr class="even">
+<td>核心转储文件<br/>Core Dump File</td>
+<td>当进程意外终止时，系统可以将该进程的地址空间的内容及终止时的一些其他信息转储到核心转储文件</td>
+<td>Linux 下的 core dump</td>
+</tr>
+</tbody>
+</table>
+<h4 id="目标文件是什么样的">目标文件是什么样的</h4>
+<ul>
+<li>目标文件中包括编译后的机器指令代码、数据，以及链接时所须要的一些信息，比如符号表、调试信息、字符串等</li>
+<li>一般目标文件将这些信息按不同的属性，以“节”（Section）的形式存储，有时候也叫“段”（Segment）</li>
+<li>ELF
+文件的开头是一个“文件头”，它描述了整个文件的属性，包括文件是否可执行、是静态链接还是动态链接及入口地址（如果是可执行文件)、目标硬件、目标操作系统等信息，此外还包括一个段表（Section
+Table），描述各个段在文件中的偏移位置及段的属性等</li>
+<li>一般 C 语言编译后的机器代码保存在 .text
+段，已初始化的全局变量和局部静态变量都保存在 .data
+段，未初始化的全局变量和局部静态变量放在 .bss 段</li>
+<li>.bss
+段记录所有未初始化的全局变量和局部静态变量的大小总和，只是为其预留位置，并没有内容，所以在文件中也不占据空间（但程序运行时要占内存空间）</li>
+<li>数据和指令分段存放的好处有：
+<ul>
+<li>数据区域可读写，而指令区域只读，二者分别设置权限可以防止程序的指令被有意或无意地改写</li>
+<li>现代 CPU
+的缓存一般都被设计成数据缓存和指令缓存分离，分开存放有利于提高程序的局部性，提高
+CPU 缓存命中率</li>
+<li>当系统中运行着多个该程序的副本时，可以共享指令部分以及其他只读数据，在有动态链接的系统中，可以节省大量内存；而每个副本的数据区域是不一样的，为进程所私有</li>
+</ul></li>
+</ul>
+<h4 id="挖掘-simplesection.o">挖掘 SimpleSection.o</h4>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -c SimpleSection.c</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>binutils 的工具 objdump
+可以用来查看各种目标文件的结构和内容，可被移植到各种平台上；Linux 下的
+readelf 是专门针对 ELF 文件格式的解析器</p></li>
+<li><p>除了最基本的代码段、数据段和 BSS 段以外，还有 3
+个段分别是只读数据段（.rodata）、注释信息段（.comment）和堆栈提示段（.note.GNU-stack）</p></li>
+<li><p>打印各个段的基本信息及更多信息：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">objdump -h SimpleSection.o</span><br><span class="line">objdump -x SimpleSection.o</span><br></pre></td></tr></table></figure></p></li>
+<li><p>查看代码段、数据段和 BSS 段的长度（dec 表示 3
+个段长度的和的十进制，hex 表示长度和的十六进制）：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">size SimpleSection.o</span><br></pre></td></tr></table></figure></p></li>
+<li><p>objdump 的 <code>-s</code>
+参数可以将所有段的内容以十六进制的方式打印出来，<code>-d</code>
+参数可以将所有包含指令的段反汇编：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">objdump -s -d SimpleSection.o</span><br></pre></td></tr></table></figure></p></li>
+<li><p>.rodata 段存放只读数据，包括只读变量（如 const
+修饰的变量）和字符串常量，单独设立 .rodata 段的好处：</p>
+<ul>
+<li><p>在语义上支持了 C++的 const 关键字</p></li>
+<li><p>操作系统在加载的时候可以将 .rodata
+段的属性映射成只读，任何修改操作都会作为非法操作处理，保证程序的安全性</p></li>
+<li><p>在某些嵌入式平台下，有些存储区域采用只读存储器（如 ROM），将
+.rodata 段放在该存储区域中可以保证访问正确的存储器</p></li>
+</ul></li>
+<li><p>有时候编译器会把字符串常量放到 .data 段，而不会单独放在 .rodata
+段</p></li>
+<li><p>有些编译器会将全局的未初始化变量存放在目标文件 .bss
+段，有些则不存放，只是预留一个未定义的 COMMON
+符号，等到最终链接成可执行文件的时候再在 .bss
+段分配空间；而编译单元内部可见的静态变量（带有 static 修饰）的确是存放在
+.bss 段的</p></li>
+<li><p>初值为 0 的静态变量可以认为是未初始化的，会被编译器优化放在 .bss
+段，从而节省磁盘空间，因为 .bss 不占磁盘空间</p></li>
+<li><p>其他段：</p>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>常用的段名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>.rodata1</td>
+<td>Read only Data，存放只读数据，比如宇符串常量、全局 const变量，跟
+.rodata 一样</td>
+</tr>
+<tr class="even">
+<td>.comment</td>
+<td>存放编译器版本信息，比如字符串：“GCC:(GNU) 4.2.0”</td>
+</tr>
+<tr class="odd">
+<td>.debug</td>
+<td>调试信息</td>
+</tr>
+<tr class="even">
+<td>.dynamic</td>
+<td>动态链接信息</td>
+</tr>
+<tr class="odd">
+<td>.hash</td>
+<td>符号哈希表</td>
+</tr>
+<tr class="even">
+<td>.line</td>
+<td>调试时的行号表，即源代码行号与编译后指令的对应表</td>
+</tr>
+<tr class="odd">
+<td>.note</td>
+<td>额外的编译器信息，比如程序的公司名、发布版本号等</td>
+</tr>
+<tr class="even">
+<td>.strtab</td>
+<td>String Table，字符串表，用于存储 ELF 文件中用到的各种字符串</td>
+</tr>
+<tr class="odd">
+<td>.symtab</td>
+<td>Symbol Table，符号表</td>
+</tr>
+<tr class="even">
+<td>.shstrtab</td>
+<td>Section String Table，段名表</td>
+</tr>
+<tr class="odd">
+<td>.plt<br/>.got</td>
+<td>动态链接的跳转表和全局入口表</td>
+</tr>
+<tr class="even">
+<td>.init<br/>.fini</td>
+<td>程序初始化与终结代码段</td>
+</tr>
+</tbody>
+</table></li>
+<li><p>系统保留的段都以“.”作为前缀，应用程序也可以使用一些非系统保留的名字作为段名，但是不能使用“.”作为前缀</p></li>
+<li><p>一个 ELF 文件可以拥有几个相同段名的段</p></li>
+<li><p>可以使用 objcopy 工具将一个二进制文件（比如图片、MP3
+音乐、词典等）作为目标文件中的一个段：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">objcopy -I binary -O elf32-i386 -B i386 image.jpg image.o</span><br><span class="line">objdump -ht image.o</span><br></pre></td></tr></table></figure></p></li>
+<li><p>GCC
+提供了一个扩展机制，使得程序员可以指定变量或函数所处的段：</p>
+<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">__attribute__((<span class="built_in">section</span>(<span class="string">&quot;FOO&quot;</span>))) <span class="type">int</span> global = <span class="number">42</span>;</span><br><span class="line">__attribute__((<span class="built_in">section</span>(<span class="string">&quot;BAR&quot;</span>))) <span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">()</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure></p></li>
+</ul>
+<h4 id="elf-文件结构描述">ELF 文件结构描述</h4>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150750.jpg" style="zoom:50%;" /></p>
+<ul>
+<li><p>用 readelf 命令来详细查看 ELF 文件头：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">readelf -h SimpleSection.o</span><br></pre></td></tr></table></figure></p></li>
+<li><p>ELF 的文件头中定义了 ELF
+魔数、文件机器字节长度、数据存储方式、版本、运行平台、ABI 版本、ELF
+重定位类型、硬件平台、硬件平台版本、入口地址、程序头入口和长度、段表的位置和长度及段的数量等</p></li>
+<li><p>入口地址规定 ELF
+程序的入口虚拟地址，操作系统在加载完该程序后从这个地址开始执行进程的指令；可重定位文件一般没有入口地址，则这个值为
+0</p></li>
+<li><p>ELF 最前面 16 字节用来标识平台属性，如字长（32/64
+位）、字节序、ELF 文件版本，其中前 4 字节是所有 ELF
+文件都必须相同的标识码（0x7F, 0x45, 0x4c,
+0x46），称为魔数，用来确认文件的类型，操作系统在加载可执行文件时会确认魔数是否正确</p></li>
+<li><p>段表（Section Header Table）描述了 ELF
+各个段的信息，比如段名、长度、偏移、读写权限及其他属性；编译器、链接器和装载器依靠段表来定位和访问各个段的属性</p></li>
+<li><p><code>objdump -h</code>
+命令只显示关键的段，省略了其他辅助性的段；可以使用 readelf
+工具来查看真正的段表结构：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">readelf -S SimpleSection.o</span><br></pre></td></tr></table></figure></p></li>
+<li><p>链接器在处理目标文件时，需要对代码段和数据段中对绝对地址引用的位置进行重定位，这些重定位信息都记录在重定位表里，对于每个需要重定位的代码段或数据段，都会有一个相应的重定位表，比如
+.rel.text 就是针对 .text 段的重定位表</p></li>
+<li><p>ELF
+将字符串集中起来存放到一个表，使用字符串在表中的偏移来引用，常见的段名为；</p>
+<ul>
+<li>.strtab：字符串表（String
+Table），用来保存普通的字符串，如符号的名字</li>
+<li>.shstrtab：段表字符串表（Section Header String
+Table），用来保存段表中用到的字符串，最常见的就是段名</li>
+</ul></li>
+</ul>
+<h4 id="链接的接口符号">链接的接口——符号</h4>
+<ul>
+<li><p>函数和变量统称为符号（Symbol），函数名或变量名就是符号名（Symbol
+Name）</p></li>
+<li><p>每一个目标文件都会有一个符号表（Symbol
+Table），每个定义的符号有一个对应的符号值（Symbol
+Value），对于变量和函数，符号值就是它们的地址；除此之外，还存在其他几种不常用到的符号：</p>
+<ul>
+<li>定义在本目标文件的全局符号，可以被其他目标文件引用</li>
+<li>在本目标文件中引用的全局符号，却没有定义在本目标文件，一般叫做外部符号（External
+Symbol）</li>
+<li>段名，往往由编译器产生，它的值就是该段的起始地址</li>
+<li>局部符号，只在编译单元内部可见，对于链接过程没有作用，链接器往往也忽略它们；调试器可以使用这些符号来分析程序或崩溃时的核心转储文件</li>
+<li>行号信息，即目标文件指令与源代码中代码行的对应关系（可选）</li>
+</ul></li>
+<li><p>可以使用 readelf、 objdump、nm 等工具来查看 ELF
+文件的符号表：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nm SimpleSection.o</span><br><span class="line">readelf -s SimpleSection.o</span><br></pre></td></tr></table></figure></p></li>
+<li><p>符号表主要包括：</p>
+<ul>
+<li>符号名，包含了该符号名在字符串表中的下标</li>
+<li>符号相对应的值
+<ul>
+<li>在目标文件中，如果是符号的定义并且该符号不是“COMMON
+块”类型的，则表示该符号在段中的偏移</li>
+<li>在目标文件中，如果符号是“COMMON
+块”类型的，则表示该符号的对齐属性</li>
+<li>在可执行文件中，表示符号的虚拟地址，对于动态链接器来说十分有用</li>
+</ul></li>
+<li>符号大小，对于包含数据的符号，这个值是该数据类型的大小；如果该值为
+0，则表示该符号大小为 0 或未知</li>
+<li>符号类型（数据对象、函数、段、文件名）和绑定信息（局部符号、全局符号、弱引用）</li>
+<li>符号所在段，如果定义在本目标文件中，则表示符号所在的段在段表中的下标，否则表示：
+<ul>
+<li>文件名符号</li>
+<li>COMMON 块类型的符号（未初始化的全局符号定义）</li>
+<li>未定义，表示该符号在本目标文件被引用到，但是定义在其他目标文件中</li>
+</ul></li>
+</ul></li>
+<li><p>ld
+链接器在链接生产可执行文件时会定义很多特殊符号，这些符号并没有在程序中定义，但是可以直接声明并且引用，链接器会在将程序最终链接成可执行文件的时候将其解析成正确的值。几个具有代表性的特殊符号：</p>
+<ul>
+<li><code>__executable_start</code>：程序起始地址，注意不是入口地址，是程序最开始的地址</li>
+<li><code>__etext</code> 或 <code>_etext</code> 或
+<code>etext</code>：代码段结束地址，即代码段最末尾的地址</li>
+<li><code>_edata</code> 或
+<code>edata</code>：数据段结束地址，即数据段最末尾的地址</li>
+<li><code>_end</code> 或 <code>end</code>：程序结束地址</li>
+</ul>
+<blockquote>
+<p>以上地址都为程序被装载时的虚拟地址</p>
+</blockquote></li>
+<li><p>C++ 通过符号修饰（Name Decoration）或符号改编（Name
+Mangling）机制来区分重载的函数名</p></li>
+<li><p>函数签名（Function
+Signature）包含函数名、参数类型、所在的类和名称空间及其他信息，编译器及链接器处理符号时使用某种名称修饰的方法，使得每个函数签名对应一个修饰后名称（Decorated
+Name）</p></li>
+<li><p>GCC 的基本 C++ 名称修饰方法：所有的符号都以 <code>_Z</code>
+开头，对于嵌套的名字（在名称空间或在类里面的），后面紧跟
+<code>N</code>，然后是各个名称空间和类的名字，每个名字前是名字字符串长度，再以
+<code>E</code> 结尾。对于函数，它的参数列表紧跟在 <code>E</code>
+后面；对于变量，其类型并没有被加入到修饰后名称中</p></li>
+<li><p>binutils 里面提供了一个叫 c++filt
+的工具用来解析被修饰过的名称：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">c++filt _ZN1N1C4funcEi</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">N::C::func(int)</span></span><br></pre></td></tr></table></figure></p></li>
+<li><p>Microsoft 提供了一个 <code>UnDecorateSymbolName()</code> 的
+API，可以将修饰后名称转换成函数签名</p></li>
+<li><p>C++ 编译器会将在 <code>extern "C"</code> 的大括号内的代码当作 C
+语言代码处理，因此 C++ 的名称修饰机制将不会起作用</p></li>
+<li><p>C++ 编译器会在编译 C++ 程序时默认定义宏
+<code>__cplusplus</code>，用来判断当前编译单元是不是 C++ 代码：</p>
+<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifdef</span> __cplusplus</span></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> &#123;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> *<span class="title">memset</span><span class="params">(<span class="type">void</span> *, <span class="type">int</span>, <span class="type">size_t</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> __cplusplus</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>该技巧几乎在所有的系统头文件里面都被用到</p>
+</blockquote></li>
+<li><p>对于 C/C++，编译器默认函数和初始化了的全局变最为强符号（Strong
+Symbol），未初始化的全局变量为弱符号（Weak Symbol），也可以通过 GCC 的
+<code>__attribute__((weak))</code>
+来定义任何一个强符号为弱符号。注意，强弱符号都是针对定义来说的，不是针对符号的引用</p></li>
+<li><p>针对强弱符号的概念，链接器会按如下规则处理与选择被多次定义的全局符号：</p>
+<ol type="1">
+<li>不允许强符号被多次定义（即不同的目标文件中不能有同名的强符号），否则链接器报符号重复定义错误</li>
+<li>如果一个符号在某个目标文件中是强符号，在其他文件中都是弱符号，那么选择强符号</li>
+<li>如果一个符号在所有目标文件中都是弱符号，那么选择其中占用空间最大的一个</li>
+</ol>
+<blockquote>
+<p>尽量不要使用多个不同类型的弱符号，否则容易导致很难发现的程序错误</p>
+</blockquote></li>
+<li><p>引用外部目标文件的符号时，如果没有找到该符号的定义：</p>
+<ul>
+<li>强引用（Strong Reference）：链接器报符号未定义错误</li>
+<li>弱引用（Weak Reference）：链接器对于该引用不报错，一般默认其为 0
+或一个特珠值，以便识别</li>
+</ul></li>
+<li><p>在 GCC 中，可以使用扩展关键字
+<code>__attribute__((weakref))</code>
+来声明对一个外部函数的引用为弱引用</p></li>
+<li><p>这种弱符号和弱引用对于库来说十分有用，比如：</p>
+<ul>
+<li>库中定义的弱符号可以被用户定义的强符号所覆盖，从而使得程序可以使用自定义版本的库函数</li>
+<li>程序可以对某些扩展功能模块的引用定义为弱引用，这样将扩展模块与程序链接在一起时就可以正常使用；如果去掉某些模块，程序也可以正常链接，只是缺少了相应的功能，这使得程序的功能更加容易裁剪和组合</li>
+</ul>
+<blockquote>
+<p>在 Linux
+程序的设计中，如果一个程序被设计成可以支持单线程或多线程的模式，就可以通过弱引用的方法来判断当前的程序是链接到了单线程的
+Glibc 库还是多线程的 Glibc 库（是否在编译时有 -lpthread
+选项），从而执行单线程版本的程序或多线程版本的程序。</p>
+</blockquote></li>
+</ul>
+<h4 id="调试信息">调试信息</h4>
+<ul>
+<li>在 GCC 编译时加上 -g
+参数，编译器就会在产生的目标文件里面加上调试信息</li>
+<li>调试信息会占用很大的空间，往往比程序的代码和数据本身大好几倍</li>
+<li>在 Linux 下，可以使用 <code>strip</code> 命令来去掉 ELF
+文件中的调试信息</li>
+</ul>
+<h3 id="第-4-章-静态链接">第 4 章 静态链接</h3>
+<h4 id="空间与地址分配">空间与地址分配</h4>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ld a.o b.o -e main -o ab</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>-e main 表示将 main 函数作为程序入口，ld 链接器默认的程序入口为
+_start</li>
+<li>-o ab 表示链接输出文件名为 ab，默认为 a.out</li>
+</ul>
+</blockquote>
+<ul>
+<li>按序叠加：直接将各个目标文件依次合并，在有很多输入文件的情况下，输出文件将会有很多零散的段，由于每个段都有地址和空间对齐要求，因此非常浪费空间</li>
+<li>相似段合并：将相同性质的段合并到一起，现在的链接器基本上都采用该方法</li>
+<li>两步链接（Two-pass Linking）
+<ol type="1">
+<li>空间与地址分配</li>
+<li>符号解析与重定位</li>
+</ol></li>
+<li>在链接之前，目标文件中的所有段的 VMA（Virtual Memory Address）都是
+0，因为虚拟空间还没有被分配，等到链接之后，可执行文件 ab
+中的各个段都被分配到了相应的虚拟地址</li>
+<li>在 Linux 下， ELF 可执行文件默认从地址 0x08048000 开始分配</li>
+<li>由于各个符号在段内的相对位置是固定的，确定各个段的起始地址后，加上符号的偏移量即可计算出它们的虚拟地址</li>
+</ul>
+<h4 id="符号解析与重定位">符号解析与重定位</h4>
+<ul>
+<li>使用 <code>objdump -d</code> 进行反汇编</li>
+<li>近址相对位移调用指令（Call near, relative, displacement relative to
+next instruction）：前面的 0xE8 是操作码，后 4
+字节是被调用函数相对于调用指令的下一条指令的偏移量，在编译时是一个临时的假地址</li>
+<li>链接器在完成地址和空间分配之后就确定了所有符号的虚拟地址，据此对每个需要重定位的指令进行地址修正</li>
+<li>对于可重定位的 ELF 文件，必须包含重定位表（Relocation
+Table），用来描述如何修改相应段里的内容；对于每个要被重定位的 ELF
+段都有一个对应的重定位表，而一个重定位表往往就是 ELF 文件中的一个段</li>
+<li>可以使用 <code>objdump -r</code>
+来查看目标文件的重定位表，其中每个重定位入口包含一个 offset：
+<ul>
+<li>对于可重定位文件，这个值是该重定位入口所要修正的位置的第一个字节相对于段起始的偏移</li>
+<li>对于可执行文件或共享对象文件，这个值是该重定位入口所要修正的位置的第一个字节的虚拟地址</li>
+</ul></li>
+<li>每个重定位的入口都是对一个符号的引用，当链接器须要对某个符号的引用进行重定位时，就会去查找由所有输入目标文件的符号表组成的全局符号表，从而确定这个符号的目标地址；若找不到则会报符号未定义错误</li>
+<li>32位 x86 平台下 ELF 文件的重定位入口所修正的指令寻址方式只有两种：
+<ul>
+<li>绝对近址 32 位寻址：修正后的地址为该符号的实际地址</li>
+<li>相对近址 32 位寻址：修正后的地址为符号距离被修正位置的地址差</li>
+</ul></li>
+</ul>
+<h4 id="common-块">COMMON 块</h4>
+<ul>
+<li><p>多个符号定义类型不一致，主要分三种情况：</p>
+<ul>
+<li>两个或两个以上强符号类型不一致（非法，报符号多重定义错误）</li>
+<li>有一个强符号，其他都是弱符号，出现类型不一致（最终输出结果中的符号所占空间与强符号相同）</li>
+<li>两个或两个以上弱符号类型不一致（以输入文件中最大的那个为准）</li>
+</ul></li>
+<li><p>直接导致需要 COMMON
+机制的原因是编译器和链接器允许不同类型的弱符号存在，但最本质的原因还是链接器不支持符号类型，即链接器无法判断各个符号的类型是否一致</p></li>
+<li><p>在目标文件中，编译器为什么不直接把未初始化的全局变量也当作未初始化的局部静态变量一样处理，为它在
+BSS 段分配空间，而是将其标记为一个 COMMON 类型的变量？</p>
+<p>当编译器将一个编译单元编译成目标文件时，如果该编译单元包含了弱符号，那么该弱符号最终所占空间的大小在此时是未知的，因为有可能其他编译单元中该符号所占的空间比本编译单元该符号所占的空间要大，所以编译器此时无法为其在
+BSS
+段分配空间。但是链接器在链接过程中可以确定弱符号的大小，因为当链接器读取所有输入目标文件以后，任何一个弱符号的最终大小都可以确定了，所以它可以在最终输出文件的
+BSS 段为其分配空间。所以总体来看，未初始化全局变量最终还是被放在 BSS
+段的。</p></li>
+<li><p>GCC 的 <code>-fno-common</code>
+也允许我们把所有未初始化的全局变量不以 COMMON 块的形式处理，或者使用
+<code>__attribute__</code>
+扩展，那么它就相当于一个强符号。如果其他目标文件中还有同一个变量的强符号定义，链接时就会发生符号重复定义错误。</p></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> global __attribute__((nocommon));</span><br></pre></td></tr></table></figure>
+<h4 id="c-相关问题">C++ 相关问题</h4>
+<ul>
+<li>重复代码消除
+<ul>
+<li>模板、外部内联函数和虚函数表都有可能在不同的编译单元里生成相同的代码</li>
+<li>保留重复代码的问题：
+<ul>
+<li>空间浪费</li>
+<li>地址较易出错，有可能两个指向同一个闲数的指针会不相等</li>
+<li>指令运行效率较低，如果同样一份指令有多份副本，那么指令 Cache
+的命中率就会降低</li>
+</ul></li>
+<li>一个比较有效的做法：将每个模板的实例代码都单独地存放在一个段里，每个段只包含一个模板实例，当别的编译单元以相同类型实例化该模板后，也会生成同样的名字，这样链接器在最终链接的时候可以区分这些相同的模板实例段，然后将它们合并入最后的代码段。GNU
+GCC 和 VISUAL C++ 编译器都采用类似的方法</li>
+<li>对于外部内联函数、虚函数表的做法也类似</li>
+<li>VISUAL C++
+提供了一个编译选项叫函数级别链接，让所有的函数都像模板函数一样，独保存到一个段里，当链接器须要用到某个函数时，它就将它合并到输出文件中，对于那些没有用的函数则将它们抛弃。这种做法可以很大程度上减小输出文件的长度，减少空间浪费，但会减慢编译和链接过程，目标文件随着段数目的增加也会变得相对较大</li>
+<li>GCC 也提供了类似的机制，它有两个选择
+<code>-ffunction-sections</code> 和
+<code>-fdata-sections</code>，分别将每个函数或变量保持到独立的段中</li>
+</ul></li>
+<li>全局构造与析构
+<ul>
+<li>C++ 的全局对象的构造函数在 main 之前被执行，析构函数在 main
+之后被执行</li>
+<li>Linux 系统下一般程序的入口是 <code>_start</code>，这个函数是 Linux
+系统库（Glibc）的一部分</li>
+<li>因此 ELF 文件定义了两种特殊的段：
+<ul>
+<li><code>.init</code> 保存进程初始化代码指令，在 main
+函数被调用之前，Glibc 会安排执行这个段中的代码</li>
+<li><code>.fini</code> 保存进程终止代码指令，当 main
+函数正常退出时，Glibc 会安排执行这个段中的代码</li>
+</ul></li>
+</ul></li>
+<li>C++ 与 ABI
+<ul>
+<li>要使两个编译器编译出来的目标文件能够相互链接，这两个目标文件必须满足：采用同样的目标文件格式、拥有同样的符号修饰标准、变量的内存分布方式相同、函数的调用方式相同，等等</li>
+<li>其中符号修饰标准、变量内存布局、函数调用方式等这些跟可执行代码二进制兼容性相关的内容称为
+ABI（Application Binary Interface）</li>
+<li>对于 C
+语言的目标代码，以下几个方面会决定目标文件之间是否二进制兼容：
+<ul>
+<li>内置类型（如 int、float、char
+等）的大小和在存储器中的放置方式（大端、小端、对齐方式等）</li>
+<li>组合类型（如 struct、union、数组等）的存储方式和内存分布</li>
+<li>外部符号（exteral-linkage）与用户定义的符号之间的命名方式和解析方式</li>
+<li>函数调用方式，比如参数入栈顺序、返回值如何保持等</li>
+<li>堆栈的分布方式，比如参数和局部变量在堆栈里的位置、参数传递方法等</li>
+<li>寄存器使用约定，函数调用时哪些寄存器可以修改，哪些须要保存，等等</li>
+</ul></li>
+<li>C++ 要做到二进制兼容比 C 来得更为不易：
+<ul>
+<li>继承类体系的内存分布，如基类、虚基类在继承类中的位置等</li>
+<li>指向成员函数的指针的内存分布，如何通过指向成员函数的指针来调用成员函数，如何传递
+this 指针</li>
+<li>如何调用虚函数，vtable 的内容和分布形式，vtable 指针在 object
+中的位置等</li>
+<li>template 如何实例化</li>
+<li>外部符号的修饰</li>
+<li>全局对象的构造和析构</li>
+<li>异常的产生和捕获机制</li>
+<li>标准库的细节问题，RTTI 如何实现等</li>
+<li>内嵌函数访问细节</li>
+</ul></li>
+</ul></li>
+</ul>
+<h4 id="静态库链接">静态库链接</h4>
+<ul>
+<li>静态库可以简单地看成一组目标文件的集合，即很多目标文件经过压缩打包后形成的一个文件</li>
+<li>使用 <code>ar -t libc.a</code> 来查看这个文件包含了哪些目标文件</li>
+<li>使用 <code>objdump -t libc.a</code> 查看符号</li>
+<li>编译和链接一个普通 C 程序，不仅要用到 C 语言库
+libc.a，还需要其他一些辅助性质的目标文件和库</li>
+<li>collect2 可以看作是 ld 链接器的一个包装，它会调用 ld
+来完成对目标文件的链接，然后再对链接结果进行一些处理，主要是收集所有与程序初始化相关的信息并且构造初始化的结构</li>
+</ul>
+<h4 id="链接过程控制">链接过程控制</h4>
+<ul>
+<li>链接器一般都提供多种控制整个链接过程的方法，以用来产生用户所须要的文件：
+<ul>
+<li>使用命令行来给链接器指定参数</li>
+<li>将链接指令存放在目标文件里面，编译器经常会通过这种方法向链接器传递指令</li>
+<li>使用链接控制脚本，也是最为灵活、最为强大的链接控制方法</li>
+</ul></li>
+<li>使用脚本控制链接过程使得输出的可执行文件能够满足某些特殊的需求，比如不使用默认
+C
+语言运行库的程序、运行于嵌入式系统的程序，甚至是操作系统内核、驱动程序等等</li>
+<li>ld 在用户没有指定链接脚本的时候会使用默认链接脚本，可以使用
+<code>ld -verbose</code> 来查看</li>
+<li>为了更加精确地控制链接过程，可以自己写一个脚本然后指定为链接控制脚本：<code>ld -T link.script</code></li>
+<li>对于可执行文件来说，符号表和字符串表是可选的，但是段名字符串表用于保存段名，是必不可少的</li>
+<li>可以通过 ld 的 <code>-s</code> 参数禁止链接器产生符号表，或者使用
+strip 命令来去除程序中的符号表</li>
+</ul>
+<h4 id="bfd-库">BFD 库</h4>
+<ul>
+<li>BFD 库（Binary File Descriptor
+library）把目标文件抽象成一个统一的模型，希望通过一种统一的接口来处理不同的目标文件格式</li>
+<li>现在 GCC（更具体地讲是 GNU 汇编器 GAS, GNU Assembler）、链接器
+ld、调试器 GDB 及 binutils 的其他工具都通过 BFD
+库来处理目标文件，而不是直接操作目标文件，这样做最大的好处是将编译器和链接器本身同具体的目标文件格式隔离开来，一旦须要支持一种新的目标文件格式，只须要在
+BFD 库里面添加一种格式即可，而不须要修改编译器和链接器</li>
+</ul>
+<h3 id="第-5-章-windows-pecoff">第 5 章 Windows PE/COFF</h3>
+<h4 id="windows-的二进制文件格式-pecoff">Windows 的二进制文件格式
+PE/COFF</h4>
+<ul>
+<li>Windows 下的可执行文件和动态链接库采用 PE 格式，VISUAL C++
+编译器产生的目标文件使用 COFF 格式</li>
+<li>PE 是 COFF 的一种扩展，它们的结构在很大程度上相同，增加了 PE
+文件头、数据目录等一些结构</li>
+<li>与 ELF 文件相同，PE/COFF 格式也采用基于段的格式</li>
+<li>在 VISUAL C++ 中可以使用 <code>#pragma</code>
+编译器指示，将变量或函数放到自定义的段：</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> data_seg (<span class="string">&quot;FOO&quot;</span>)</span></span><br><span class="line"><span class="type">int</span> global = <span class="number">1</span>;</span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> data_seg (<span class="string">&quot;.data&quot;</span>) <span class="comment">// 恢复到 .data</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="pe-的前身coff">PE 的前身——COFF</h4>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150751.jpg" style="zoom:50%;" /></p>
+<h4 id="elf-文件中不存在的段">ELF 文件中不存在的段</h4>
+<ul>
+<li>.drectve 段：
+编译器传递给链接器的指令（Directive），即编译器希望告诉链接器应该怎样链接这个目标文件</li>
+<li>COFF 文件中所有以 .debug 开始的段都包含着调试信息
+<ul>
+<li>.debug$S 表示包含符号（Symbol）相关的调试信息段</li>
+<li>.debug$P 表示包含预编译头文件（Precompiled Header
+Files）相关的调试信息段</li>
+<li>.debug$T 表示包含类型（Type）相关的调试信息段</li>
+</ul></li>
+</ul>
+<h4 id="windows-下的-elfpe">Windows 下的 ELF——PE</h4>
+<ul>
+<li>数据目录（Data
+Directory）保存了一些常用的数据结构（如导入表、导出表、资源、重定位表等），便于系统装载
+PE 可执行文件时快速查找</li>
+</ul>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-08-17-150748.jpg" style="zoom:50%;" /></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Yuheng Ding WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Yuheng Ding Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/OS/" rel="tag"># OS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/03/18/programmers-self-cultivation-part-1/" rel="prev" title="[Note] 程序员的自我修养——第 1 部分 简介">
+                  <i class="fa fa-chevron-left"></i> [Note] 程序员的自我修养——第 1 部分 简介
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/04/29/programmers-self-cultivation-part-3/" rel="next" title="[Note] 程序员的自我修养——第 3 部分 装载与动态链接">
+                  [Note] 程序员的自我修养——第 3 部分 装载与动态链接 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yuheng Ding</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Symbols count total: </span>
+    <span title="Symbols count total">370k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>Reading time total &asymp;</span>
+    <span title="Reading time total">5:37</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"timdyh","repo":"gitalk-comments","client_id":"0babcb65af364dd08a90","client_secret":"22090e837380d49040a73f2ed1db4f9541b29379","admin_user":"timdyh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"90932a21280983de31cf82e68fda231e"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

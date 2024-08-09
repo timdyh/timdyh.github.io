@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="null//null" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="x_9IHIiVX0aZQfKSCtN7gy8_1UhN7guVmZAmA4gv1EE">
+  <meta name="msvalidate.01" content="AC8F448726B8A8742C6DFFA7640E7DBF">
+  <meta name="baidu-site-verification" content="code-2qEdijyCxz">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="The Items in this book are guidelines, not rules, because guidelines have exceptions. The most important part of each Item is not the advice it offers, but the rationale behind the advice. Once you’v">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Note] Effective Modern C++">
+<meta property="og:url" content="http://example.com/2021/10/06/effective-modern-cpp/index.html">
+<meta property="og:site_name" content="TimDyh">
+<meta property="og:description" content="The Items in this book are guidelines, not rules, because guidelines have exceptions. The most important part of each Item is not the advice it offers, but the rationale behind the advice. Once you’v">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-10-06T13:15:58.000Z">
+<meta property="article:modified_time" content="2022-11-19T07:16:45.833Z">
+<meta property="article:author" content="Yuheng Ding">
+<meta property="article:tag" content="C&#x2F;C++">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2021/10/06/effective-modern-cpp/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2021/10/06/effective-modern-cpp/","path":"2021/10/06/effective-modern-cpp/","title":"[Note] Effective Modern C++"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[Note] Effective Modern C++ | TimDyh</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">TimDyh</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#item-1-understand-template-type-deduction."><span class="nav-number">1.</span> <span class="nav-text">Item 1: Understand
+template type deduction.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-2-understand-auto-type-deduction."><span class="nav-number">2.</span> <span class="nav-text">Item 2: Understand auto
+type deduction.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-3-understand-decltype."><span class="nav-number">3.</span> <span class="nav-text">Item 3: Understand decltype.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-4-know-how-to-view-deduced-types."><span class="nav-number">4.</span> <span class="nav-text">Item 4: Know how to view
+deduced types.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-5-prefer-auto-to-explicit-type-declarations."><span class="nav-number">5.</span> <span class="nav-text">Item 5:
+Prefer auto to explicit type declarations.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-6-use-the-explicitly-typed-initializer-idiom-when-auto-deduces-undesired-types."><span class="nav-number">6.</span> <span class="nav-text">Item
+6: Use the explicitly typed initializer idiom when auto deduces
+undesired types.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-7-distinguish-between-and-when-creating-objects."><span class="nav-number">7.</span> <span class="nav-text">Item 7:
+Distinguish between () and {} when creating objects.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-8-prefer-nullptr-to-0-and-null."><span class="nav-number">8.</span> <span class="nav-text">Item 8: Prefer nullptr to
+0 and NULL.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-9-prefer-alias-declarations-to-typedefs."><span class="nav-number">9.</span> <span class="nav-text">Item 9: Prefer
+alias declarations to typedefs.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-10-prefer-scoped-enums-to-unscoped-enums."><span class="nav-number">10.</span> <span class="nav-text">Item 10: Prefer
+scoped enums to unscoped enums.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-11-prefer-deleted-functions-to-private-undefined-ones."><span class="nav-number">11.</span> <span class="nav-text">Item
+11: Prefer deleted functions to private undefined ones.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-12-declare-overriding-functions-override."><span class="nav-number">12.</span> <span class="nav-text">Item 12: Declare
+overriding functions override.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-13-prefer-const_iterators-to-iterators."><span class="nav-number">13.</span> <span class="nav-text">Item 13: Prefer
+const_iterators to iterators.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-14-declare-functions-noexcept-if-they-wont-emit-exceptions."><span class="nav-number">14.</span> <span class="nav-text">Item
+14: Declare functions noexcept if they won’t emit exceptions.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-15-use-constexpr-whenever-possible."><span class="nav-number">15.</span> <span class="nav-text">Item 15: Use constexpr
+whenever possible.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-16-make-const-member-functions-thread-safe."><span class="nav-number">16.</span> <span class="nav-text">Item 16: Make
+const member functions thread safe.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-17-understand-special-member-function-generation."><span class="nav-number">17.</span> <span class="nav-text">Item 17:
+Understand special member function generation.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-18-use-stdunique_ptr-for-exclusive-ownership-resource-management."><span class="nav-number">18.</span> <span class="nav-text">Item
+18: Use std::unique_ptr for exclusive-ownership resource
+management.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-19-use-stdshared_ptr-for-shared-ownership-resource-management."><span class="nav-number">19.</span> <span class="nav-text">Item
+19: Use std::shared_ptr for shared-ownership resource management.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-20-use-stdweak_ptr-for-stdshared_ptr-like-pointers-that-can-dangle."><span class="nav-number">20.</span> <span class="nav-text">Item
+20: Use std::weak_ptr for std::shared_ptr-like pointers that can
+dangle.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-21-prefer-stdmake_unique-and-stdmake_shared-to-direct-use-of-new."><span class="nav-number">21.</span> <span class="nav-text">Item
+21: Prefer std::make_unique and std::make_shared to direct use of
+new.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-22-when-using-the-pimpl-idiom-define-special-member-functions-in-the-implementation-file."><span class="nav-number">22.</span> <span class="nav-text">Item
+22: When using the Pimpl Idiom, define special member functions in the
+implementation file.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-23-understand-stdmove-and-stdforward."><span class="nav-number">23.</span> <span class="nav-text">Item 23: Understand
+std::move and std::forward.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-24-distinguish-universal-references-from-rvalue-references."><span class="nav-number">24.</span> <span class="nav-text">Item
+24: Distinguish universal references from rvalue references.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-25-use-stdmove-on-rvalue-references-stdforward-on-universal-references."><span class="nav-number">25.</span> <span class="nav-text">Item
+25: Use std::move on rvalue references, std::forward on universal
+references.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-26-avoid-overloading-on-universal-references."><span class="nav-number">26.</span> <span class="nav-text">Item 26:
+Avoid overloading on universal references.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-27-familiarize-yourself-with-alternatives-to-overloading-on-universal-references."><span class="nav-number">27.</span> <span class="nav-text">Item
+27: Familiarize yourself with alternatives to overloading on universal
+references.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-28-understand-reference-collapsing."><span class="nav-number">28.</span> <span class="nav-text">Item 28: Understand
+reference collapsing.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-29-assume-that-move-operations-are-not-present-not-cheap-and-not-used."><span class="nav-number">29.</span> <span class="nav-text">Item
+29: Assume that move operations are not present, not cheap, and not
+used.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-30-familiarize-yourself-with-perfect-forwarding-failure-cases."><span class="nav-number">30.</span> <span class="nav-text">Item
+30: Familiarize yourself with perfect forwarding failure cases.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-31-avoid-default-capture-modes."><span class="nav-number">31.</span> <span class="nav-text">Item 31: Avoid default
+capture modes.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-32-use-init-capture-to-move-objects-into-closures."><span class="nav-number">32.</span> <span class="nav-text">Item
+32: Use init capture to move objects into closures.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-33-use-decltype-on-auto-parameters-to-stdforward-them."><span class="nav-number">33.</span> <span class="nav-text">Item
+33: Use decltype on auto&amp;&amp;
+parameters to std::forward them.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-34-prefer-lambdas-to-stdbind."><span class="nav-number">34.</span> <span class="nav-text">Item 34: Prefer lambdas to
+std::bind.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-35-prefer-task-based-programming-to-thread-based."><span class="nav-number">35.</span> <span class="nav-text">Item 35:
+Prefer task-based programming to thread-based.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-36-specify-stdlaunchasync-if-asynchronicity-is-essential."><span class="nav-number">36.</span> <span class="nav-text">Item
+36: Specify std::launch::async if asynchronicity is essential.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-37-make-stdthreads-unjoinable-on-all-paths."><span class="nav-number">37.</span> <span class="nav-text">Item 37: Make
+std::threads unjoinable on all paths.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-38-be-aware-of-varying-thread-handle-destructor-behavior."><span class="nav-number">38.</span> <span class="nav-text">Item
+38: Be aware of varying thread handle destructor behavior.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-39-consider-void-futures-for-one-shot-event-communication."><span class="nav-number">39.</span> <span class="nav-text">Item
+39: Consider void futures for one-shot event communication.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-40-use-stdatomic-for-concurrency-volatile-for-special-memory."><span class="nav-number">40.</span> <span class="nav-text">Item
+40: Use std::atomic for concurrency, volatile for special memory.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-41-consider-pass-by-value-for-copyable-parameters-that-are-cheap-to-move-and-always-copied."><span class="nav-number">41.</span> <span class="nav-text">Item
+41: Consider pass by value for copyable parameters that are cheap to
+move and always copied.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-42-consider-emplacement-instead-of-insertion."><span class="nav-number">42.</span> <span class="nav-text">Item 42:
+Consider emplacement instead of insertion.</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yuheng Ding"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Yuheng Ding</p>
+  <div class="site-description" itemprop="description">Per aspera, ad astra.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/timdyh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dyh0701@gmail.com" title="E-Mail → mailto:dyh0701@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/tim_dyh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;tim_dyh" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/timdyh" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/06/effective-modern-cpp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[Note] Effective Modern C++ | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [Note] Effective Modern C++
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-10-06 21:15:58" itemprop="dateCreated datePublished" datetime="2021-10-06T21:15:58+08:00">2021-10-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Note/" itemprop="url" rel="index"><span itemprop="name">Note</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>15k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>13 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>The Items in this book are guidelines, not rules, because guidelines
+have exceptions. The most important part of each Item is not the advice
+it offers, but the rationale behind the advice. Once you’ve read that,
+you’ll be in a position to determine whether the circumstances of your
+project justify a violation of the Item’s guidance. The true goal of
+this book isn’t to tell you what to do or what to avoid doing, but to
+convey a deeper understanding of how things work in C++11 and C++14.</p>
+</blockquote>
+<span id="more"></span>
+<h3 id="item-1-understand-template-type-deduction.">Item 1: Understand
+template type deduction.</h3>
+<ul>
+<li>During template type deduction, arguments that are references are
+treated as non-references, i.e., their reference-ness is ignored.</li>
+<li>When deducing types for universal reference parameters, lvalue
+arguments get special treatment.</li>
+<li>When deducing types for by-value parameters, const and/or volatile
+arguments are treated as non-const and non-volatile.</li>
+<li>During template type deduction, arguments that are array or function
+names decay to pointers, unless they’re used to initialize
+references.</li>
+</ul>
+<h3 id="item-2-understand-auto-type-deduction.">Item 2: Understand auto
+type deduction.</h3>
+<ul>
+<li>auto type deduction is usually the same as template type deduction,
+but auto type deduction assumes that a braced initializer represents a
+std::initializer_list, and template type deduction doesn’t.</li>
+<li>auto in a function return type or a lambda parameter implies
+template type deduction, not auto type deduction.</li>
+</ul>
+<h3 id="item-3-understand-decltype.">Item 3: Understand decltype.</h3>
+<ul>
+<li>decltype almost always yields the type of a variable or expression
+without any modifications.</li>
+<li>For lvalue expressions of type T other than names, decltype always
+reports a type of T&amp;.</li>
+<li>C++14 supports decltype(auto), which, like auto, deduces a type from
+its initializer, but it performs the type deduction using the decltype
+rules.</li>
+</ul>
+<h3 id="item-4-know-how-to-view-deduced-types.">Item 4: Know how to view
+deduced types.</h3>
+<ul>
+<li>Deduced types can often be seen using IDE editors, compiler error
+messages, and the Boost TypeIndex library.</li>
+<li>The results of some tools may be neither helpful nor accurate, so an
+under‐ standing of C++’s type deduction rules remains essential.</li>
+</ul>
+<h3 id="item-5-prefer-auto-to-explicit-type-declarations.">Item 5:
+Prefer auto to explicit type declarations.</h3>
+<ul>
+<li>auto variables must be initialized, are generally immune to type
+mismatches that can lead to portability or efficiency problems, can ease
+the process of refactoring, and typically require less typing than
+variables with explicitly specified types.</li>
+<li>auto-typed variables are subject to the pitfalls described in Items
+2 and 6.</li>
+</ul>
+<h3
+id="item-6-use-the-explicitly-typed-initializer-idiom-when-auto-deduces-undesired-types.">Item
+6: Use the explicitly typed initializer idiom when auto deduces
+undesired types.</h3>
+<ul>
+<li>“Invisible” proxy types can cause auto to deduce the “wrong” type
+for an initializing expression.</li>
+<li>The explicitly typed initializer idiom forces auto to deduce the
+type you want it to have.</li>
+</ul>
+<h3 id="item-7-distinguish-between-and-when-creating-objects.">Item 7:
+Distinguish between () and {} when creating objects.</h3>
+<ul>
+<li>Braced initialization is the most widely usable initialization
+syntax, it prevents narrowing conversions, and it’s immune to C++’s
+<em>most vexing parse</em>.</li>
+<li>During constructor overload resolution, braced initializers are
+matched to std::initializer_list parameters if at all possible, even if
+other constructors offer seemingly better matches.</li>
+<li>An example of where the choice between parentheses and braces can
+make a significant difference is creating a
+<code>std::vector&lt;numeric type&gt;</code> with two arguments.</li>
+<li>Choosing between parentheses and braces for object creation inside
+templates can be challenging.</li>
+</ul>
+<h3 id="item-8-prefer-nullptr-to-0-and-null.">Item 8: Prefer nullptr to
+0 and NULL.</h3>
+<ul>
+<li>Prefer nullptr to 0 and NULL.</li>
+<li>Avoid overloading on integral and pointer types.</li>
+</ul>
+<h3 id="item-9-prefer-alias-declarations-to-typedefs.">Item 9: Prefer
+alias declarations to typedefs.</h3>
+<ul>
+<li>typedefs don’t support templatization, but alias declarations
+do.</li>
+<li>Alias templates avoid the “::type” suffix and, in templates, the
+“typename” prefix often required to refer to typedefs.</li>
+<li>C++14 offers alias templates for all the C++11 type traits
+transformations.</li>
+</ul>
+<h3 id="item-10-prefer-scoped-enums-to-unscoped-enums.">Item 10: Prefer
+scoped enums to unscoped enums.</h3>
+<ul>
+<li>C++98-style enums are now known as unscoped enums.</li>
+<li>Enumerators of scoped enums are visible only within the enum. They
+convert to other types only with a cast.</li>
+<li>Both scoped and unscoped enums support specification of the
+underlying type. The default underlying type for scoped enums is int.
+Unscoped enums have no default underlying type.</li>
+<li>Scoped enums may always be forward-declared. Unscoped enums may be
+forward-declared only if their declaration specifies an underlying
+type.</li>
+</ul>
+<h3
+id="item-11-prefer-deleted-functions-to-private-undefined-ones.">Item
+11: Prefer deleted functions to private undefined ones.</h3>
+<ul>
+<li>Prefer deleted functions to private undefined ones.</li>
+<li>Any function may be deleted, including non-member functions and
+template instantiations.</li>
+</ul>
+<h3 id="item-12-declare-overriding-functions-override.">Item 12: Declare
+overriding functions override.</h3>
+<ul>
+<li>Declare overriding functions override.</li>
+<li>Member function reference qualifiers make it possible to treat
+lvalue and rvalue objects (*this) differently.</li>
+</ul>
+<h3 id="item-13-prefer-const_iterators-to-iterators.">Item 13: Prefer
+const_iterators to iterators.</h3>
+<ul>
+<li>Prefer const_iterators to iterators.</li>
+<li>In maximally generic code, prefer non-member versions of begin, end,
+rbegin, etc., over their member function counterparts.</li>
+</ul>
+<h3
+id="item-14-declare-functions-noexcept-if-they-wont-emit-exceptions.">Item
+14: Declare functions noexcept if they won’t emit exceptions.</h3>
+<ul>
+<li>noexcept is part of a function’s interface, and that means that
+callers may depend on it.</li>
+<li>noexcept functions are more optimizable than non-noexcept
+functions.</li>
+<li>noexcept is particularly valuable for the move operations, swap,
+memory deallocation functions, and destructors.</li>
+<li>Most functions are exception-neutral rather than noexcept.</li>
+</ul>
+<h3 id="item-15-use-constexpr-whenever-possible.">Item 15: Use constexpr
+whenever possible.</h3>
+<ul>
+<li>constexpr objects are const and are initialized with values known
+during compilation.</li>
+<li>constexpr functions can produce compile-time results when called
+with arguments whose values are known during compilation.</li>
+<li>constexpr objects and functions may be used in a wider range of
+contexts than non-constexpr objects and functions.</li>
+<li>constexpr is part of an object’s or function’s interface.</li>
+</ul>
+<h3 id="item-16-make-const-member-functions-thread-safe.">Item 16: Make
+const member functions thread safe.</h3>
+<ul>
+<li>Make const member functions thread safe unless you’re certain
+they’ll never be used in a concurrent context.</li>
+<li>Use of std::atomic variables may offer better performance than a
+mutex, but they’re suited for manipulation of only a single variable or
+memory location.</li>
+</ul>
+<h3 id="item-17-understand-special-member-function-generation.">Item 17:
+Understand special member function generation.</h3>
+<ul>
+<li>The special member functions are those compilers may generate on
+their own: default constructor, destructor, copy operations, and move
+operations.</li>
+<li>Move operations are generated only for classes lacking explicitly
+declared move operations, copy operations, and a destructor.</li>
+<li>The copy constructor is generated only for classes lacking an
+explicitly declared copy constructor, and it’s deleted if a move
+operation is declared. The copy assignment operator is generated only
+for classes lacking an explicitly declared copy assignment operator, and
+it’s deleted if a move operation is declared. Generation of the copy
+operations in classes with an explicitly declared destructor is
+deprecated.</li>
+<li>Member function templates never suppress generation of special
+member functions.</li>
+</ul>
+<h3
+id="item-18-use-stdunique_ptr-for-exclusive-ownership-resource-management.">Item
+18: Use std::unique_ptr for exclusive-ownership resource
+management.</h3>
+<ul>
+<li>std::unique_ptr is a small, fast, move-only smart pointer for
+managing resources with exclusive-ownership semantics.</li>
+<li>By default, resource destruction takes place via delete, but custom
+deleters can be specified. Stateful deleters and function pointers as
+deleters increase the size of std::unique_ptr objects.</li>
+<li>Converting a std::unique_ptr to a std::shared_ptr is easy.</li>
+</ul>
+<h3
+id="item-19-use-stdshared_ptr-for-shared-ownership-resource-management.">Item
+19: Use std::shared_ptr for shared-ownership resource management.</h3>
+<ul>
+<li>std::shared_ptrs offer convenience approaching that of garbage
+collection for the shared lifetime management of arbitrary
+resources.</li>
+<li>Compared to std::unique_ptr, std::shared_ptr objects are typically
+twice as big, incur overhead for control blocks, and require atomic
+reference count manipulations.</li>
+<li>Default resource destruction is via delete, but custom deleters are
+supported. The type of the deleter has no effect on the type of the
+std::shared_ptr.</li>
+<li>Avoid creating std::shared_ptrs from variables of raw pointer
+type.</li>
+</ul>
+<h3
+id="item-20-use-stdweak_ptr-for-stdshared_ptr-like-pointers-that-can-dangle.">Item
+20: Use std::weak_ptr for std::shared_ptr-like pointers that can
+dangle.</h3>
+<ul>
+<li>Use std::weak_ptr for std::shared_ptr-like pointers that can
+dangle.</li>
+<li>Potential use cases for std::weak_ptr include caching, observer
+lists, and the prevention of std::shared_ptr cycles.</li>
+</ul>
+<h3
+id="item-21-prefer-stdmake_unique-and-stdmake_shared-to-direct-use-of-new.">Item
+21: Prefer std::make_unique and std::make_shared to direct use of
+new.</h3>
+<ul>
+<li>Compared to direct use of new, make functions eliminate source code
+duplication, improve exception safety, and, for std::make_shared and
+std::allocate_shared, generate code that’s smaller and faster.</li>
+<li>Situations where use of make functions is inappropriate include the
+need to specify custom deleters and a desire to pass braced
+initializers.</li>
+<li>For std::shared_ptrs, additional situations where make functions may
+be ill-advised include (1) classes with custom memory management and (2)
+systems with memory concerns, very large objects, and std::weak_ptrs
+that outlive the corresponding std::shared_ptrs.</li>
+</ul>
+<h3
+id="item-22-when-using-the-pimpl-idiom-define-special-member-functions-in-the-implementation-file.">Item
+22: When using the Pimpl Idiom, define special member functions in the
+implementation file.</h3>
+<ul>
+<li>The Pimpl Idiom decreases build times by reducing compilation
+dependencies between class clients and class implementations.</li>
+<li>For std::unique_ptr pImpl pointers, declare special member functions
+in the class header, but implement them in the implementation file. Do
+this even if the default function implementations are acceptable.</li>
+<li>The above advice applies to std::unique_ptr, but not to
+std::shared_ptr.</li>
+</ul>
+<h3 id="item-23-understand-stdmove-and-stdforward.">Item 23: Understand
+std::move and std::forward.</h3>
+<ul>
+<li>std::move performs an unconditional cast to an rvalue. In and of
+itself, it doesn’t move anything.</li>
+<li>std::forward casts its argument to an rvalue only if that argument
+is bound to an rvalue.</li>
+<li>Neither std::move nor std::forward do anything at runtime.</li>
+</ul>
+<h3
+id="item-24-distinguish-universal-references-from-rvalue-references.">Item
+24: Distinguish universal references from rvalue references.</h3>
+<ul>
+<li>If a function template parameter has type T&amp;&amp; for a deduced
+type T, or if an object is declared using auto&amp;&amp;, the parameter
+or object is a universal reference.</li>
+<li>If the form of the type declaration isn’t precisely
+<em>type</em>&amp;&amp;, or if type deduction does not occur,
+<em>type</em>&amp;&amp; denotes an rvalue reference.</li>
+<li>Universal references correspond to rvalue references if they’re
+initialized with rvalues. They correspond to lvalue references if
+they’re initialized with lvalues.</li>
+</ul>
+<h3
+id="item-25-use-stdmove-on-rvalue-references-stdforward-on-universal-references.">Item
+25: Use std::move on rvalue references, std::forward on universal
+references.</h3>
+<ul>
+<li>Apply std::move to rvalue references and std::forward to universal
+references the last time each is used.</li>
+<li>Do the same thing for rvalue references and universal references
+being returned from functions that return by value.</li>
+<li>Never apply std::move or std::forward to local objects if they would
+otherwise be eligible for the return value optimization.</li>
+</ul>
+<h3 id="item-26-avoid-overloading-on-universal-references.">Item 26:
+Avoid overloading on universal references.</h3>
+<ul>
+<li>Overloading on universal references almost always leads to the
+universal reference overload being called more frequently than
+expected.</li>
+<li>Perfect-forwarding constructors are especially problematic, because
+they’re typically better matches than copy constructors for non-const
+lvalues, and they can hijack derived class calls to base class copy and
+move constructors.</li>
+</ul>
+<h3
+id="item-27-familiarize-yourself-with-alternatives-to-overloading-on-universal-references.">Item
+27: Familiarize yourself with alternatives to overloading on universal
+references.</h3>
+<ul>
+<li>Alternatives to the combination of universal references and
+overloading include the use of distinct function names, passing
+parameters by lvalue-reference-to-const, passing parameters by value,
+and using tag dispatch.</li>
+<li>Constraining templates via std::enable_if permits the use of
+universal references and overloading together, but it controls the
+conditions under which compilers may use the universal reference
+overloads.</li>
+<li>Universal reference parameters often have efficiency advantages, but
+they typically have usability disadvantages.</li>
+</ul>
+<h3 id="item-28-understand-reference-collapsing.">Item 28: Understand
+reference collapsing.</h3>
+<ul>
+<li>Reference collapsing occurs in four contexts: template
+instantiation, auto type generation, creation and use of typedefs and
+alias declarations, and decltype.</li>
+<li>When compilers generate a reference to a reference in a reference
+collapsing context, the result becomes a single reference. If either of
+the original references is an lvalue reference, the result is an lvalue
+reference. Otherwise it’s an rvalue reference.</li>
+<li>Universal references are rvalue references in contexts where type
+deduction distinguishes lvalues from rvalues and where reference
+collapsing occurs.</li>
+</ul>
+<h3
+id="item-29-assume-that-move-operations-are-not-present-not-cheap-and-not-used.">Item
+29: Assume that move operations are not present, not cheap, and not
+used.</h3>
+<ul>
+<li>Assume that move operations are not present, not cheap, and not
+used.</li>
+<li>In code with known types or support for move semantics, there is no
+need for assumptions.</li>
+</ul>
+<h3
+id="item-30-familiarize-yourself-with-perfect-forwarding-failure-cases.">Item
+30: Familiarize yourself with perfect forwarding failure cases.</h3>
+<ul>
+<li>Perfect forwarding fails when template type deduction fails or when
+it deduces the wrong type.</li>
+<li>The kinds of arguments that lead to perfect forwarding failure are
+braced initializers, null pointers expressed as 0 or NULL,
+declaration-only integral const static data members, template and
+overloaded function names, and bitfields.</li>
+</ul>
+<h3 id="item-31-avoid-default-capture-modes.">Item 31: Avoid default
+capture modes.</h3>
+<ul>
+<li>Default by-reference capture can lead to dangling references.</li>
+<li>Default by-value capture is susceptible to dangling pointers
+(especially this), and it misleadingly suggests that lambdas are
+self-contained.</li>
+</ul>
+<h3 id="item-32-use-init-capture-to-move-objects-into-closures.">Item
+32: Use init capture to move objects into closures.</h3>
+<ul>
+<li>Use C++14’s init capture to move objects into closures.</li>
+<li>In C++11, emulate init capture via hand-written classes or
+std::bind.</li>
+</ul>
+<h3
+id="item-33-use-decltype-on-auto-parameters-to-stdforward-them.">Item
+33: Use <strong>decltype</strong> on <strong>auto&amp;&amp;</strong>
+parameters to <strong>std::forward</strong> them.</h3>
+<ul>
+<li>Use decltype on auto&amp;&amp; parameters to std::forward them.</li>
+</ul>
+<h3 id="item-34-prefer-lambdas-to-stdbind.">Item 34: Prefer lambdas to
+<strong>std::bind</strong>.</h3>
+<ul>
+<li>Lambdas are more readable, more expressive, and may be more
+efficient than using std::bind.</li>
+<li>In C++11 only, std::bind may be useful for implementing move capture
+or for binding objects with templatized function call operators.</li>
+</ul>
+<h3 id="item-35-prefer-task-based-programming-to-thread-based.">Item 35:
+Prefer task-based programming to thread-based.</h3>
+<ul>
+<li>The std::thread API offers no direct way to get return values from
+asynchronously run functions, and if those functions throw, the program
+is terminated.</li>
+<li>Thread-based programming calls for manual management of thread
+exhaustion, oversubscription, load balancing, and adaptation to new
+platforms.</li>
+<li>Task-based programming via std::async with the default launch policy
+handles most of these issues for you.</li>
+</ul>
+<h3
+id="item-36-specify-stdlaunchasync-if-asynchronicity-is-essential.">Item
+36: Specify std::launch::async if asynchronicity is essential.</h3>
+<ul>
+<li>The default launch policy for std::async permits both asynchronous
+and synchronous task execution.</li>
+<li>This flexibility leads to uncertainty when accessing thread_locals,
+implies that the task may never execute, and affects program logic for
+timeout-based wait calls.</li>
+<li>Specify std::launch::async if asynchronous task execution is
+essential.</li>
+</ul>
+<h3 id="item-37-make-stdthreads-unjoinable-on-all-paths.">Item 37: Make
+std::threads unjoinable on all paths.</h3>
+<ul>
+<li>Make std::threads unjoinable on all paths.</li>
+<li>join-on-destruction can lead to difficult-to-debug performance
+anomalies.</li>
+<li>detach-on-destruction can lead to difficult-to-debug undefined
+behavior.</li>
+<li>Declare std::thread objects last in lists of data members.</li>
+</ul>
+<h3
+id="item-38-be-aware-of-varying-thread-handle-destructor-behavior.">Item
+38: Be aware of varying thread handle destructor behavior.</h3>
+<ul>
+<li>Future destructors normally just destroy the future’s data
+members.</li>
+<li>The final future referring to a shared state for a non-deferred task
+launched via std::async blocks until the task completes.</li>
+</ul>
+<h3
+id="item-39-consider-void-futures-for-one-shot-event-communication.">Item
+39: Consider void futures for one-shot event communication.</h3>
+<ul>
+<li>For simple event communication, condvar-based designs require a
+superfluous mutex, impose constraints on the relative progress of
+detecting and reacting tasks, and require reacting tasks to verify that
+the event has taken place.</li>
+<li>Designs employing a flag avoid those problems, but are based on
+polling, not blocking.</li>
+<li>A condvar and flag can be used together, but the resulting
+communications mechanism is somewhat stilted.</li>
+<li>Using std::promises and futures dodges these issues, but the
+approach uses heap memory for shared states, and it’s limited to
+one-shot communication.</li>
+</ul>
+<h3
+id="item-40-use-stdatomic-for-concurrency-volatile-for-special-memory.">Item
+40: Use std::atomic for concurrency, volatile for special memory.</h3>
+<ul>
+<li>std::atomic is for data accessed from multiple threads without using
+mutexes. It’s a tool for writing concurrent software.</li>
+<li>volatile is for memory where reads and writes should not be
+optimized away. It’s a tool for working with special memory.</li>
+</ul>
+<h3
+id="item-41-consider-pass-by-value-for-copyable-parameters-that-are-cheap-to-move-and-always-copied.">Item
+41: Consider pass by value for copyable parameters that are cheap to
+move and always copied.</h3>
+<ul>
+<li>For copyable, cheap-to-move parameters that are always copied, pass
+by value may be nearly as efficient as pass by reference, it’s easier to
+implement, and it can generate less object code.</li>
+<li>Copying parameters via construction may be significantly more
+expensive than copying them via assignment.</li>
+<li>Pass by value is subject to the slicing problem, so it’s typically
+inappropriate for base class parameter types.</li>
+</ul>
+<h3 id="item-42-consider-emplacement-instead-of-insertion.">Item 42:
+Consider emplacement instead of insertion.</h3>
+<ul>
+<li>In principle, emplacement functions should sometimes be more
+efficient than their insertion counterparts, and they should never be
+less efficient.</li>
+<li>In practice, they’re most likely to be faster when (1) the value
+being added is constructed into the container, not assigned; (2) the
+argument type(s) passed differ from the type held by the container; and
+(3) the container won’t reject the value being added due to it being a
+duplicate.</li>
+<li>Emplacement functions may perform type conversions that would be
+rejected by insertion functions.</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Yuheng Ding WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Yuheng Ding Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/C-C/" rel="tag"># C/C++</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/06/20/more-effective-cpp/" rel="prev" title="[Note] More Effective C++">
+                  <i class="fa fa-chevron-left"></i> [Note] More Effective C++
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/11/28/effective-stl/" rel="next" title="[Note] Effective STL">
+                  [Note] Effective STL <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yuheng Ding</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Symbols count total: </span>
+    <span title="Symbols count total">370k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>Reading time total &asymp;</span>
+    <span title="Reading time total">5:37</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"timdyh","repo":"gitalk-comments","client_id":"0babcb65af364dd08a90","client_secret":"22090e837380d49040a73f2ed1db4f9541b29379","admin_user":"timdyh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"a162e5a5de5dafa8bd5bc81c0170b164"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

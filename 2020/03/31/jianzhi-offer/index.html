@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="null//null" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="x_9IHIiVX0aZQfKSCtN7gy8_1UhN7guVmZAmA4gv1EE">
+  <meta name="msvalidate.01" content="AC8F448726B8A8742C6DFFA7640E7DBF">
+  <meta name="baidu-site-verification" content="code-2qEdijyCxz">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="记录书中一些比较经典的题目。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《剑指 Offer》刷题笔记">
+<meta property="og:url" content="http://example.com/2020/03/31/jianzhi-offer/index.html">
+<meta property="og:site_name" content="TimDyh">
+<meta property="og:description" content="记录书中一些比较经典的题目。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-03-31T06:59:40.000Z">
+<meta property="article:modified_time" content="2022-05-15T10:18:20.083Z">
+<meta property="article:author" content="Yuheng Ding">
+<meta property="article:tag" content="Regex">
+<meta property="article:tag" content="Data Structure">
+<meta property="article:tag" content="Algorithm">
+<meta property="article:tag" content="Sorting">
+<meta property="article:tag" content="Search">
+<meta property="article:tag" content="Greedy">
+<meta property="article:tag" content="Dynamic Programming">
+<meta property="article:tag" content="Tree">
+<meta property="article:tag" content="Linked List">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2020/03/31/jianzhi-offer/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2020/03/31/jianzhi-offer/","path":"2020/03/31/jianzhi-offer/","title":"《剑指 Offer》刷题笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《剑指 Offer》刷题笔记 | TimDyh</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">TimDyh</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E9%A2%9803.-%E6%95%B0%E7%BB%84%E4%B8%AD%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B0%E5%AD%97"><span class="nav-number">1.</span> <span class="nav-text">面试题03.
+数组中重复的数字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E9%A2%9803.-%E9%A2%98%E7%9B%AE%E4%BA%8Cleetcode-287.-%E5%AF%BB%E6%89%BE%E9%87%8D%E5%A4%8D%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">面试题03.
+题目二（Leetcode 287. 寻找重复数）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE"><span class="nav-number">2.1.</span> <span class="nav-text">方法一：二分查找</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88"><span class="nav-number">2.2.</span> <span class="nav-text">方法二：快慢指针</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E9%A2%9811.-%E6%97%8B%E8%BD%AC%E6%95%B0%E7%BB%84%E7%9A%84%E6%9C%80%E5%B0%8F%E6%95%B0%E5%AD%97"><span class="nav-number">3.</span> <span class="nav-text">面试题11.
+旋转数组的最小数字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E9%A2%9812.-%E7%9F%A9%E9%98%B5%E4%B8%AD%E7%9A%84%E8%B7%AF%E5%BE%84"><span class="nav-number">4.</span> <span class="nav-text">面试题12.
+矩阵中的路径</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E9%A2%9814--i.-%E5%89%AA%E7%BB%B3%E5%AD%90"><span class="nav-number">5.</span> <span class="nav-text">面试题14-
+I. 剪绳子</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92"><span class="nav-number">5.1.</span> <span class="nav-text">方法一：动态规划</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C%E8%B4%AA%E5%BF%83"><span class="nav-number">5.2.</span> <span class="nav-text">方法二：贪心</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E9%A2%9815.-%E4%BA%8C%E8%BF%9B%E5%88%B6%E4%B8%AD1%E7%9A%84%E4%B8%AA%E6%95%B0"><span class="nav-number">6.</span> <span class="nav-text">面试题15.
+二进制中1的个数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80%E6%9C%89%E5%87%A0%E4%BD%8D%E5%BE%AA%E7%8E%AF%E5%87%A0%E6%AC%A1"><span class="nav-number">6.1.</span> <span class="nav-text">方法一：有几位循环几次</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C%E6%9C%89%E5%87%A0%E4%B8%AA-1-%E5%BE%AA%E7%8E%AF%E5%87%A0%E6%AC%A1"><span class="nav-number">6.2.</span> <span class="nav-text">方法二：有几个 1 循环几次</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E9%A2%9816.-%E6%95%B0%E5%80%BC%E7%9A%84%E6%95%B4%E6%95%B0%E6%AC%A1%E6%96%B9"><span class="nav-number">7.</span> <span class="nav-text">面试题16.
+数值的整数次方</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E9%A2%9819.-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8C%B9%E9%85%8D"><span class="nav-number">8.</span> <span class="nav-text">面试题19.
+正则表达式匹配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80%E9%80%92%E5%BD%92"><span class="nav-number">8.1.</span> <span class="nav-text">方法一：递归</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92"><span class="nav-number">8.2.</span> <span class="nav-text">方法二：动态规划</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E9%A2%9828.-%E5%AF%B9%E7%A7%B0%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91"><span class="nav-number">9.</span> <span class="nav-text">面试题28.
+对称的二叉树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E9%A2%9835.-%E5%A4%8D%E6%9D%82%E9%93%BE%E8%A1%A8%E7%9A%84%E5%A4%8D%E5%88%B6"><span class="nav-number">10.</span> <span class="nav-text">面试题35.
+复杂链表的复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E9%A2%9836.-%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E4%B8%8E%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8"><span class="nav-number">11.</span> <span class="nav-text">面试题36.
+二叉搜索树与双向链表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E9%A2%9838.-%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E6%8E%92%E5%88%97"><span class="nav-number">12.</span> <span class="nav-text">面试题38.
+字符串的排列</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80%E8%BF%BD%E5%8A%A0"><span class="nav-number">12.1.</span> <span class="nav-text">方法一：追加</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C%E4%BA%A4%E6%8D%A2"><span class="nav-number">12.2.</span> <span class="nav-text">方法二：交换</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yuheng Ding"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Yuheng Ding</p>
+  <div class="site-description" itemprop="description">Per aspera, ad astra.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/timdyh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dyh0701@gmail.com" title="E-Mail → mailto:dyh0701@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/tim_dyh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;tim_dyh" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/timdyh" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/31/jianzhi-offer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《剑指 Offer》刷题笔记 | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《剑指 Offer》刷题笔记
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-03-31 14:59:40" itemprop="dateCreated datePublished" datetime="2020-03-31T14:59:40+08:00">2020-03-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Coding/" itemprop="url" rel="index"><span itemprop="name">Coding</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>12k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>11 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>记录书中一些比较经典的题目。</p>
+</blockquote>
+<span id="more"></span>
+<h2
+id="面试题03.-数组中重复的数字"><a href="https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/" target="_blank">面试题03.
+数组中重复的数字</a></h2>
+<blockquote>
+<p>找出数组中重复的数字。</p>
+<p>在一个长度为 n 的数组 nums 里的所有数字都在 0～n-1
+的范围内。数组中某些数字是重复的，但不知道有几个数字重复了，也不知道每个数字重复了几次。请找出数组中任意一个重复的数字。</p>
+</blockquote>
+<p>根据鸽巢原理，不断将数字交换到自身对应的下标上，直到发现重复的数字。</p>
+<p>虽然代码中有两重循环，但每个数字最多只要交换两次就能找到属于它自己的位置，因此总的时间复杂度为
+<span class="math inline">\(O(n)\)</span> 。空间复杂度为 <span
+class="math inline">\(O(1)\)</span> 。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">findRepeatNumber</span><span class="params">(vector&lt;<span class="type">int</span>&gt; &amp;nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nums.<span class="built_in">size</span>(); i++) &#123;</span><br><span class="line">            <span class="keyword">while</span> (nums[i] != i) &#123;</span><br><span class="line">                <span class="keyword">if</span> (nums[nums[i]] == nums[i]) &#123;</span><br><span class="line">                    <span class="keyword">return</span> nums[i];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="type">int</span> temp = nums[i];</span><br><span class="line">                nums[i] = nums[temp];</span><br><span class="line">                nums[temp] = temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2
+id="面试题03.-题目二leetcode-287.-寻找重复数"><a href="https://leetcode-cn.com/problems/find-the-duplicate-number/" target="_blank">面试题03.
+题目二（Leetcode 287. 寻找重复数）</a></h2>
+<blockquote>
+<p>给定一个包含 n + 1 个整数的数组 nums，其数字都在 1 到 n 之间（包括 1
+和
+n），可知至少存在一个重复的整数。假设只有一个重复的整数，找出这个重复的数。</p>
+</blockquote>
+<h3 id="方法一二分查找">方法一：二分查找</h3>
+<p>对区间 <code>[1,n]</code> （注意不是对数组 <code>nums</code>
+）进行二分查找，每次只需统计前一半区间内的数字个数，如果大于区间长度，则说明这段区间一定有重复数字，否则另一半区间内一定有重复数字，然后继续对该半个区间进行划分。</p>
+<p>一共划分 <span class="math inline">\(\log n\)</span>
+次，每次统计个数需要花费 <code>O(n)</code> 的时间，所以总的时间复杂度为
+<span class="math inline">\(O(n\log n)\)</span> 。空间复杂度为 <span
+class="math inline">\(O(1)\)</span> 。</p>
+<p>注意：若数组有多个重复的数字，此方法不能保证找出所有重复的数字。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">findDuplicate</span><span class="params">(vector&lt;<span class="type">int</span>&gt; &amp;nums)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> lo = <span class="number">1</span>, hi = nums.<span class="built_in">size</span>() - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (lo &lt;= hi) &#123;</span><br><span class="line">            <span class="keyword">if</span> (lo == hi) <span class="keyword">return</span> lo;</span><br><span class="line"></span><br><span class="line">            <span class="type">int</span> mid = lo + ((hi - lo) &gt;&gt; <span class="number">1</span>);</span><br><span class="line">            <span class="type">int</span> cnt = <span class="built_in">count</span>(nums, lo, mid);</span><br><span class="line">            <span class="keyword">if</span> (cnt &gt; mid - lo + <span class="number">1</span>) &#123;</span><br><span class="line">                hi = mid;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                lo = mid + <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">count</span><span class="params">(vector&lt;<span class="type">int</span>&gt; &amp;nums, <span class="type">int</span> lo, <span class="type">int</span> hi)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i : nums) &#123;</span><br><span class="line">            <span class="keyword">if</span> (i &gt;= lo &amp;&amp; i &lt;= hi) &#123;</span><br><span class="line">                cnt++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> cnt;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="方法二快慢指针">方法二：快慢指针</h3>
+<p>如果将数组看成链表，每个元素的下一个元素是其值作为下标对应的元素，我们发现，如果数组中存在重复元素，那么链表中一定会形成环，而环的入口就是那个重复的元素。于是我们的目标变成找到环的入口。</p>
+<p>我们设置两个指针 <code>slow</code> 和 <code>fast</code>
+，前者每走一步，后者走两步。假设 <code>slow</code> 走了 <span
+class="math inline">\(n\)</span> 步时与 <code>fast</code> 相遇，则此时
+<code>fast</code> 走了 <span class="math inline">\(2n\)</span>
+步，且其多走的 <span class="math inline">\(n\)</span>
+步一定是环周长的整数倍。然后我们再设置一个指针 <code>entry</code>
+，让它从起点开始和 <code>slow</code> （从与 <code>fast</code>
+的相遇点开始）一起同速前进，当它们再相遇时，指向的就是环的入口。</p>
+<p>为什么 <code>entry</code> 和 <code>slow</code>
+一定会在入口相遇呢？我们假设起点距离入口为 <span
+class="math inline">\(m\)</span> ，则 <code>slow</code> 和
+<code>fast</code> 相遇时，<code>slow</code> 已经在环中走了 <span
+class="math inline">\(n-m\)</span> 步，如果再走 <span
+class="math inline">\(m\)</span> 步，则一定会回到环的入口处（ <span
+class="math inline">\(n\)</span> 是周长的整数倍），而此时
+<code>enrty</code> 也走到了环的入口。</p>
+<p>总结一下，这个算法有两个关键点：</p>
+<ul>
+<li>先通过快慢指针得到 <span class="math inline">\(n\)</span>
+是环周长的整数倍，这个结论之后要用到。</li>
+<li><code>slow</code> 和 <code>fast</code> 相遇后，我们只知道此时
+<code>slow</code> 再走 <span class="math inline">\(m\)</span>
+步就会回到环的入口处，但并不知道 <span class="math inline">\(m\)</span>
+具体是多少。设置 <code>enrty</code> 的目的就是通过它和 <code>slow</code>
+的相遇来指示已同时到达环的入口。</li>
+</ul>
+<p>时间复杂度 <span class="math inline">\(O(n)\)</span> ，空间复杂度
+<span class="math inline">\(O(1)\)</span> 。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">findDuplicate</span><span class="params">(vector&lt;<span class="type">int</span>&gt; &amp;nums)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> slow = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> fast = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            slow = nums[slow];</span><br><span class="line">            fast = nums[nums[fast]];</span><br><span class="line">        &#125; <span class="keyword">while</span> (slow != fast);</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> entry = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (entry != slow) &#123;</span><br><span class="line">            entry = nums[entry];</span><br><span class="line">            slow = nums[slow];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> entry;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2
+id="面试题11.-旋转数组的最小数字"><a href="https://leetcode-cn.com/problems/xuan-zhuan-shu-zu-de-zui-xiao-shu-zi-lcof/" target="_blank">面试题11.
+旋转数组的最小数字</a></h2>
+<blockquote>
+<p>把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。输入一个递增排序的数组的一个旋转，输出旋转数组的最小元素。例如，数组
+[3,4,5,1,2] 为 [1,2,3,4,5] 的一个旋转，该数组的最小值为1。</p>
+</blockquote>
+<p>旋转数组由两段递增序列组成，且左子序列中的元素均不小于右子序列中的元素。</p>
+<p>采用二分查找的思想，考虑三种情况：</p>
+<ol type="1">
+<li>中间元素小于最右元素，说明中间元素在右子序列中，排除其右侧部分；</li>
+<li>中间元素大于最右元素，说明中间元素在左子序列中，排除其左侧部分；</li>
+<li>中间元素等于最右元素，此时无法判断应排除哪一侧（例如最左、中间、最右元素均相等的情况），但至少可以排除最右元素，因为即使最右元素是最小值，我们还可以取与之相等的中间元素。</li>
+</ol>
+<p>值得一提的是，该算法也兼容数组整体递增（把前 0
+个元素搬到数组末尾）的特殊情况。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minArray</span><span class="params">(vector&lt;<span class="type">int</span>&gt; &amp;numbers)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> lo = <span class="number">0</span>, hi = numbers.<span class="built_in">size</span>() - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (lo &lt; hi) &#123;</span><br><span class="line">            <span class="type">int</span> mid = lo + ((hi - lo) &gt;&gt; <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">if</span> (numbers[mid] &lt; numbers[hi])</span><br><span class="line">                hi = mid;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (numbers[mid] &gt; numbers[hi])</span><br><span class="line">                lo = mid + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                hi--;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> numbers[lo];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2
+id="面试题12.-矩阵中的路径"><a href="https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof/" target="_blank">面试题12.
+矩阵中的路径</a></h2>
+<blockquote>
+<p>请设计一个函数，用来判断在一个矩阵中是否存在一条包含某字符串所有字符的路径。路径可以从矩阵中的任意一格开始，每一步可以在矩阵中向左、右、上、下移动一格。如果一条路径经过了矩阵的某一格，那么该路径不能再次进入该格子。</p>
+</blockquote>
+<p>回溯法，通过将 <code>board</code> 中的元素置 0
+表明已经过该格子，从而省去另开一个二维数组的空间开销。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">exist</span><span class="params">(vector&lt;vector&lt;<span class="type">char</span>&gt;&gt; &amp;board, string word)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (word.<span class="built_in">empty</span>()) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="type">int</span> n = board.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> m = board[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">if</span> (word.<span class="built_in">size</span>() &gt; n * m) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; m; j++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (<span class="built_in">dfs</span>(board, word, <span class="number">0</span>, i, j))</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">dfs</span><span class="params">(vector&lt;vector&lt;<span class="type">char</span>&gt;&gt; &amp;board, string word, <span class="type">int</span> index, <span class="type">int</span> i, <span class="type">int</span> j)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (index &gt;= word.<span class="built_in">size</span>()) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (i &lt; <span class="number">0</span> || j &lt; <span class="number">0</span> || i &gt;= board.<span class="built_in">size</span>() || j &gt;= board[<span class="number">0</span>].<span class="built_in">size</span>())</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (board[i][j] == word[index]) &#123;</span><br><span class="line">            board[i][j] = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">dfs</span>(board, word, index + <span class="number">1</span>, i, j + <span class="number">1</span>)</span><br><span class="line">             || <span class="built_in">dfs</span>(board, word, index + <span class="number">1</span>, i + <span class="number">1</span>, j)</span><br><span class="line">             || <span class="built_in">dfs</span>(board, word, index + <span class="number">1</span>, i, j - <span class="number">1</span>)</span><br><span class="line">             || <span class="built_in">dfs</span>(board, word, index + <span class="number">1</span>, i - <span class="number">1</span>, j))</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            board[i][j] = word[index];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2
+id="面试题14--i.-剪绳子"><a href="https://leetcode-cn.com/problems/jian-sheng-zi-lcof/" target="_blank">面试题14-
+I. 剪绳子</a></h2>
+<blockquote>
+<p>给你一根长度为 n 的绳子，请把绳子剪成整数长度的 m
+段（m、n都是整数，n&gt;1并且m&gt;1），每段绳子的长度记为
+k[0],k[1]...k[m] 。请问 k[0]*k[1]*...*k[m]
+可能的最大乘积是多少？例如，当绳子的长度是8时，我们把它剪成长度分别为2、3、3的三段，此时得到的最大乘积是18。</p>
+</blockquote>
+<h3 id="方法一动态规划">方法一：动态规划</h3>
+<p>注意考虑余下的 <code>i - j</code> 长度段不再剪的情况，即取
+<code>i - j</code> 和 <code>dp[i-j]</code> 的最大值。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">cuttingRope</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n + <span class="number">1</span>)</span></span>;</span><br><span class="line">        dp[<span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">2</span>; i &lt;= n; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt; i; j++) &#123;</span><br><span class="line">                dp[i] = <span class="built_in">max</span>(dp[i], <span class="built_in">max</span>(i - j, dp[i-j]) * j);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="方法二贪心">方法二：贪心</h3>
+<ul>
+<li>当 <code>n &lt;= 3</code> 时，由于题目要求至少剪一刀，返回
+<code>n - 1</code> 。</li>
+<li>当 <code>n &gt; 3</code> 时，先尽可能多地剪出长度为 3
+的片段，然后根据余下的长度分三种情况讨论：
+<ul>
+<li>余 0 ：直接返回 <span class="math inline">\(3^n\)</span> 。</li>
+<li>余 1 ：<span class="math inline">\(3+1=2+2\)</span> ，即返回 <span
+class="math inline">\(3^{n-1} * 4\)</span> 。</li>
+<li>余 2 ：返回 <span class="math inline">\(3^n * 2\)</span> 。</li>
+</ul></li>
+</ul>
+<p>（详细证明见《剑指Offer》或 Leetcode 题解）</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">cuttingRope</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (n &lt;= <span class="number">3</span>) <span class="keyword">return</span> n - <span class="number">1</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="type">int</span> q = n / <span class="number">3</span>;</span><br><span class="line">        <span class="type">int</span> r = n % <span class="number">3</span>;</span><br><span class="line">        <span class="keyword">if</span> (r == <span class="number">0</span>) <span class="keyword">return</span> (<span class="type">int</span>)<span class="built_in">pow</span>(<span class="number">3</span>, q);</span><br><span class="line">        <span class="keyword">if</span> (r == <span class="number">1</span>) <span class="keyword">return</span> (<span class="type">int</span>)<span class="built_in">pow</span>(<span class="number">3</span>, q - <span class="number">1</span>) * <span class="number">4</span>;</span><br><span class="line">        <span class="keyword">return</span> (<span class="type">int</span>)<span class="built_in">pow</span>(<span class="number">3</span>, q) * <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2
+id="面试题15.-二进制中1的个数"><a href="https://leetcode-cn.com/problems/er-jin-zhi-zhong-1de-ge-shu-lcof/" target="_blank">面试题15.
+二进制中1的个数</a></h2>
+<blockquote>
+<p>请实现一个函数，输入一个整数，输出该数二进制表示中 1 的个数。例如，把
+9 表示成二进制是 1001，有 2 位是 1。因此，如果输入 9，则该函数输出
+2。</p>
+</blockquote>
+<h3 id="方法一有几位循环几次">方法一：有几位循环几次</h3>
+<p>左移 <code>flag</code> 而不是右移 <code>n</code>
+，因为后者为负数时会导致死循环。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">hammingWeight</span><span class="params">(<span class="type">uint32_t</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">        <span class="type">unsigned</span> <span class="type">int</span> flag = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (flag) &#123;</span><br><span class="line">            <span class="keyword">if</span> (n &amp; flag) cnt++;</span><br><span class="line">            flag = flag &lt;&lt; <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> cnt;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="方法二有几个-1-循环几次">方法二：有几个 1 循环几次</h3>
+<p>把一个整数减去 1，再和原整数做与运算，会把该整数最右边的 1 变成
+0。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">hammingWeight</span><span class="params">(<span class="type">uint32_t</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (n) &#123;</span><br><span class="line">            cnt++;</span><br><span class="line">            n = n &amp; (n - <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> cnt;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2
+id="面试题16.-数值的整数次方"><a href="https://leetcode-cn.com/problems/shu-zhi-de-zheng-shu-ci-fang-lcof/" target="_blank">面试题16.
+数值的整数次方</a></h2>
+<blockquote>
+<p>实现函数double Power(double base, int
+exponent)，求base的exponent次方。不得使用库函数，同时不需要考虑大数问题。</p>
+</blockquote>
+<p>题目看似简单却暗藏杀机，至少有以下几点需要注意：</p>
+<ol type="1">
+<li>注意指数为负时可能引发的除零错误（虽然 LeetCode
+上没有这种测试用例）。</li>
+<li>注意边界情况。本题 <code>n</code> 的范围是 <span
+class="math inline">\([-2^{31},2^{31}-1]\)</span> ，当 <code>n</code>
+恰好为 <span class="math inline">\(-2^{31}\)</span> 时，其绝对值将超出
+32 位整型的表示范围 <span
+class="math inline">\([-2^{31},2^{31}-1]\)</span> ，因此需要转换为
+<code>long long</code> 类型。</li>
+<li>注意时间复杂度。朴素的累乘会超时，这里我们用快速幂算法，复杂度可降到
+<span class="math inline">\(O(\log n)\)</span> 。</li>
+</ol>
+<p>此外，还可以在一些小细节上做优化，例如用与运算代替求余运算符、用右移运算代替除法运算符。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">double</span> <span class="title">myPow</span><span class="params">(<span class="type">double</span> x, <span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="type">double</span> res = <span class="number">1.0</span>;</span><br><span class="line">        <span class="type">long</span> <span class="type">long</span> N = n;</span><br><span class="line">        <span class="keyword">if</span> (N &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">// if (equal(x, 0.0)) return 0.0; // divided by zero</span></span><br><span class="line">            N = -N;</span><br><span class="line">            x = <span class="number">1.0</span> / x;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span> (N) &#123;</span><br><span class="line">            <span class="keyword">if</span> (N &amp; <span class="number">1</span>) res *= x;</span><br><span class="line">            x *= x;</span><br><span class="line">            N &gt;&gt;= <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2
+id="面试题19.-正则表达式匹配"><a href="https://leetcode-cn.com/problems/zheng-ze-biao-da-shi-pi-pei-lcof/" target="_blank">面试题19.
+正则表达式匹配</a></h2>
+<blockquote>
+<p>请实现一个函数用来匹配包含'.'和'*'的正则表达式。模式中的字符'.'表示任意一个字符，而'*'表示它前面的字符可以出现任意次（含0次）。在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串"aaa"与模式"a.a"和"ab*ac*a"匹配，但与"aa.a"和"ab*a"均不匹配。</p>
+</blockquote>
+<h3 id="方法一递归">方法一：递归</h3>
+<p>首先定义一下“字符匹配”：字符串中的字符和模式中的字符相同，或模式中的字符为'.'。</p>
+<p>设置两个指针 <code>i</code> 和 <code>j</code>
+分别指向字符串的当前字符和模式的当前字符，分情况讨论：</p>
+<ul>
+<li><p>模式中的第二个字符不是'*'</p>
+<p>如果字符串中的第一个字符和模式中的第一个字符相匹配，则 <code>i</code>
+和 <code>j</code>
+都向后移动一个字符，然后匹配剩余的字符串和模式；否则直接返回
+<code>false</code> 。</p></li>
+<li><p>模式中的第二个字符是'*'</p>
+<p>如果字符串中的第一个字符和模式中的第一个字符相匹配，则有三种情况：</p>
+<ul>
+<li><p>'*'匹配字符串中的 0 个字符</p>
+<p>仅在模式上向后移动两个字符，而字符串不动，相当于'*'和它前面的字符直接被忽略；</p></li>
+<li><p>'*'匹配字符串中的 1 个字符</p>
+<p>在字符串上向后移动一个字符，并在模式上向后移动两个字符，表明'*'已匹配结束；</p></li>
+<li><p>'*'匹配字符串中的多个字符</p>
+<p>仅在字符串上向后移动一个字符，而模式不动，表明'*'还要继续匹配；</p></li>
+</ul>
+<p>否则只可能是'*'匹配字符串中的 0
+个字符的情况，忽略'*'和它前面的字符，继续向后匹配。</p></li>
+</ul>
+<p>注意：递归解法的效率很低，字符串传参的时候必须传引用，否则就会超时。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isMatch</span><span class="params">(string s, string p)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> _isMatch(s, p, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">bool</span> _isMatch(string &amp;s, string &amp;p, <span class="type">int</span> i, <span class="type">int</span> j) &#123;</span><br><span class="line">        <span class="keyword">if</span> (i == s.<span class="built_in">size</span>() &amp;&amp; j == p.<span class="built_in">size</span>())</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (i &lt; s.<span class="built_in">size</span>() &amp;&amp; j == p.<span class="built_in">size</span>())</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (j + <span class="number">1</span> &lt; p.<span class="built_in">size</span>() &amp;&amp; p[j+<span class="number">1</span>] == <span class="string">&#x27;*&#x27;</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (i &lt; s.<span class="built_in">size</span>() &amp;&amp; (s[i] == p[j] || p[j] == <span class="string">&#x27;.&#x27;</span>)) &#123;</span><br><span class="line">                <span class="keyword">return</span> _isMatch(s, p, i, j + <span class="number">2</span>)</span><br><span class="line">                    || _isMatch(s, p, i + <span class="number">1</span>, j + <span class="number">2</span>)</span><br><span class="line">                    || _isMatch(s, p, i + <span class="number">1</span>, j);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> _isMatch(s, p, i, j + <span class="number">2</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (i &lt; s.<span class="built_in">size</span>() &amp;&amp; (s[i] == p[j] || p[j] == <span class="string">&#x27;.&#x27;</span>))</span><br><span class="line">            <span class="keyword">return</span> _isMatch(s, p, i + <span class="number">1</span>, j + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="方法二动态规划">方法二：动态规划</h3>
+<p>定义状态 <code>dp[i][j]</code> 为 <code>s</code> 的前 <code>i</code>
+个字符 <code>s[0..i-1]</code> 是否匹配 <code>p</code> 的前
+<code>j</code> 个字符 <code>p[0..j-1]</code> 。</p>
+<p>根据 <code>s[i-1]</code> 和 <code>p[j-1]</code> 的关系分类讨论：</p>
+<ul>
+<li><p><code>s[i-1]</code> 和 <code>p[j-1]</code>
+匹配（同方法一中字符匹配的定义）</p>
+<p>只要看 <code>s</code> 的前 <code>i-1</code> 个字符是否匹配
+<code>p</code> 的前 <code>j-1</code> 个字符，即
+<code>dp[i][j] = dp[i-1][j-1]</code> ；</p></li>
+<li><p><code>p[j-1]</code> 是'*'</p>
+<p>考虑以下两种情况的或运算，即两者中成立一个就匹配：</p>
+<ul>
+<li><p>'*'匹配字符串中的 0 个字符</p>
+<p>'*'和它前面的字符直接被忽略，此时 <code>dp[i][j] = dp[i][j-2]</code>
+；</p></li>
+<li><p>'*'匹配字符串中的 1 个或多个字符</p>
+<p><code>s[i-1]</code> 是'*'所匹配的若干个字符中的最后一个，前提是
+<code>s[i-1]</code> 要和'*'前面的字符匹配，这时只要看 <code>s</code>
+的前 <code>i-1</code> 个字符是否匹配 <code>p</code> 的前 <code>j</code>
+个字符，即 <code>dp[i][j] = dp[i-1][j]</code> ；</p></li>
+</ul></li>
+<li><p><code>p[j-1]</code> 是正常字符却和 <code>s[i-1]</code> 不相同</p>
+<p>只能是 <code>dp[i][j] = false</code>（代码中省略了，因为初值默认就是
+<code>false</code> ）。</p></li>
+</ul>
+<p>此外，还要尤其注意一下 <code>dp</code> 数组的初始化：</p>
+<ul>
+<li><code>dp[0][0] = true</code> ，表示空字符串和空模式是匹配的；</li>
+<li><code>dp[1..n][0] = false</code>
+，表示非空字符串和空模式是不匹配的；</li>
+<li><code>dp[0][1..m]</code>
+需要讨论，空字符串是有可能与非空模式相匹配的，因为'*'包括匹配 0
+次的情况：
+<ul>
+<li>如果模式的当前字符 <code>p[j-1]</code>
+是'*'，且模式向前两个字符的状态是匹配的，即<code>dp[0][j-2] = true</code>
+，则 <code>dp[0][j] = true</code> ；</li>
+<li>否则 <code>dp[0][j] = false</code> 。</li>
+</ul></li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isMatch</span><span class="params">(string s, string p)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = s.<span class="built_in">size</span>(), m = p.<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">bool</span>&gt;&gt; <span class="built_in">dp</span>(n + <span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">bool</span>&gt;(m + <span class="number">1</span>));</span><br><span class="line">        dp[<span class="number">0</span>][<span class="number">0</span>] = <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">2</span>; j &lt;= m; j++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (p[j<span class="number">-1</span>] == <span class="string">&#x27;*&#x27;</span> &amp;&amp; dp[<span class="number">0</span>][j<span class="number">-2</span>])</span><br><span class="line">                dp[<span class="number">0</span>][j] = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt;= m; j++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (s[i<span class="number">-1</span>] == p[j<span class="number">-1</span>] || p[j<span class="number">-1</span>] == <span class="string">&#x27;.&#x27;</span>) &#123;</span><br><span class="line">                    dp[i][j] = dp[i<span class="number">-1</span>][j<span class="number">-1</span>];</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (p[j<span class="number">-1</span>] == <span class="string">&#x27;*&#x27;</span>) &#123;</span><br><span class="line">                    dp[i][j] = dp[i][j<span class="number">-2</span>] </span><br><span class="line">                    		|| ((s[i<span class="number">-1</span>] == p[j<span class="number">-2</span>] || p[j<span class="number">-2</span>] == <span class="string">&#x27;.&#x27;</span>) &amp;&amp; dp[i<span class="number">-1</span>][j]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n][m];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2
+id="面试题28.-对称的二叉树"><a href="https://leetcode-cn.com/problems/dui-cheng-de-er-cha-shu-lcof/" target="_blank">面试题28.
+对称的二叉树</a></h2>
+<blockquote>
+<p>请实现一个函数，用来判断一棵二叉树是不是对称的。如果一棵二叉树和它的镜像一样，那么它是对称的。</p>
+</blockquote>
+<p>如果前序遍历和其对称遍历的序列一样，则二叉树是对称的。</p>
+<p>注意这两个方向的遍历是可以同时进行并及时判别的。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isSymmetric</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (root == <span class="literal">nullptr</span>) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> _isSymmetric(root-&gt;left, root-&gt;right);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">bool</span> _isSymmetric(TreeNode* root1, TreeNode* root2) &#123;</span><br><span class="line">        <span class="keyword">if</span> (root1 == <span class="literal">nullptr</span> &amp;&amp; root2 == <span class="literal">nullptr</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (root1 == <span class="literal">nullptr</span> || root2 == <span class="literal">nullptr</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (root1-&gt;val != root2-&gt;val)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> _isSymmetric(root1-&gt;left, root2-&gt;right)</span><br><span class="line">            &amp;&amp; _isSymmetric(root1-&gt;right, root2-&gt;left);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2
+id="面试题35.-复杂链表的复制"><a href="https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/" target="_blank">面试题35.
+复杂链表的复制</a></h2>
+<blockquote>
+<p>请实现 <code>copyRandomList</code>
+函数，复制一个复杂链表。在复杂链表中，每个节点除了有一个
+<code>next</code> 指针指向下一个节点，还有一个 <code>random</code>
+指针指向链表中的任意节点或者 <code>null</code>。</p>
+</blockquote>
+<p>分三步走：</p>
+<ol type="1">
+<li>沿着 <code>next</code>
+复制每一个节点，并将复制的节点接在对应的原节点后面。</li>
+<li>从头遍历链表，将每个复制节点的 <code>random</code> 设为原节点的
+<code>random</code> 的下一个节点。</li>
+<li>将链表拆分成原链表和复制链表。</li>
+</ol>
+<p>这种方法既能达到 <span class="math inline">\(O(n)\)</span>
+的时间复杂度，也没有使用辅助空间。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">Node* <span class="title">copyRandomList</span><span class="params">(Node* head)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (head == <span class="literal">nullptr</span>) <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line"></span><br><span class="line">        Node* curr = head;</span><br><span class="line">        <span class="keyword">while</span> (curr != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">            Node* copy = <span class="keyword">new</span> <span class="built_in">Node</span>(curr-&gt;val);</span><br><span class="line">            copy-&gt;next = curr-&gt;next;</span><br><span class="line">            curr-&gt;next = copy;</span><br><span class="line">            curr = copy-&gt;next;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        curr = head;</span><br><span class="line">        <span class="keyword">while</span> (curr != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">            Node* copy = curr-&gt;next;</span><br><span class="line">            <span class="keyword">if</span> (curr-&gt;random != <span class="literal">nullptr</span>)</span><br><span class="line">                copy-&gt;random = curr-&gt;random-&gt;next;</span><br><span class="line">            curr = curr-&gt;next-&gt;next;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Node* head_copy = head-&gt;next;</span><br><span class="line">        curr = head;</span><br><span class="line">        <span class="keyword">while</span> (curr != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">            Node* copy = curr-&gt;next;</span><br><span class="line">            curr-&gt;next = copy-&gt;next;</span><br><span class="line">            <span class="keyword">if</span> (copy-&gt;next != <span class="literal">nullptr</span>)</span><br><span class="line">                copy-&gt;next = copy-&gt;next-&gt;next;</span><br><span class="line">            curr = curr-&gt;next;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> head_copy;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2
+id="面试题36.-二叉搜索树与双向链表"><a href="https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/" target="_blank">面试题36.
+二叉搜索树与双向链表</a></h2>
+<blockquote>
+<p>输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的循环双向链表。要求不能创建任何新的节点，只能调整树中节点指针的指向。</p>
+</blockquote>
+<p>基于递归的中序遍历，<code>head</code>
+表示整个双向链表的首节点，<code>pre</code> 表示上一个根节点。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    Node* head = <span class="literal">nullptr</span>;</span><br><span class="line">    Node* pre = <span class="literal">nullptr</span>;    </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">Node* <span class="title">treeToDoublyList</span><span class="params">(Node* root)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!root) <span class="keyword">return</span> root;</span><br><span class="line">        <span class="built_in">inorder</span>(root);</span><br><span class="line">        head-&gt;left = pre;</span><br><span class="line">        pre-&gt;right = head;</span><br><span class="line">        <span class="keyword">return</span> head;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">inorder</span><span class="params">(Node* root)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (root-&gt;left) <span class="built_in">inorder</span>(root-&gt;left);</span><br><span class="line">        root-&gt;left = pre;</span><br><span class="line">        <span class="keyword">if</span> (pre) pre-&gt;right = root;</span><br><span class="line">        <span class="keyword">else</span> head = root;</span><br><span class="line">        pre = root;</span><br><span class="line">        <span class="keyword">if</span> (root-&gt;right) <span class="built_in">inorder</span>(root-&gt;right);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2
+id="面试题38.-字符串的排列"><a href="https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/" target="_blank">面试题38.
+字符串的排列</a></h2>
+<blockquote>
+<p>输入一个字符串，打印出该字符串中字符的所有排列。</p>
+<p>你可以以任意顺序返回这个字符串数组，但里面不能有重复元素。</p>
+</blockquote>
+<h3 id="方法一追加">方法一：追加</h3>
+<p>从空字符串开始不断向末尾追加字符。</p>
+<p>通过先对输入字符串进行排序，然后每次循环中判断前一个字符是否访问过且和当前字符相同，从而避免因存在重复字符而生成重复的排列。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;string&gt; <span class="title">permutation</span><span class="params">(string s)</span> </span>&#123;</span><br><span class="line">        vector&lt;string&gt; res;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">bool</span>&gt; <span class="title">visited</span><span class="params">(s.size())</span></span>;</span><br><span class="line">        string t;</span><br><span class="line">        <span class="built_in">sort</span>(s.<span class="built_in">begin</span>(), s.<span class="built_in">end</span>());</span><br><span class="line">        <span class="built_in">dfs</span>(res, visited, s, t);</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">dfs</span><span class="params">(vector&lt;string&gt;&amp; res, vector&lt;<span class="type">bool</span>&gt;&amp; visited, string&amp; s, string&amp; t)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (t.<span class="built_in">size</span>() == s.<span class="built_in">size</span>()) &#123;</span><br><span class="line">            res.<span class="built_in">push_back</span>(t);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; s.<span class="built_in">size</span>(); i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (visited[i]) <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">if</span> (i &gt; <span class="number">0</span> &amp;&amp; s[i<span class="number">-1</span>] == s[i] &amp;&amp; visited[i<span class="number">-1</span>]) <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">            visited[i] = <span class="literal">true</span>;</span><br><span class="line">            t.<span class="built_in">push_back</span>(s[i]);</span><br><span class="line">            <span class="built_in">dfs</span>(res, visited, s, t);</span><br><span class="line">            t.<span class="built_in">pop_back</span>();</span><br><span class="line">            visited[i] = <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="方法二交换">方法二：交换</h3>
+<p>直接在输入字符串上两两字符做交换。</p>
+<p>通过判断待交换元素之间是否有与当前元素相同的元素，从而实现对重复情况的剪枝。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;string&gt; <span class="title">permutation</span><span class="params">(string s)</span> </span>&#123;</span><br><span class="line">        vector&lt;string&gt; res;</span><br><span class="line">        <span class="built_in">dfs</span>(res, s, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">dfs</span><span class="params">(vector&lt;string&gt;&amp; res, string&amp; s, <span class="type">int</span> start)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (start == s.<span class="built_in">size</span>() - <span class="number">1</span>) &#123;</span><br><span class="line">            res.<span class="built_in">push_back</span>(s);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = start; i &lt; s.<span class="built_in">size</span>(); i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">duplicate</span>(s, start, i)) <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">            <span class="built_in">swap</span>(s[start], s[i]);</span><br><span class="line">            <span class="built_in">dfs</span>(res, s, start + <span class="number">1</span>);</span><br><span class="line">            <span class="built_in">swap</span>(s[start], s[i]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">duplicate</span><span class="params">(string&amp; s, <span class="type">int</span> start, <span class="type">int</span> i)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = start; j &lt; i; j++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (s[j] == s[i]) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Yuheng Ding WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Yuheng Ding Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Regex/" rel="tag"># Regex</a>
+              <a href="/tags/Data-Structure/" rel="tag"># Data Structure</a>
+              <a href="/tags/Algorithm/" rel="tag"># Algorithm</a>
+              <a href="/tags/Sorting/" rel="tag"># Sorting</a>
+              <a href="/tags/Search/" rel="tag"># Search</a>
+              <a href="/tags/Greedy/" rel="tag"># Greedy</a>
+              <a href="/tags/Dynamic-Programming/" rel="tag"># Dynamic Programming</a>
+              <a href="/tags/Tree/" rel="tag"># Tree</a>
+              <a href="/tags/Linked-List/" rel="tag"># Linked List</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/03/11/leetcode-tree/" rel="prev" title="Leetcode 刷题笔记——树">
+                  <i class="fa fa-chevron-left"></i> Leetcode 刷题笔记——树
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/04/28/cpp-primer-plus/" rel="next" title="[Note] C++ Primer Plus">
+                  [Note] C++ Primer Plus <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yuheng Ding</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Symbols count total: </span>
+    <span title="Symbols count total">370k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>Reading time total &asymp;</span>
+    <span title="Reading time total">5:37</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"timdyh","repo":"gitalk-comments","client_id":"0babcb65af364dd08a90","client_secret":"22090e837380d49040a73f2ed1db4f9541b29379","admin_user":"timdyh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"ad7097eb86769dc126413b07a895b6dc"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

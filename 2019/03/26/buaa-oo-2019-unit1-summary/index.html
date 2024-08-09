@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="null//null" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="x_9IHIiVX0aZQfKSCtN7gy8_1UhN7guVmZAmA4gv1EE">
+  <meta name="msvalidate.01" content="AC8F448726B8A8742C6DFFA7640E7DBF">
+  <meta name="baidu-site-verification" content="code-2qEdijyCxz">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="第一次作业 第一次作业需要完成的任务为简单多项式导函数的求解。 思路 因为仅仅是简单多项式的求导，所以求导本身没有什么可说的，直接套用幂函数的求导公式就行了，主要的精力是花在了正则表达式上。这里推荐两个网站：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BUAA-OO-2019 第一单元总结">
+<meta property="og:url" content="http://example.com/2019/03/26/buaa-oo-2019-unit1-summary/index.html">
+<meta property="og:site_name" content="TimDyh">
+<meta property="og:description" content="第一次作业 第一次作业需要完成的任务为简单多项式导函数的求解。 思路 因为仅仅是简单多项式的求导，所以求导本身没有什么可说的，直接套用幂函数的求导公式就行了，主要的精力是花在了正则表达式上。这里推荐两个网站：">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-122643.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-122650.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-122656.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-122700.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-122705.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-122707.jpg">
+<meta property="article:published_time" content="2019-03-26T04:57:00.000Z">
+<meta property="article:modified_time" content="2022-12-16T11:59:07.735Z">
+<meta property="article:author" content="Yuheng Ding">
+<meta property="article:tag" content="OOP">
+<meta property="article:tag" content="Regex">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-122643.jpg">
+
+
+<link rel="canonical" href="http://example.com/2019/03/26/buaa-oo-2019-unit1-summary/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2019/03/26/buaa-oo-2019-unit1-summary/","path":"2019/03/26/buaa-oo-2019-unit1-summary/","title":"BUAA-OO-2019 第一单元总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>BUAA-OO-2019 第一单元总结 | TimDyh</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">TimDyh</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A"><span class="nav-number">1.</span> <span class="nav-text">第一次作业</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF"><span class="nav-number">1.1.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90"><span class="nav-number">1.2.</span> <span class="nav-text">程序结构分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%A6%E9%87%8F%E5%88%86%E6%9E%90"><span class="nav-number">1.3.</span> <span class="nav-text">度量分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Ebug"><span class="nav-number">1.4.</span> <span class="nav-text">关于BUG</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AC%A1%E4%BD%9C%E4%B8%9A"><span class="nav-number">2.</span> <span class="nav-text">第二次作业</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF-1"><span class="nav-number">2.1.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90-1"><span class="nav-number">2.2.</span> <span class="nav-text">程序结构分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%A6%E9%87%8F%E5%88%86%E6%9E%90-1"><span class="nav-number">2.3.</span> <span class="nav-text">度量分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Ebug-1"><span class="nav-number">2.4.</span> <span class="nav-text">关于BUG</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A"><span class="nav-number">3.</span> <span class="nav-text">第三次作业</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF-2"><span class="nav-number">3.1.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90-2"><span class="nav-number">3.2.</span> <span class="nav-text">程序结构分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%A6%E9%87%8F%E5%88%86%E6%9E%90-2"><span class="nav-number">3.3.</span> <span class="nav-text">度量分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Ebug-2"><span class="nav-number">3.4.</span> <span class="nav-text">关于BUG</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%E4%B8%8E%E5%BB%BA%E8%AE%AE"><span class="nav-number">4.</span> <span class="nav-text">总结与建议</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yuheng Ding"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Yuheng Ding</p>
+  <div class="site-description" itemprop="description">Per aspera, ad astra.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/timdyh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dyh0701@gmail.com" title="E-Mail → mailto:dyh0701@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/tim_dyh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;tim_dyh" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/timdyh" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/03/26/buaa-oo-2019-unit1-summary/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="BUAA-OO-2019 第一单元总结 | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          BUAA-OO-2019 第一单元总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2019-03-26 12:57:00" itemprop="dateCreated datePublished" datetime="2019-03-26T12:57:00+08:00">2019-03-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Project/" itemprop="url" rel="index"><span itemprop="name">Project</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>3.1k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>3 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="第一次作业">第一次作业</h2>
+<p>第一次作业需要完成的任务为简单多项式导函数的求解。</p>
+<h3 id="思路">思路</h3>
+<p>因为仅仅是简单多项式的求导，所以求导本身没有什么可说的，直接套用幂函数的求导公式就行了，主要的精力是花在了正则表达式上。这里推荐两个网站：</p>
+<span id="more"></span>
+<p><a href="https://github.com/ziishaned/learn-regex" target="_blank">https://github.com/ziishaned/learn-regex</a></p>
+<p><a href="https://regex101.com" target="_blank">https://regex101.com</a></p>
+<p>前者可以用来学习正则表达式的语法，后者则提供实时的正则表达式匹配，方便进行调试和验证。尤其是后者，能大幅提高编写正则表达式的效率和正确性，省去了每次都得在IDEA里运行一遍的麻烦。</p>
+<p>用正则时有一点需要注意，那就是大正则是不可取的。我一开始就是企图用一大串正则匹配整个输入，结果当时是爆栈了。合理的做法应当是每次只find()一个Term，以及通过Term与Term之间的连接关系判断合法性。</p>
+<p>在数据结构方面，我一开始用的是ArrayList，但在后来优化的时候发现合并非常麻烦，于是果断放弃，学习并采用了HashMap。通过将指数作为Key，可以快速地找到指数相同的项，以实现合并同类项的目的。</p>
+<h3 id="程序结构分析">程序结构分析</h3>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-122643.jpg" /></p>
+<p>由于刚接触Java语言，也不太懂什么是面向对象思想，所以程序整体来说还是比较C
+type的。也可能是由于本次作业比较简单，所以也并没有用到继承、接口之类的东西。从类图中可以看到，一共也就两个类，其中PolyDiff完成主函数、预处理、合法性判断等任务，而Term则实例化出多项式中的每一项，保存系数和指数，并提供diff()求导方法。</p>
+<h3 id="度量分析">度量分析</h3>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-122650.jpg" /></p>
+<p>可以看出个别方法复杂度过高，这很不OO。下次应当多注意抽象以及代码重用，避免一个方法或者类的过于臃肿。</p>
+<h3 id="关于bug">关于BUG</h3>
+<p>公测未被查出bug。在互测阶段，我第一个发现的bug是自己的bug，其原因在于，我判断合法性的做法是将匹配了的每一项用"#"替换掉，最后看除了"
+"、"
+、"#"之外是否没有其他的字符。然而，我忽略了输入一开始就含有"#"的可能，但这种可能性非常小，以至于我认为只要不仔细阅读我的代码，基本上是不可能歪打正着的。遗憾的是，最终还是有一位十分认真的同学，（我猜）在一行一行通读了我的整个代码后，居然还真的发现了这个bug……我是服气的，真的太强了orz</p>
+<p>至于我查别人的bug，都是用的我写作业时自测发现了bug的样例，因为我相信这样的样例会具有一定的杀伤力和普适性。事实证明，我的确能用这种方法测出很多别人的bug，于是也就没有再结合他人的代码设计结构来设计更多的测试样例。</p>
+<h2 id="第二次作业">第二次作业</h2>
+<p>第二次作业需要完成的任务为包含简单幂函数和简单正余弦函数的导函数的求解。</p>
+<h3 id="思路-1">思路</h3>
+<p>第二次作业新引入了正余弦函数，乍看复杂了许多，但其实还是可以用套公式的办法死做，然而代价就是毫无扩展性可言。</p>
+<p>对于每一项及其导函数，都可以化为幂函数和正余弦函数的幂次的乘积这种标准形式，那么Term就相应拥有了系数、幂函数及正余弦函数的指数这四个属性。除了正则表达式匹配和求导规则有一些变化，其余与第一次作业并无太大区别。</p>
+<p>值得注意的是，这次HashMap的Key我采用的是将幂函数及正余弦函数的指数拼接成一个字符串，并在相邻指数之间用"|"分隔。如此一来，便可省去重写equals()和hashcode()的麻烦，然后像第一次作业一样合并同类项。</p>
+<h3 id="程序结构分析-1">程序结构分析</h3>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-122656.jpg" /></p>
+<p>程序结构大体类似于第一次作业。</p>
+<h3 id="度量分析-1">度量分析</h3>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-122700.jpg" /></p>
+<p>合法性判断的方法还是有些冗长了，可能是因为其中包含了一些对输入进行预处理的操作，可以考虑将这部分单独抽离出来。</p>
+<h3 id="关于bug-1">关于BUG</h3>
+<p>在吸取了上一次作业的教训后，我舍弃了替换捕获组方法，而是根据本次匹配起点是否为上一次匹配的终点，以及最后一次匹配的终点是否为字符串的末尾，来判断输入的合法性。最终在公测和互测中都未发现bug。</p>
+<p>发现别人程序的bug依然采用上一次作业的方法，果然又查出了不少bug，大多是对于非法的输入没有输出WRONG
+FORMAT!</p>
+<h2 id="第三次作业">第三次作业</h2>
+<p>第三次作业需要完成的任务为包含简单幂函数和简单正余弦函数的导函数的求解(支持因子嵌套在三角函数因子中)。</p>
+<h3 id="思路-2">思路</h3>
+<p>正如之前所说的，套公式的做法是无法解决任意层嵌套的问题的，因此整个程序架构必须重构。在这里我采用的是递归下降的方法，规定好每种函数、组合的求导法则，将嵌套的内容看做一个整体，留给下一层递归处理，每次只判断当前层的合法性并进行相应的求导。</p>
+<p>在优化方面，仅仅是剔除了冗余的0、1、括号、正负号等等，在同类项合并和恒等变换方面未能进行更多的处理，其原因和求导方法的返回值有关。由于我在一开始设计的时候就直接把每个因子的求导结果当作字符串保存，所以整个表达式求导的过程就相当于是字符串按一定规则转化和拼接的过程。这样做的好处在于简答、直观、不易出错，但弊端也很明显，那就是很难做进一步优化，因为对字符串中的内容是无法进行插入、删除、替换、排序或合并等操作的，除非像读取输入那样再一次对字符串进行分析。由于时间有限，我没有那样做。其实更好的方法是将求导的结果也作为某一个类的实例，方便对其做进一步的处理。</p>
+<h3 id="程序结构分析-2">程序结构分析</h3>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-122705.jpg" /></p>
+<p>如图所示，本次作业我用到了面向对象中的继承，有必要这样做的原因有三：</p>
+<ol type="1">
+<li>每个子类都需要toString()方法，以返回该项因子自身的字符串。由于这个方法对于每种因子都一样，所以应该在父类中统一实现。</li>
+<li>每个子类都需要实现各自的diff()方法，因为每种函数或组合都有自己的求导规则。</li>
+<li>每个子类都继承于Factor类使得不同类型的因子可以放在一个ArrayList中一起处理。</li>
+</ol>
+<p>至于Term，它并不是因子，只是Expr的组成部分，所以单独成为一类。</p>
+<p>通过继承这种面向对象的思维方式，我们程序的结构更加清晰，功能更加强大，最重要的是，拥有了可扩展性。</p>
+<h3 id="度量分析-2">度量分析</h3>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-122707.jpg" /></p>
+<p>果然越复杂的程序，要做到均衡控制每个方法的复杂度就越难。主要的问题依然出在输入分析、预处理以及合法性判断上，尽管这次我将他们分离了开来。至于有没有必要以及如何进一步拆解，还有待研究。</p>
+<h3 id="关于bug-2">关于BUG</h3>
+<p>本次作业依然没有被查出任何bug。</p>
+<p>在查别人的bug方面，为了解放劳动力，这次我选择写脚本进行批量测试。我用到了Python中一个强大的第三方包——<a href="https://www.sympy.org/en/index.html" target="_blank">SymPy</a>，可以进行复杂表达式的求导运算以及判断两式是否等价，这也是我的"简化版评测机"的主要原理，即将Java程序的输出与SymPy的输出进行比对。显然，该评测机无法对非法输入给出评判。而测试用例本身依然是我自测时手动构造的测试集，按行读取便可进行批量测试，威力极大，效率奇高。</p>
+<h2 id="总结与建议">总结与建议</h2>
+<p>第一单元总体还是比较入门的，重点在于熟悉Java语法特性、建立面向对象思维，为日后的多线程编程打好基础。</p>
+<p>对于我个人而已，学习了Java正则表达式、BigInteger类、HashMap、重写与重载、继承与接口等等技术，并且慢慢开始理解了层次化架构和面向对象技术的优越性。总体感觉Java还是比C/C++要方便的多，基本上只要是你能想到的功能，总有类或者第三方包能为你提供解决方案。而这就需要我们有查找资料自学的能力，无论是看技术博客还是阅读官方文档，再加上自己多动手实践，相信很快就能掌握一项新的技术，并在作业中发挥其功能。</p>
+<p>此外，通过Checkstyle对代码风格进行规范也是比较有效的措施，基本上不会再写出会令人抓狂的代码了。但是其中每行最多80个字符的限制我实在觉得不太合理，尤其是涉及正则表达式的时候，往往是硬生生地把一句逻辑连贯的代码拆成多行。个人认为在阅读代码时，莫名其妙的换行比一行稍长的代码体验更糟。建议将每行的字符数上限改为100~120。</p>
+<p>对于面向对象的理解可能还是只是停留在表层，甚至会有一些误解，这就需要进一步的学习和练习，在一次次实践中总结经验与教训。希望以后能写出更加OO的程序。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Yuheng Ding WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Yuheng Ding Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/OOP/" rel="tag"># OOP</a>
+              <a href="/tags/Regex/" rel="tag"># Regex</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/08/24/luogu-p1177-quick-sort/" rel="prev" title="洛谷 P1177 【模板】快速排序">
+                  <i class="fa fa-chevron-left"></i> 洛谷 P1177 【模板】快速排序
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/04/23/buaa-oo-2019-unit2-summary/" rel="next" title="BUAA-OO-2019 第二单元总结">
+                  BUAA-OO-2019 第二单元总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yuheng Ding</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Symbols count total: </span>
+    <span title="Symbols count total">370k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>Reading time total &asymp;</span>
+    <span title="Reading time total">5:37</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"timdyh","repo":"gitalk-comments","client_id":"0babcb65af364dd08a90","client_secret":"22090e837380d49040a73f2ed1db4f9541b29379","admin_user":"timdyh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"f48e4ca2a80225b1dec565ca3bfd952f"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

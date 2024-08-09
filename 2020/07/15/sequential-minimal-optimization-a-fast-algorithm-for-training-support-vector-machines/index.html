@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="null//null" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="x_9IHIiVX0aZQfKSCtN7gy8_1UhN7guVmZAmA4gv1EE">
+  <meta name="msvalidate.01" content="AC8F448726B8A8742C6DFFA7640E7DBF">
+  <meta name="baidu-site-verification" content="code-2qEdijyCxz">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="摘要 本文提出了一种用于训练支持向量机的新算法：序列最小优化算法（SMO）。训练支持向量机需要解决非常大的二次规划（QP）优化问题。SMO 将这个大的 QP 问题分解为一系列最小的 QP 问题。这些小的 QP 问题可以通过解析来解决，从而避免了将耗时的数值 QP 优化用作内部循环。SMO 所需的内存量与训练集大小成线性关系，这使 SMO 可以处理非常大的训练集。由于避免了矩阵计算，因此对于各种测试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Paper] Sequential Minimal Optimization: A Fast Algorithm for Training Support Vector Machines">
+<meta property="og:url" content="http://example.com/2020/07/15/sequential-minimal-optimization-a-fast-algorithm-for-training-support-vector-machines/index.html">
+<meta property="og:site_name" content="TimDyh">
+<meta property="og:description" content="摘要 本文提出了一种用于训练支持向量机的新算法：序列最小优化算法（SMO）。训练支持向量机需要解决非常大的二次规划（QP）优化问题。SMO 将这个大的 QP 问题分解为一系列最小的 QP 问题。这些小的 QP 问题可以通过解析来解决，从而避免了将耗时的数值 QP 优化用作内部循环。SMO 所需的内存量与训练集大小成线性关系，这使 SMO 可以处理非常大的训练集。由于避免了矩阵计算，因此对于各种测试">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144009.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144012.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144052.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144056.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144059.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144103.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144106.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144109.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144112.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144115.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143430.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143432.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143433.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143434.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143435.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143436.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143437.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143438.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143439.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143440.jpg">
+<meta property="article:published_time" content="2020-07-15T15:04:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T08:23:46.474Z">
+<meta property="article:author" content="Yuheng Ding">
+<meta property="article:tag" content="Machine Learning">
+<meta property="article:tag" content="SVM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144009.jpg">
+
+
+<link rel="canonical" href="http://example.com/2020/07/15/sequential-minimal-optimization-a-fast-algorithm-for-training-support-vector-machines/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2020/07/15/sequential-minimal-optimization-a-fast-algorithm-for-training-support-vector-machines/","path":"2020/07/15/sequential-minimal-optimization-a-fast-algorithm-for-training-support-vector-machines/","title":"[Paper] Sequential Minimal Optimization: A Fast Algorithm for Training Support Vector Machines"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[Paper] Sequential Minimal Optimization: A Fast Algorithm for Training Support Vector Machines | TimDyh</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">TimDyh</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A0%94%E7%A9%B6%E8%83%8C%E6%99%AF"><span class="nav-number">2.</span> <span class="nav-text">研究背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A0%94%E7%A9%B6%E7%8E%B0%E7%8A%B6"><span class="nav-number">4.</span> <span class="nav-text">研究现状</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">解决方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9%E4%B8%8E%E4%BC%98%E5%8A%BF"><span class="nav-number">5.1.</span> <span class="nav-text">创新点与优势</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E8%BF%87%E7%A8%8B"><span class="nav-number">5.2.</span> <span class="nav-text">实现过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B1%82%E8%A7%A3%E4%B8%A4%E4%B8%AA%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E4%B9%98%E6%95%B0%E7%9A%84%E8%A7%A3%E6%9E%90%E6%96%B9%E6%B3%95"><span class="nav-number">5.3.</span> <span class="nav-text">求解两个拉格朗日乘数的解析方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E8%A6%81%E4%BC%98%E5%8C%96%E7%9A%84%E4%B9%98%E6%95%B0%E7%9A%84%E5%90%AF%E5%8F%91%E5%BC%8F%E6%96%B9%E6%B3%95"><span class="nav-number">5.4.</span> <span class="nav-text">选择要优化的乘数的启发式方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E8%AF%84%E4%BC%B0"><span class="nav-number">6.</span> <span class="nav-text">实验评估</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E5%B9%B3%E5%8F%B0"><span class="nav-number">6.1.</span> <span class="nav-text">实验平台</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E9%85%8D%E7%BD%AE"><span class="nav-number">6.2.</span> <span class="nav-text">实验配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%96%B9%E6%B3%95"><span class="nav-number">6.3.</span> <span class="nav-text">实验方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E8%AE%BA"><span class="nav-number">6.4.</span> <span class="nav-text">实验结论</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E8%B6%B3%E4%B9%8B%E5%A4%84"><span class="nav-number">7.</span> <span class="nav-text">不足之处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">8.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yuheng Ding"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Yuheng Ding</p>
+  <div class="site-description" itemprop="description">Per aspera, ad astra.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/timdyh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dyh0701@gmail.com" title="E-Mail → mailto:dyh0701@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/tim_dyh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;tim_dyh" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/timdyh" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/07/15/sequential-minimal-optimization-a-fast-algorithm-for-training-support-vector-machines/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[Paper] Sequential Minimal Optimization: A Fast Algorithm for Training Support Vector Machines | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [Paper] Sequential Minimal Optimization: A Fast Algorithm for Training Support Vector Machines
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-07-15 23:04:00" itemprop="dateCreated datePublished" datetime="2020-07-15T23:04:00+08:00">2020-07-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Paper-Reading/" itemprop="url" rel="index"><span itemprop="name">Paper Reading</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>5.5k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>5 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="摘要">摘要</h3>
+<p>本文提出了一种用于训练支持向量机的新算法：序列最小优化算法（SMO）。训练支持向量机需要解决非常大的二次规划（QP）优化问题。SMO
+将这个大的 QP 问题分解为一系列最小的 QP 问题。这些小的 QP
+问题可以通过解析来解决，从而避免了将耗时的数值 QP 优化用作内部循环。SMO
+所需的内存量与训练集大小成线性关系，这使 SMO
+可以处理非常大的训练集。由于避免了矩阵计算，因此对于各种测试问题，SMO
+随训练集大小在线性和二次方之间缩放，而标准分块 SVM
+算法随训练集大小在线性和三次方之间缩放。SMO 的计算时间主要由 SVM
+评估决定，因此 SMO 对于线性 SVM
+和稀疏数据集最快。在现实世界的稀疏数据集上，SMO 的速度可以比分块算法快
+1000 倍以上。</p>
+<span id="more"></span>
+<h3 id="研究背景">研究背景</h3>
+<p>在过去的几年中，学界对支持向量机（SVM）的研究兴趣激增，因其在诸如手写字符识别、面部检测、行人检测和文本分类等许多问题上均具有良好的泛化性能。然而，现有的
+SVM 训练算法速度慢、内存开销大，且实现过于复杂和困难，这使得 SVM
+的使用仍然仅限于一小部分研究人员。因此，为了提高 SVM
+的实用性，亟需一种更好的训练算法。</p>
+<h3 id="问题描述">问题描述</h3>
+<p>SVM
+的训练本质上是求解一个二次规划（QP）问题，其拉格朗日对偶表示如下：</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144009.jpg" alt="1" style="zoom:67%;" /></p>
+<p>当满足如下 KKT 条件时，该 QP 问题得以解决：</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144012.jpg" alt="2" style="zoom:67%;" /></p>
+<p>其中，<span class="math inline">\(\vec x_i\)</span> 是第 i
+个训练样本，<span class="math inline">\(y_i\)</span> 是第 i
+个训练样本的真实标签，<span class="math inline">\(u_i\)</span> 是第 i
+个训练样本的输出，<span class="math inline">\(α_i\)</span> 第 i
+个训练样本对应的拉格朗日乘数，<span class="math inline">\(C\)</span>
+是惩罚参数。</p>
+<p>上式中的二次形式涉及一个矩阵，该矩阵的元素数量等于训练样本数量的平方。一旦样本数量稍大，该矩阵将难以存入内存，因而通过标准的
+QP 技术无法轻松解决由 SVM 引出的 QP 问题。</p>
+<p>本文所讨论的内容即，作者所提出的训练算法是如何解决上述问题的。</p>
+<h3 id="研究现状">研究现状</h3>
+<p>Vapnik[2] 描述了一种“分块”解决 SVM QP 的方法，将整个 QP
+问题分解为多个 QP
+子问题，其最终目标是识别所有非零拉格朗日乘数并丢弃所有零拉格朗日乘数。每个
+QP
+子问题都使用先前子问题的结果初始化。在最后一步，已经确定了整个非零拉格朗日乘数集，从而解决了整个
+QP 问题。</p>
+<p>分块处理将矩阵的大小从训练样本数的平方，减少到大约为非零拉格朗日乘数的数目的平方。然而，分块算法仍然不能解决大规模的训练问题，因为即使这个缩小的矩阵也无法放入内存中。</p>
+<p>1997年，Osuna 等人[3] 从理论上证明，大的 QP
+问题可以分解为一系列较小的 QP
+子问题。基于此，论文建议在每一步中添加一个样本，然后去除一个样本，这样每个
+QP
+子问题将保持一个恒定大小的矩阵，从而允许对任意大小的数据集进行训练。但显然这是低效的，因为它使用整个数值
+QP 优化步骤来仅仅使一个训练样本服从 KKT 条件。</p>
+<p>更重要的是，所有这些方法都需要数值 QP 解算器，而众所周知，数值 QP
+存在精度问题。</p>
+<h3 id="解决方法">解决方法</h3>
+<p>作者在论文中提出的序列最小优化算法（SMO）是一种简单快速求解 SVM
+引出的 QP 问题的方法，它将整个 QP 问题分解为多个 QP 子问题，通过
+Osuna[3] 的定理保证收敛。</p>
+<h4 id="创新点与优势">创新点与优势</h4>
+<p>不像以往的算法，SMO
+在每一步仅选择两个拉格朗日乘数进行联合优化。其优势在于，两个拉格朗日乘数的优化可以通过解析方法完成，避免了数值
+QP 优化，计算更快、更精确。此外，由于 SMO
+完全不需要额外的矩阵存储，即使大规模的训练问题也可以在个人电脑的内存中运行。下图直观地说明了
+SMO 与以往算法的区别。</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144052.jpg" alt="comparison" style="zoom:67%;" /></p>
+<p>图中，每种算法均展示了三个训练轮次。水平细线代表训练集，粗块代表本轮中被优化的拉格朗日乘数。对于分块算法，每轮添加固定数量的样本，而为零的拉格朗日乘数被丢弃。因此，每轮的训练样本数量趋于增加。对于Osuna的算法，每轮都会优化固定数量的样本，因为添加和删除的样本数量相同。对于SMO，每轮都仅对两个样本进行解析优化，因此每轮都非常快。</p>
+<h4 id="实现过程">实现过程</h4>
+<p>SMO
+由两个部分组成：一种求解两个拉格朗日乘数的解析方法，以及一种选择要优化的乘数的启发式方法。</p>
+<h4
+id="求解两个拉格朗日乘数的解析方法">求解两个拉格朗日乘数的解析方法</h4>
+<p>为了求解两个拉格朗日乘数，SMO
+首先计算这些乘数的约束，然后求解约束最小值。如下图所示，有界约束使拉格朗日乘数位于一个框内，而线性相等约束使拉格朗日乘数位于对角线上。
+因此，目标函数的约束最小值必须位于对角线段上。</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144056.jpg" alt="constraints" style="zoom:67%;" /></p>
+<p>在实现上，假设当前为第 <span class="math inline">\(k\)</span>
+轮，使用解析法计算乘数 <span class="math inline">\(α_1^{(k)}\)</span> 和
+<span class="math inline">\(α_2^{(k)}\)</span> 的最优解并更新至 <span
+class="math inline">\(α_1^{(k+1)}\)</span> 和 <span
+class="math inline">\(α_2^{(k+1)}\)</span>，<span
+class="math inline">\(\vec α\)</span> 中的其他乘数不变，得到 <span
+class="math inline">\(\vec α^{(k+1)}\)</span>，然后更新阈值 <span
+class="math inline">\(b^{(k+1)}\)</span> 以及误差 $E_i^{(k+1)}
+$。具体计算过程如下：</p>
+<ol type="1">
+<li><p>计算 <span class="math inline">\(α_2^{(k+1)}\)</span> 的取值范围
+<span class="math inline">\([L, H]\)</span>，其中</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144059.jpg" alt="LH" style="zoom:67%;" /></p></li>
+<li><p>求得最优解<span class="math inline">\(α_1^{(k+1)}\)</span>，<span
+class="math inline">\(α_2^{(k+1)}\)</span>，<span
+class="math inline">\(b^{(k+1)}\)</span></p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144103.jpg" alt="84" style="zoom:67%;" /></p>
+<p>结合 <span class="math inline">\(α_2^{(k+1)}\)</span>
+的取值范围，可得</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144106.jpg" alt="85" style="zoom:67%;" /></p>
+<p>由 <span class="math inline">\(α_2^{(k+1)}\)</span> 可求得 <span
+class="math inline">\(α_1^{(k+1)}\)</span></p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144109.jpg" alt="86" style="zoom:67%;" /></p>
+<p>之后更新阈值 <span class="math inline">\(b\)</span></p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144112.jpg" alt="b" style="zoom:67%;" /></p></li>
+<li><p>更新 <span class="math inline">\(E_i\)</span> 的值</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-144115.jpg" alt="90" style="zoom:67%;" /></p></li>
+</ol>
+<h4 id="选择要优化的乘数的启发式方法">选择要优化的乘数的启发式方法</h4>
+<p>第一个乘数的选择称为外循环。首先遍历整个样本集，选择违反 KKT 条件的
+<span class="math inline">\(α_i\)</span>
+作为第一个乘数，遍历完整个样本集后，遍历非边界样本集 <span
+class="math inline">\(0&lt;α_i&lt;C\)</span> 中违反 KKT 条件的 <span
+class="math inline">\(α_i\)</span>
+作为第一个乘数。遍历完非边界样本集后，再次回到遍历整个样本集中寻找，即在整个样本集与非边界样本集上来回切换。直到遍历整个样本集后，没有违反
+KKT 条件的 <span class="math inline">\(α_i\)</span>，则退出。</p>
+<p>第二个乘数的选择称为内循环。选择的依据是最大化联合优化过程中采取的步长，而
+SMO 通过 <span class="math inline">\(|E_1−E_2|\)</span>
+来近似步长，为此需要为训练集中的每个非边界样本保留一个缓存的误差值 <span
+class="math inline">\(E_i\)</span>。</p>
+<h3 id="实验评估">实验评估</h3>
+<p>作者对比标准分块 SVM 学习算法，对 SMO 算法进行了一系列基准测试。</p>
+<h4 id="实验平台">实验平台</h4>
+<p>两种算法都以 C++ 编写，使用 Microsoft 的 Visual C++ 5.0
+编译器，且都在运行 Windows NT 4 的 266 MHz Pentium II 处理器上运行。</p>
+<h4 id="实验配置">实验配置</h4>
+<p>如 Burges[4] 的建议，分块算法使用投影共轭梯度算法[5]作为 QP
+解算器，并使用启发式方法来设置停止阈值[1]。为了确保分块算法和 SMO
+算法达到相同的精度，如果输出与其正确值相差 <span
+class="math inline">\(10^{-3}\)</span>
+以上，则两种算法都会将该样本标识为违反 KKT 条件。</p>
+<h4 id="实验方法">实验方法</h4>
+<p>作者在收入预测任务、网页分类任务和两个不同的人工数据集上对 SMO
+算法进行了测试，研究算法的时间性能以及数据稀疏性对运算速度的影响。以下表中列出的所有时间均以
+CPU 秒为单位。</p>
+<p><strong>收入预测</strong></p>
+<p>用于测试 SMO 速度的第一个数据集是 UCI 的 adult 家庭普查数据集，共有
+32562 个样本，包括 14 个属性。SVM 的任务是预测该家庭的收入是否超过
+50,000 美元。针对该问题训练了两种不同的 SVM：线性 SVM 和方差为 10
+的高斯SVM。</p>
+<p>下表显示了在 adult 数据集上，使用 SMO 算法和分块算法训练线性 SVM
+的时间。</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143430.jpg"
+alt="income_linear" />
+<figcaption aria-hidden="true">income_linear</figcaption>
+</figure>
+<p>通过拟合训练时间与训练集大小的对数-对数图，得出 SMO 的训练时间规模为
+~<span class="math inline">\(N^{1.9}\)</span>，而分块算法为 ~<span
+class="math inline">\(N^{3.1}\)</span>。因此，SMO将对于该问题的经验缩放比例优化了至少一个数量级。</p>
+<p>使用 SMO 算法和分块算法训练高斯 SVM 的时间如下表所示：</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143432.jpg"
+alt="income_rbf" />
+<figcaption aria-hidden="true">income_rbf</figcaption>
+</figure>
+<p>SMO 算法对于非线性 SVM 比线性 SVM 慢，这是因为时间开销主要由 SVM
+的评估决定。这里，SMO 的训练时间规模为 ~<span
+class="math inline">\(N^{2.1}\)</span>，而分块算法为 ~<span
+class="math inline">\(N^{2.9}\)</span>。同样，SMO
+比分块算法大约快一个数量级。</p>
+<p><strong>网页分类</strong></p>
+<p>SMO 的第二项测试是对网页进行分类。训练集包括 49749
+个网页，从每个网页中提取了 300
+个稀疏的二进制关键字属性。在此问题上尝试了两种不同的 SVM：线性 SVM
+和方差为 10 的高斯 SVM。</p>
+<p>使用 SMO 算法和分块算法训练线性 SVM 的时间如下表所示：</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143433.jpg"
+alt="web_linear" />
+<figcaption aria-hidden="true">web_linear</figcaption>
+</figure>
+<p>对于该数据集上的线性 SVM，SMO 的训练时间规模为 ~<span
+class="math inline">\(N^{1.6}\)</span>，而分块算法为 ~<span
+class="math inline">\(N^{2.5}\)</span>。该实验是 SMO
+在计算时间上优于分块算法的另一个例子。</p>
+<p>使用 SMO 算法和分块算法训练高斯 SVM 的时间如下表所示：</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143434.jpg"
+alt="web_rbf" />
+<figcaption aria-hidden="true">web_rbf</figcaption>
+</figure>
+<p>对于该数据集上的非线性 SVM，SMO 的训练时间规模为 ~<span
+class="math inline">\(N^{1.7}\)</span>，而分块算法为 ~<span
+class="math inline">\(N^{2.0}\)</span>。在这种情况下，SMO 比分块算法快
+2~6 倍。</p>
+<p><strong>线性可分数据集</strong></p>
+<p>作者还在人工生成的数据集上对 SMO 进行了测试，以探索 SMO
+在极端情况下的性能。</p>
+<p>第一个人工数据集是完全线性可分离的数据集，输入数据是随机二进制 300
+维向量。这里用线性 SVM 拟合此数据集。</p>
+<p>使用 SMO 算法和分块算法训练线性 SVM 的时间如下表所示：</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143435.jpg"
+alt="artificial_1_linear" />
+<figcaption aria-hidden="true">artificial_1_linear</figcaption>
+</figure>
+<p>SMO 的训练时间规模为 ~<span
+class="math inline">\(N\)</span>，较分块算法的 ~<span
+class="math inline">\(N^{1.2}\)</span> 稍好。</p>
+<p>此外，还可以在此简单数据集上测量利用稀疏点积而获得的SMO算法和分块算法的加速。相同的数据集在使用和不使用稀疏点乘积代码的情况下都进行了测试。</p>
+<p>稀疏/非稀疏实验的结果如下表所示：</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143436.jpg"
+alt="artificial_1_linear_sparse" />
+<figcaption aria-hidden="true">artificial_1_linear_sparse</figcaption>
+</figure>
+<p>对于 SMO，使用稀疏数据结构将代码的速度提高了 10 倍以上，这表明 SVM
+的评估时间完全决定了 SMO
+的计算时间。稀疏点积代码仅将分块算法的速度提高了大约 1.1 倍，这表明数值
+QP 步骤的评估在分块计算中占主导地位。</p>
+<p><strong>噪声数据集</strong></p>
+<p>第二个人工数据集由随机的 300 维二进制输入点和随机输出标签生成。SVM
+拟合的是纯噪声。</p>
+<p>将 SMO 和分块算法应用于线性 SVM 的结果如下所示：</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143437.jpg"
+alt="artificial_2_linear" />
+<figcaption aria-hidden="true">artificial_2_linear</figcaption>
+</figure>
+<p>SMO 的计算时间规模为 ~<span
+class="math inline">\(N^{1.8}\)</span>，而分块算法为 ~<span
+class="math inline">\(N^{3.2}\)</span>。该结果显示，当大多数支持向量都处于边界时，SMO
+表现出色。因此，为了确定由稀疏点积代码引起的速度增加，在没有使用稀疏点乘积代码的情况下测试了
+SMO 和分块算法：</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143438.jpg"
+alt="artificial_2_linear_sparse" />
+<figcaption aria-hidden="true">artificial_2_linear_sparse</figcaption>
+</figure>
+<p>在线性 SVM 情况下，稀疏点积代码将 SMO 的速度提高了大约 6
+倍，而分块算法的速度提升很小。在该实验中，即使对于非稀疏数据，SMO
+也比分块更快。</p>
+<p>同样地，作者也使用了方差为 10 的高斯 SVM
+对第二个人工数据集进行了测试，实验结果显示在以下两个表格中：</p>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143439.jpg"
+alt="artificial_2_rbf" />
+<figcaption aria-hidden="true">artificial_2_rbf</figcaption>
+</figure>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-18-143440.jpg"
+alt="artificial_2_rbf_sparse" />
+<figcaption aria-hidden="true">artificial_2_rbf_sparse</figcaption>
+</figure>
+<p>对于拟合纯噪声的高斯 SVM，SMO 的计算时间规模为 ~<span
+class="math inline">\(N^{2.2}\)</span>，而分块算法为 ~<span
+class="math inline">\(N^{3.4}\)</span>。即使应用于非稀疏数据，SMO
+的总运行时间仍然优于分块算法。对于非线性情况，输入数据的稀疏性使 SMO
+的速度提高了大约 4 倍，这表明对于非线性 SVM，点积速度仍占 SMO
+计算时间的主导地位。</p>
+<h4 id="实验结论">实验结论</h4>
+<ul>
+<li>SMO 在多种不同的数据集上都比分块算法更快。</li>
+<li>SMO 在有许多拉格朗日乘数处于边界上的 SVM 上表现出色。</li>
+<li>SMO 对于线性 SVM 表现良好，因为 SMO 的计算时间主要由 SVM
+评估决定。</li>
+<li>SMO 对于具有稀疏输入的 SVM 表现出色（即使是非线性
+SVM），因为其可以减少核函数的计算时间，从而直接加速了 SMO。</li>
+<li>SMO
+在大规模问题上表现良好，因为对于文中所有的测试问题，其计算时间随训练集大小的缩放规模都优于分块算法。</li>
+</ul>
+<h3 id="不足之处">不足之处</h3>
+<p>S.S. Keerthi 等人[6]指出，由于 SMO 的计算方式以及仅维护和更新一个阈值
+<span class="math inline">\(β\)</span>
+的特点，在某些情况下可能会进行不必要的第二个拉格朗日乘数的搜索，从而导致
+SMO 的效率低下。</p>
+<p>左琳[7]也指出，SMO
+实际上是在循环迭代上寻求快速算法。因此如果没有一个好的选择迭代策略，SMO
+算法就存在盲目性，可能出现某些达到最优值的样本却不满足 KKT
+条件的情况，比如过度选择的消耗，影响了算法的执行效率。</p>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>J. Platt, “Sequential minimal optimization: A fast algorithm for
+training support vector machines,” Microsoft, Res. Tech. Rep.
+MSR-TR-98-14, 1998.</li>
+<li>Vapnik, V., <em>Estimation of Dependences Based on Empirical
+Data</em>, Springer-Verlag, (1982).</li>
+<li>Osuna, E., Freund, R., Girosi, F., "Improved Training Algorithm for
+Support Vector Machines," <em>Proc. IEEE NNSP ’97</em>, (1997).</li>
+<li>Burges, Christopher JC. "A tutorial on support vector machines for
+pattern recognition." <em>Data mining and knowledge discovery</em> 2.2
+(1998): 121-167.</li>
+<li>Gill, P. E., Murray, W., Wright, M. H., <em>Practical
+Optimization,</em> Academic Press, (1981).</li>
+<li>Keerthi, S. Sathiya, et al. "Improvements to Platt's SMO algorithm
+for SVM classifier design." <em>Neural computation</em> 13.3 (2001):
+637-649.</li>
+<li>左琳. "序列最小优化工作集选择算法的改进." <em>电子科技大学学报</em>
+42.3 (2013): 448-451.</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Yuheng Ding WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Yuheng Ding Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Machine-Learning/" rel="tag"># Machine Learning</a>
+              <a href="/tags/SVM/" rel="tag"># SVM</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/06/28/cpp-primer/" rel="prev" title="[Note] C++ Primer">
+                  <i class="fa fa-chevron-left"></i> [Note] C++ Primer
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/07/15/http-https-analysis/" rel="next" title="HTTP 与 HTTPS 协议分析">
+                  HTTP 与 HTTPS 协议分析 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yuheng Ding</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Symbols count total: </span>
+    <span title="Symbols count total">370k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>Reading time total &asymp;</span>
+    <span title="Reading time total">5:37</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"timdyh","repo":"gitalk-comments","client_id":"0babcb65af364dd08a90","client_secret":"22090e837380d49040a73f2ed1db4f9541b29379","admin_user":"timdyh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"7aed71cc4249ecd9ad93fa79b038ec9f"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

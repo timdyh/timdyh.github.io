@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="null//null" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="x_9IHIiVX0aZQfKSCtN7gy8_1UhN7guVmZAmA4gv1EE">
+  <meta name="msvalidate.01" content="AC8F448726B8A8742C6DFFA7640E7DBF">
+  <meta name="baidu-site-verification" content="code-2qEdijyCxz">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="This book shows how to design and implement C++ software that is more effective: more likely to behave correctly; more robust in the face of exceptions; more efficient; more portable; makes better us">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Note] More Effective C++">
+<meta property="og:url" content="http://example.com/2021/06/20/more-effective-cpp/index.html">
+<meta property="og:site_name" content="TimDyh">
+<meta property="og:description" content="This book shows how to design and implement C++ software that is more effective: more likely to behave correctly; more robust in the face of exceptions; more efficient; more portable; makes better us">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-06-19T16:53:05.000Z">
+<meta property="article:modified_time" content="2024-02-08T06:56:49.831Z">
+<meta property="article:author" content="Yuheng Ding">
+<meta property="article:tag" content="C&#x2F;C++">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2021/06/20/more-effective-cpp/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2021/06/20/more-effective-cpp/","path":"2021/06/20/more-effective-cpp/","title":"[Note] More Effective C++"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[Note] More Effective C++ | TimDyh</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">TimDyh</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#item-1-distinguish-between-pointers-and-references."><span class="nav-number">1.</span> <span class="nav-text">Item 1:
+Distinguish between pointers and references.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-2-prefer-c-style-casts."><span class="nav-number">2.</span> <span class="nav-text">Item 2: Prefer C++-style
+casts.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-3-never-treat-arrays-polymorphically."><span class="nav-number">3.</span> <span class="nav-text">Item 3: Never treat
+arrays polymorphically.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-4-avoid-gratuitous-default-constructors."><span class="nav-number">4.</span> <span class="nav-text">Item 4: Avoid
+gratuitous default constructors.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-5-be-wary-of-user-defined-conversion-functions."><span class="nav-number">5.</span> <span class="nav-text">Item 5: Be
+wary of user-defined conversion functions.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-6-distinguish-between-prefix-and-postfix-forms-of-increment-and-decrement-operators."><span class="nav-number">6.</span> <span class="nav-text">Item
+6: Distinguish between prefix and postfix forms of increment and
+decrement operators.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-7-never-overload-or-."><span class="nav-number">7.</span> <span class="nav-text">Item 7: Never overload &amp;&amp;,
+||, or ,.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-8-understand-the-different-meanings-of-new-and-delete."><span class="nav-number">8.</span> <span class="nav-text">Item 8:
+Understand the different meanings of new and delete.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-9-use-destructors-to-prevent-resource-leaks."><span class="nav-number">9.</span> <span class="nav-text">Item 9: Use
+destructors to prevent resource leaks.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-10-prevent-resource-leaks-in-constructors."><span class="nav-number">10.</span> <span class="nav-text">Item 10:
+Prevent resource leaks in constructors.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-11-prevent-exceptions-from-leaving-destructors."><span class="nav-number">11.</span> <span class="nav-text">Item 11:
+Prevent exceptions from leaving destructors.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-12-understand-how-throwing-an-exception-differs-from-passing-a-parameter-or-calling-a-virtual-function."><span class="nav-number">12.</span> <span class="nav-text">Item
+12: Understand how throwing an exception differs from passing a
+parameter or calling a virtual function.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-13-catch-exceptions-by-reference."><span class="nav-number">13.</span> <span class="nav-text">Item 13: Catch
+exceptions by reference.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-14-use-exception-specifications-judiciously."><span class="nav-number">14.</span> <span class="nav-text">Item 14: Use
+exception specifications judiciously.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-15-understand-the-costs-of-exception-handling."><span class="nav-number">15.</span> <span class="nav-text">Item 15:
+Understand the costs of exception handling.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-16-remember-the-80-20-rule."><span class="nav-number">16.</span> <span class="nav-text">Item 16: Remember the 80-20
+rule.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-17-consider-using-lazy-evaluation."><span class="nav-number">17.</span> <span class="nav-text">Item 17: Consider using
+lazy evaluation.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-18-amortize-the-cost-of-expected-computations."><span class="nav-number">18.</span> <span class="nav-text">Item 18:
+Amortize the cost of expected computations.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-19-understand-the-origin-of-temporary-objects."><span class="nav-number">19.</span> <span class="nav-text">Item 19:
+Understand the origin of temporary objects.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-20-facilitate-the-return-value-optimization."><span class="nav-number">20.</span> <span class="nav-text">Item 20:
+Facilitate the return value optimization.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-21-overload-to-avoid-implicit-type-conversions."><span class="nav-number">21.</span> <span class="nav-text">Item 21:
+Overload to avoid implicit type conversions.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-22-consider-using-op-instead-of-stand-alone-op."><span class="nav-number">22.</span> <span class="nav-text">Item 22:
+Consider using op&#x3D; instead of stand-alone op.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-23-consider-alternative-libraries."><span class="nav-number">23.</span> <span class="nav-text">Item 23: Consider
+alternative libraries.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-24-understand-the-costs-of-virtual-functions-multiple-inheritance-virtual-base-classes-and-rtti."><span class="nav-number">24.</span> <span class="nav-text">Item
+24: Understand the costs of virtual functions, multiple inheritance,
+virtual base classes, and RTTI.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-25-virtualizing-constructors-and-non-member-functions."><span class="nav-number">25.</span> <span class="nav-text">Item
+25: Virtualizing constructors and non-member functions.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-26-limiting-the-number-of-objects-of-a-class."><span class="nav-number">26.</span> <span class="nav-text">Item 26:
+Limiting the number of objects of a class.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-27-requiring-or-prohibiting-heap-based-objects."><span class="nav-number">27.</span> <span class="nav-text">Item 27:
+Requiring or prohibiting heap-based objects.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-28-smart-pointers."><span class="nav-number">28.</span> <span class="nav-text">Item 28: Smart pointers.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-29-reference-counting."><span class="nav-number">29.</span> <span class="nav-text">Item 29: Reference counting.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-30-proxy-classes."><span class="nav-number">30.</span> <span class="nav-text">Item 30: Proxy classes.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-31-making-functions-virtual-with-respect-to-more-than-one-object."><span class="nav-number">31.</span> <span class="nav-text">Item
+31: Making functions virtual with respect to more than one object.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-32-program-in-the-future-tense."><span class="nav-number">32.</span> <span class="nav-text">Item 32: Program in the
+future tense.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-33-make-non-leaf-classes-abstract."><span class="nav-number">33.</span> <span class="nav-text">Item 33: Make non-leaf
+classes abstract.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-34-understand-how-to-combine-c-and-c-in-the-same-program."><span class="nav-number">34.</span> <span class="nav-text">Item
+34: Understand how to combine C++ and C in the same program.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#item-35-familiarize-yourself-with-the-language-standard."><span class="nav-number">35.</span> <span class="nav-text">Item
+35: Familiarize yourself with the language standard.</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yuheng Ding"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Yuheng Ding</p>
+  <div class="site-description" itemprop="description">Per aspera, ad astra.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/timdyh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dyh0701@gmail.com" title="E-Mail → mailto:dyh0701@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/tim_dyh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;tim_dyh" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/timdyh" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/20/more-effective-cpp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[Note] More Effective C++ | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [Note] More Effective C++
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-06-20 00:53:05" itemprop="dateCreated datePublished" datetime="2021-06-20T00:53:05+08:00">2021-06-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Note/" itemprop="url" rel="index"><span itemprop="name">Note</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>43k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>39 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>This book shows how to design and implement C++ software that is
+<strong>more effective</strong>: more likely to behave correctly; more
+robust in the face of exceptions; more efficient; more portable; makes
+better use of language features; adapts to change more gracefully; works
+better in a mixed-language environment; is easier to use correctly; is
+harder to use incorrectly. In short, software that's just
+<strong>better</strong>.</p>
+</blockquote>
+<span id="more"></span>
+<h3 id="item-1-distinguish-between-pointers-and-references.">Item 1:
+Distinguish between pointers and references.</h3>
+<ul>
+<li>There is no such thing as a null reference. A reference must always
+refer to some object.</li>
+<li>It can be more efficient to use references than to use pointers
+because there's no need to test the validity of a reference before using
+it. Pointers, on the other hand, should generally be tested against
+null.</li>
+<li>Pointers may be reassigned to refer to different objects. A
+reference, however, always refers to the object with which it is
+initialized.</li>
+<li>When you're implementing certain operators that need to return
+something that can be used as the target of an assignment (e.g.
+operator[]), you should use a reference.</li>
+</ul>
+<h3 id="item-2-prefer-c-style-casts.">Item 2: Prefer C++-style
+casts.</h3>
+<ul>
+<li>C++-style casts specify more precisely the purpose of each cast, and
+they are easy to find.</li>
+<li><code>static_cast</code> has basically the same power and meaning as
+the general-purpose C-style cast.</li>
+<li><code>const_cast</code> is used to cast away the constness or
+volatileness of an expression.</li>
+<li><code>dynamic_cast</code> is used to perform safe casts down or
+across an inheritance hierarchy (cannot be applied to types lacking
+virtual functions).</li>
+<li><code>reinterpret_cast</code> is used to perform type conversions
+whose result is nearly always implementation-defined (rarely
+portable).</li>
+</ul>
+<h3 id="item-3-never-treat-arrays-polymorphically.">Item 3: Never treat
+arrays polymorphically.</h3>
+<ul>
+<li>Manipulating arrays of derived class objects through base class
+pointers and references almost never works the way you want it to.</li>
+<li>The result of deleting an array of derived class objects through a
+base class pointer is undefined,</li>
+<li>Polymorphism and pointer arithmetic simply don't mix. Array
+operations almost always involve pointer arithmetic, so arrays and
+polymorphism don't mix.</li>
+<li>You're unlikely to make the mistake of treating an array
+polymorphically if you avoid having a concrete class inherit from
+another concrete class.</li>
+</ul>
+<h3 id="item-4-avoid-gratuitous-default-constructors.">Item 4: Avoid
+gratuitous default constructors.</h3>
+<ul>
+<li>If a class lacks a default constructor, there are restrictions on
+how you can use that class. Its use may be problematic in three
+contexts:
+<ul>
+<li>There is, in general, no way to specify constructor arguments for
+objects in arrays.</li>
+<li>They are ineligible for use with many template-based container
+classes.</li>
+<li>A virtual base class lacking a default constructor requires that all
+classes derived from that class - no matter how far removed - must know
+about, understand the meaning of, and provide for the virtual base
+class's constructors' arguments.</li>
+</ul></li>
+<li>Inclusion of meaningless default constructors affects the efficiency
+of classes.</li>
+</ul>
+<h3 id="item-5-be-wary-of-user-defined-conversion-functions.">Item 5: Be
+wary of user-defined conversion functions.</h3>
+<ul>
+<li>Two kinds of functions allow compilers to perform implicit
+conversions: <em>single-argument constructors</em> and <em>implicit type
+conversion operators</em>.</li>
+<li>Granting compilers license to perform implicit type conversions
+usually leads to more harm than good, so don't provide conversion
+functions unless you're sure you want them.</li>
+<li>For implicit type conversion operators, replace the operators with
+equivalent functions that don't have the syntactically magic names, e.g.
+asDouble(), which must be called explicitly.</li>
+<li>For single-argument constructors:
+<ul>
+<li>use the <em>explicit</em> keyword, or</li>
+<li>use <em>proxy classes</em>, using the rule that no sequence of
+conversions is allowed to contain more than one user-defined
+conversion.</li>
+</ul></li>
+</ul>
+<h3
+id="item-6-distinguish-between-prefix-and-postfix-forms-of-increment-and-decrement-operators.">Item
+6: Distinguish between prefix and postfix forms of increment and
+decrement operators.</h3>
+<ul>
+<li>Postfix forms take an int argument, and compilers silently pass 0 as
+that int when those functions are called.</li>
+<li>Prefix forms return a reference.</li>
+<li>Postfix forms return a const object, to prohibit double application
+(e.g. i++++), for two reasons:
+<ul>
+<li>It's inconsistent with the behavior of the built-in types.</li>
+<li>It almost never does what clients expect it to, because i would be
+incremented only once.</li>
+</ul></li>
+<li>When dealing with user-defined types, prefix increment should be
+used whenever possible, because it's inherently more efficient.</li>
+<li>Postfix increment and decrement should be implemented in terms of
+their prefix counterparts.</li>
+</ul>
+<h3 id="item-7-never-overload-or-.">Item 7: Never overload &amp;&amp;,
+||, or ,.</h3>
+<ul>
+<li>C++ allows you to customize the behavior of the &amp;&amp; and ||
+operators for user-defined types. But if you decide to take advantage of
+this opportunity, be aware that you are replacing short-circuit
+semantics with function call semantics, which means <strong>all</strong>
+parameters must be evaluated in <strong>undefined order</strong>.</li>
+<li>An expression containing a comma is evaluated by first evaluating
+the part of the expression to the left of the comma, then evaluating the
+expression to the right of the comma; the result of the overall comma
+expression is the value of the expression on the right. Unfortunately,
+you can't mimic this behavior.</li>
+</ul>
+<h3
+id="item-8-understand-the-different-meanings-of-new-and-delete.">Item 8:
+Understand the different meanings of new and delete.</h3>
+<ul>
+<li>The new operator always does two things; you can't change its
+behavior in any way.
+<ul>
+<li>First, it allocates enough memory to hold an object of the type
+requested.</li>
+<li>Second, it calls a constructor to initialize an object in the memory
+that was allocated.</li>
+</ul></li>
+<li>What you can change is how the memory for an object is allocated.
+The <code>new operator</code> calls the
+<code>operator new function</code> to perform the requisite memory
+allocation, and you can overload that function to change its behavior by
+adding additional parameters, but the first parameter must always be of
+type <code>size_t</code>.</li>
+<li>If you want to create an object on the heap, use the new operator.
+It both allocates memory and calls a constructor for the object. If you
+only want to allocate memory, call operator new; no constructor will be
+called. If you want to customize the memory allocation that takes place
+when heap objects are created, write your own version of operator new
+and use the new operator; it will automatically invoke your custom
+version of operator new. If you want to construct an object in memory
+you've already got a pointer to, use placement new.</li>
+<li>If you want to deal only with raw, uninitialized memory, you should
+bypass the new and delete operators entirely. Instead, you should call
+operator new to get the memory and operator delete to return it to the
+system.</li>
+<li>If you use placement new to create an object in some memory, you
+should avoid using the delete operator on that memory. Instead, you
+should undo the effect of the constructor by explicitly calling the
+object's destructor.</li>
+<li>For arrays, the new operator behaves slightly differently from the
+case of single-object creation.
+<ul>
+<li>Memory is allocated by the array-allocation equivalent, a function
+called operator new[].</li>
+<li>A constructor must be called for each object in the array.</li>
+</ul></li>
+<li>Similarly, when the delete operator is used on an array, it calls a
+destructor for each array element and then calls operator delete[] to
+deallocate the memory.</li>
+</ul>
+<h3 id="item-9-use-destructors-to-prevent-resource-leaks.">Item 9: Use
+destructors to prevent resource leaks.</h3>
+<ul>
+<li>Use auto_ptr objects instead of raw pointers, and you won't have to
+worry about heap objects not being deleted, not even when exceptions are
+thrown.</li>
+<li>Because the auto_ptr destructor uses the single-object form of
+delete, auto_ptr is not suitable for use with pointers to arrays of
+objects. If you'd like an auto_ptr-like template for arrays, you'll have
+to write your own. In such cases, however, it's often a better design
+decision to use a vector instead of an array, anyway.</li>
+<li>The idea behind auto_ptr - using an object to store a resource that
+needs to be automatically released and relying on that object's
+destructor to release it - applies to more than just pointer-based
+resources.</li>
+</ul>
+<h3 id="item-10-prevent-resource-leaks-in-constructors.">Item 10:
+Prevent resource leaks in constructors.</h3>
+<ul>
+<li>C++ destroys only fully constructed objects, and an object isn't
+fully constructed until its constructor has run to completion.</li>
+<li>Because C++ won't clean up after objects that throw exceptions
+during construction, you must design your constructors so that they
+clean up after themselves. Often, this involves simply catching all
+possible exceptions, executing some cleanup code, then rethrowing the
+exception so it continues to propagate. To avoid code duplication, move
+the common cleanup code into a private helper function, and have both
+the constructor's catch block and the destructor call it. However, this
+won't work for member initialization lists.</li>
+<li>A better solution: if you replace pointer class members with their
+corresponding auto_ptr objects, you fortify your constructors against
+resource leaks in the presence of exceptions, you eliminate the need to
+manually deallocate resources in destructors, and you allow const member
+pointers to be handled in the same graceful fashion as non-const
+pointers..</li>
+</ul>
+<h3 id="item-11-prevent-exceptions-from-leaving-destructors.">Item 11:
+Prevent exceptions from leaving destructors.</h3>
+<ul>
+<li><p>There are two situations in which a destructor is called:</p>
+<ul>
+<li>The first is when an object is destroyed under "normal" conditions,
+e.g., when it goes out of scope or is explicitly deleted.</li>
+<li>The second is when an object is destroyed by the exception-handling
+mechanism during the stack-unwinding part of exception propagation.</li>
+</ul></li>
+<li><p>You must write your destructors under the conservative assumption
+that an exception is active, because if control leaves a destructor due
+to an exception while another exception is active, C++ calls the
+terminate function.</p></li>
+<li><p>Two good reasons for keeping exceptions from propagating out of
+destructors:</p>
+<ul>
+<li>First, it prevents terminate from being called during the
+stack-unwinding part of exception propagation.</li>
+<li>Second, it helps ensure that destructors always accomplish
+everything they are supposed to accomplish.</li>
+</ul></li>
+<li><p>The only way to do that is by using try and catch blocks, and
+doing nothing in catch blocks:</p>
+<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Session::~<span class="built_in">Session</span>()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="built_in">logDestruction</span>(<span class="keyword">this</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">catch</span> (...) &#123;  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p></li>
+</ul>
+<h3
+id="item-12-understand-how-throwing-an-exception-differs-from-passing-a-parameter-or-calling-a-virtual-function.">Item
+12: Understand how throwing an exception differs from passing a
+parameter or calling a virtual function.</h3>
+<ul>
+<li><p>When you call a function, control eventually returns to the call
+site (unless the function fails to return), but when you throw an
+exception, control does not return to the throw site.</p></li>
+<li><p>C++ specifies that an object thrown as an exception is always
+copied (based on its static type), even if the object being thrown is
+not in danger of being destroyed (e.g. static objects). This helps
+explain another difference between parameter passing and throwing an
+exception: the latter is typically much slower than the former.</p></li>
+<li><p>You'll want to use the <code>throw;</code> syntax to rethrow the
+current exception, because there's no chance that that will change the
+type of the exception being propagated. Furthermore, it's more
+efficient, because there's no need to generate a new exception
+object.</p>
+<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">catch</span> (Widget&amp; w)	<span class="comment">// catch Widget exceptions</span></span><br><span class="line">&#123;</span><br><span class="line">	...			<span class="comment">// handle the exception</span></span><br><span class="line">	<span class="keyword">throw</span>;		<span class="comment">// rethrow the exception so it continues to propagate</span></span><br><span class="line">				<span class="comment">// no copy, so the type won&#x27;t change</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">catch</span> (Widget&amp; w)	<span class="comment">// catch Widget exceptions</span></span><br><span class="line">&#123;</span><br><span class="line">	...			<span class="comment">// handle the exception</span></span><br><span class="line">	<span class="keyword">throw</span> w;	<span class="comment">// propagate a copy of the caught exception</span></span><br><span class="line">				<span class="comment">// if w is a SpecialWidget, the copy will always be of type Widget</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p></li>
+<li><p>A thrown object (which is always a temporary) may be caught by
+simple reference; it need not be caught by reference-to-const. Passing a
+temporary object to a non-const reference parameter is not allowed for
+function calls, but it is for exceptions.</p></li>
+<li><p>When we catch an exception by value, we expect to pay for the
+creation of two copies of the thrown object, one to create the temporary
+that all exceptions generate, the second to copy that temporary into w.
+Similarly, when we catch an exception by reference, we still expect to
+pay for the creation of a copy of the exception: the copy that is the
+temporary. In contrast, when we pass function parameters by reference,
+no copying takes place. When throwing an exception, then, we expect to
+construct (and later destruct) one more copy of the thrown object than
+if we passed the same object to a function.</p></li>
+<li><p>Throw by pointer is equivalent to pass by pointer. Either way, a
+copy of the pointer is passed. About all you need to remember is not to
+throw a pointer to a local object, which is the behavior the mandatory
+copying rule is designed to avoid.</p></li>
+<li><p>Two kinds of conversions are applied when matching exceptions to
+catch clauses.</p>
+<ul>
+<li>The first is inheritance-based conversions. A catch clause for base
+class exceptions is allowed to handle exceptions of derived class types,
+too.</li>
+<li>The second type of allowed conversion is from a typed to an untyped
+pointer, so a catch clause taking a const void* pointer will catch an
+exception of any pointer type.</li>
+</ul></li>
+<li><p>Catch clauses are always tried <strong>in the order of their
+appearance</strong>. In contrast, when you call a virtual function, the
+function invoked is the one in the class <strong>closest</strong> to the
+dynamic type of the object invoking the function.</p></li>
+<li><p>Never put a catch clause for a base class before a catch clause
+for a derived class.</p></li>
+</ul>
+<h3 id="item-13-catch-exceptions-by-reference.">Item 13: Catch
+exceptions by reference.</h3>
+<ul>
+<li>You have three choices, just as when specifying how parameters
+should be passed to functions: by pointer, by value, or by
+reference.</li>
+<li><strong>By pointer</strong>: the only way of moving exception
+information without copying an object, but programmers must define
+exception objects in a way that guarantees the objects exist after
+control leaves the functions throwing pointers to them (e.g. global and
+static objects). Do not throw a pointer to a new heap object.
+Furthermore, it doesn't work with the standard exception types.</li>
+<li><strong>By value</strong>: eliminates questions about exception
+deletion and works with the standard exception types, but it requires
+that exception objects be copied <strong>twice</strong> each time
+they're thrown, and it also gives rise to the specter of the <em>slicing
+problem</em>.</li>
+<li><strong>By reference</strong>: suffers from none of the problems we
+have discussed.</li>
+</ul>
+<h3 id="item-14-use-exception-specifications-judiciously.">Item 14: Use
+exception specifications judiciously.</h3>
+<ul>
+<li>The default behavior for unexpected is to call terminate, and the
+default behavior for terminate is to call abort, so the default behavior
+for a program with a violated exception specification is to halt.</li>
+<li>Compilers only partially check exception usage for consistency with
+exception specifications. The language standard prohibits them from
+rejecting (though they may issue a warning) a call to a function that
+might violate the exception specification of the function making the
+call.</li>
+<li>There is no way to know anything about the exceptions thrown by a
+template's type parameters. Templates and exception specifications don't
+mix.</li>
+<li>Omit exception specifications on functions making calls to functions
+that themselves lack exception specifications.</li>
+<li>When allowing users to register callback functions, tighten the
+exception specification in the function typedef.</li>
+<li>Handle exceptions "the system" may throw, such as
+<code>bad_alloc</code>.</li>
+<li>C++ allows you to replace unexpected exceptions with exceptions of a
+different type by <code>set_unexpected</code>. If the unexpected
+function's replacement rethrows the current exception, that exception
+will be replaced by a new exception of the standard type
+<code>bad_exception</code>.</li>
+<li>Exception specifications result in unexpected being invoked even
+when a higher-level caller is prepared to cope with the exception that's
+arisen.</li>
+</ul>
+<h3 id="item-15-understand-the-costs-of-exception-handling.">Item 15:
+Understand the costs of exception handling.</h3>
+<ul>
+<li>Exception handling has costs, and you pay at least some of them even
+if you never use the keywords try, throw, or catch.</li>
+<li>Programs compiled without support for exceptions are typically both
+faster and smaller than their counterparts compiled with support for
+exceptions.</li>
+<li>As a rough estimate, expect your overall code size to increase by
+<strong>5-10%</strong> and your runtime to go up by a similar amount if
+you use try blocks (assuming no exceptions are thrown, just the cost of
+having try blocks in your programs). To minimize this cost, you should
+avoid unnecessary try blocks.</li>
+<li>An exception specification generally incurs about the same cost as a
+try block.</li>
+<li>Compared to a normal function return, returning from a function by
+throwing an exception may be as much as <strong>three orders of
+magnitude</strong> slower. But you'll take it only if you throw an
+exception, and that should be almost never.</li>
+</ul>
+<h3 id="item-16-remember-the-80-20-rule.">Item 16: Remember the 80-20
+rule.</h3>
+<ul>
+<li>The overall performance of your software is almost always determined
+by a small part of its constituent code.</li>
+<li>The 20 percent of your program that is causing you heartache, and
+the way to identify that horrid 20 percent is to use a program profiler,
+which directly measures the resources you are interested in.</li>
+<li>Profile your software using as many data sets as possible, and
+ensure that each data set is representative of how the software is used
+by its clients (or at least its most important clients).</li>
+</ul>
+<h3 id="item-17-consider-using-lazy-evaluation.">Item 17: Consider using
+lazy evaluation.</h3>
+<ul>
+<li>When you employ <em>lazy evaluation</em>, you write your classes in
+such a way that they defer computations until the results of those
+computations are required.</li>
+<li><strong>Reference Counting</strong>: don't bother to make a copy of
+something until you really need one. Instead, be lazy - use someone
+else's copy as long as you can get away with it.</li>
+<li><strong>Distinguishing Reads from Writes</strong>: by using lazy
+evaluation and proxy classes as described in Item 30, however, we can
+defer the decision on whether to take read actions or write actions
+until we can determine which is correct.</li>
+<li><strong>Lazy Fetching</strong>: read no data from disk when a large
+object is created. Instead, only the "shell" of an object is created,
+and data is retrieved from the database only when that particular data
+is needed inside the object.</li>
+<li><strong>Lazy Expression Evaluation</strong>: avoid unnecessary
+numerical computations. For example, APL employed lazy evaluation to
+defer its computations until it knew exactly what part of a result
+matrix was needed, then it computed only that part.</li>
+</ul>
+<h3 id="item-18-amortize-the-cost-of-expected-computations.">Item 18:
+Amortize the cost of expected computations.</h3>
+<ul>
+<li>The philosophy of this item might be called <em>over-eager
+evaluation</em>: doing things <strong>before</strong> you're asked to do
+them.</li>
+<li>If you expect a computation to be requested frequently, you can
+lower the average cost per request by designing your data structures to
+handle the requests especially efficiently:
+<ul>
+<li><strong>Caching</strong> values that have already been computed and
+are likely to be needed again.</li>
+<li><strong>Prefetching</strong>: the computational equivalent of a
+discount for buying in bulk.</li>
+<li>The <em>locality of reference</em> phenomenon: if data in one place
+is requested, it's quite common to want nearby data, too.</li>
+</ul></li>
+<li>You can often trade space for time.</li>
+<li>This Item is not contradictory to Item 17:
+<ul>
+<li>Lazy evaluation is a technique for improving the efficiency of
+programs when you must support operations whose results are not always
+needed.</li>
+<li>Over-eager evaluation is a technique for improving the efficiency of
+programs when you must support operations whose results are almost
+always needed or whose results are often needed more than once.</li>
+<li>Both are more difficult to implement than run-of-the-mill eager
+evaluation, but both can yield significant performance improvements in
+programs whose behavioral characteristics justify the extra programming
+effort.</li>
+</ul></li>
+</ul>
+<h3 id="item-19-understand-the-origin-of-temporary-objects.">Item 19:
+Understand the origin of temporary objects.</h3>
+<ul>
+<li>True temporary objects in C++ are invisible - they don't appear in
+your source code. They arise whenever a non-heap object is created but
+not named. Such unnamed objects usually arise in one of two situations:
+<ul>
+<li>when implicit type conversions are applied to make function calls
+succeed, and</li>
+<li>when functions return objects.</li>
+</ul></li>
+<li>The attendant costs of their construction and destruction can have a
+noticeable impact on the performance of your programs.</li>
+<li>Two general ways to eliminate implicit type conversions:
+<ul>
+<li>To redesign your code so conversions like these can't take place.
+(See Item 5)</li>
+<li>To modify your software so that the conversions are unnecessary.
+(See Item 21)</li>
+</ul></li>
+<li>These conversions occur only when passing objects by value or when
+passing to a reference-to-const parameter. They do not occur when
+passing an object to a reference-to-non-const parameter.</li>
+<li>For most functions that return objects (except for operator+=, see
+Item 22), there is no way to avoid the construction and destruction of
+the return value. However, sometimes you can write your object-returning
+functions in a way that allows your compilers to optimize temporary
+objects out of existence (e.g. <em>return value optimization</em>, see
+Item 20).</li>
+</ul>
+<h3 id="item-20-facilitate-the-return-value-optimization.">Item 20:
+Facilitate the return value optimization.</h3>
+<ul>
+<li>A function either has to return an object in order to offer correct
+behavior or it doesn't. If it does, there's no way to get rid of the
+object being returned.</li>
+<li>It is frequently possible to write functions that return objects in
+such a way that compilers can eliminate the cost of the temporaries. The
+trick is to return <em>constructor arguments</em> instead of
+objects.</li>
+<li>This particular optimization - eliminating a local temporary by
+using a function's return location (and possibly replacing that with an
+object at the function's call site) - is both well-known and commonly
+implemented. It even has a name: the <em>return value
+optimization</em>.</li>
+<li>Besides, you can eliminate the overhead of the call to the function
+by declaring that function inline.</li>
+</ul>
+<h3 id="item-21-overload-to-avoid-implicit-type-conversions.">Item 21:
+Overload to avoid implicit type conversions.</h3>
+<ul>
+<li>Besides implicit type conversion, there is another way to make
+mixed-type calls to operator+ succeed: overloading to eliminate type
+conversions.</li>
+<li>Every overloaded operator must take at least one argument of a
+user-defined type.</li>
+<li>Overloading to avoid temporaries isn't limited to operator
+functions. Any function taking arguments of type string, char*, complex,
+etc., is a reasonable candidate for overloading to eliminate type
+conversions.</li>
+<li>Still, it's important to keep the 80-20 rule (see Item 16) in mind.
+There is no point in implementing a slew of overloaded functions unless
+you have good reason to believe that it will make a noticeable
+improvement in the overall efficiency of the programs that use
+them.</li>
+</ul>
+<h3 id="item-22-consider-using-op-instead-of-stand-alone-op.">Item 22:
+Consider using op= instead of stand-alone op.</h3>
+<ul>
+<li><p>A good way to ensure that the natural relationship between the
+assignment version of an operator (e.g., operator+=) and the stand-alone
+version (e.g., operator+) exists is to implement the latter in terms of
+the former (see also Item 6).</p></li>
+<li><p>In general, assignment versions of operators are more efficient
+than stand-alone versions, because stand-alone versions must typically
+return a new object, and that costs us the construction and destruction
+of a temporary. Assignment versions of operators write to their
+left-hand argument, so there is no need to generate a temporary to hold
+the operator's return value.</p></li>
+<li><p>By offering assignment versions of operators as well as
+stand-alone versions, you allow clients of your classes to make the
+difficult trade-off between efficiency and convenience.</p></li>
+<li><p>When faced with a choice between a named object and a temporary
+object, you may be better off using the temporary, which has always been
+eligible for the return value optimization (see Item 20).</p>
+<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line"><span class="type">const</span> T <span class="keyword">operator</span>+(<span class="type">const</span> T&amp; lhs, <span class="type">const</span> T&amp; rhs)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">T</span>(lhs) += rhs;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line"><span class="type">const</span> T <span class="keyword">operator</span>+(<span class="type">const</span> T&amp; lhs, <span class="type">const</span> T&amp; rhs)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="function">T <span class="title">result</span><span class="params">(lhs)</span></span>;</span><br><span class="line">	<span class="keyword">return</span> result += rhs;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p></li>
+</ul>
+<h3 id="item-23-consider-alternative-libraries.">Item 23: Consider
+alternative libraries.</h3>
+<ul>
+<li>Different libraries offering similar functionality often feature
+different performance trade-offs, so once you've identified the
+bottlenecks in your software (via profiling, see Item 16), you should
+see if it's possible to remove those bottlenecks by replacing one
+library with another.</li>
+</ul>
+<h3
+id="item-24-understand-the-costs-of-virtual-functions-multiple-inheritance-virtual-base-classes-and-rtti.">Item
+24: Understand the costs of virtual functions, multiple inheritance,
+virtual base classes, and RTTI.</h3>
+<ul>
+<li><p>When a virtual function is called, the code executed must
+correspond to the dynamic type of the object on which the function is
+invoked; the type of the pointer or reference to the object is
+immaterial. How can compilers provide this behavior efficiently? Most
+implementations use <em>virtual tables (vtbls)</em> and <em>virtual
+table pointers (vptrs)</em>.</p></li>
+<li><p>A vtbl is usually an array of pointers to functions. Each class
+in a program that declares or inherits virtual functions has its own
+vtbl, and the entries in a class's vtbl are pointers to the
+implementations of the virtual functions for that class. Therefore, you
+have to set aside space for a virtual table for each class that contains
+virtual functions. The size of a class's vtbl is proportional to the
+number of virtual functions declared for that class (including those it
+inherits from its base classes).</p></li>
+<li><p>You need only one copy of a class's vtbl in your programs. Where
+to put it? Compiler vendors tend to fall into two camps:</p>
+<ul>
+<li>Generate a copy of the vtbl in each object file that might need it,
+then the linker strips out duplicate copies, leaving only a single
+instance of each vtbl in the final executable or library.</li>
+<li>Employ a heuristic to determine which object file should contain the
+vtbl for a class: a class's vtbl is generated in the object file
+containing the definition (i.e., the body) of the first non-inline
+non-pure virtual function in that class.</li>
+</ul></li>
+<li><p>Each object whose class declares virtual functions carries with
+it a hidden data member that points to the virtual table for that class.
+This hidden data member - the vptr - is added by compilers at a location
+in the object known only to the compilers. Therefore, you have to pay
+for an extra pointer inside each object that is of a class containing
+virtual functions.</p></li>
+<li><p>How do compilers determine which virtual function to call?</p>
+<ol type="1">
+<li>Follow the object's vptr to its vtbl. This is a simple operation,
+because the compilers know where to look inside the object for the vptr.
+As a result, this costs only an offset adjustment (to get to the vptr)
+and a pointer indirection (to get to the vtbl).</li>
+<li>Find the pointer in the vtbl that corresponds to the function being
+called. This, too, is simple, because compilers assign each virtual
+function a unique index within the table. The cost of this step is just
+an offset into the vtbl array.</li>
+<li>Invoke the function pointed to by the pointer located in step
+2.</li>
+</ol></li>
+<li><p>The cost of calling a virtual function is thus basically the same
+as that of calling a function through a function pointer. Virtual
+functions <strong>per se</strong> are not usually a performance
+bottleneck.</p></li>
+<li><p>For all practical purposes, virtual functions aren't inlined.
+(Virtual functions can be inlined when invoked through
+<strong>objects</strong>, but most virtual function calls are made
+through <strong>pointers</strong> or <strong>references</strong> to
+objects, and such calls are not inlined.)</p></li>
+<li><p>With multiple inheritance, offset calculations to find vptrs
+within objects become more complicated; there are multiple vptrs within
+a single object (one per base class); and special vtbls must be
+generated for base classes in addition to the stand-alone vtbls we have
+discussed. As a result, both the per-class and the per-object space
+overhead for virtual functions increases, and the runtime invocation
+cost grows slightly, too.</p></li>
+<li><p>Virtual base classes may incur a cost of their own, however,
+because implementations of virtual base classes often use pointers to
+virtual base class parts as the means for avoiding the replication, and
+one or more of those pointers may be stored inside your
+objects.</p></li>
+<li><p>The language specification states that we're guaranteed accurate
+information on an object's dynamic type only if that type has at least
+one virtual function.</p></li>
+<li><p>RTTI was designed to be implementable in terms of a class's vtbl.
+The space cost of RTTI is an additional entry in each class vtbl plus
+the cost of the storage for the type_info object for each
+class.</p></li>
+<li><p>The following table summarizes the primary costs of virtual
+functions, multiple inheritance, virtual base classes, and RTTI:</p>
+<table>
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 29%" />
+<col style="width: 28%" />
+<col style="width: 18%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Increases Size of Objects</th>
+<th>Increases Per-Class Data</th>
+<th>Reduces Inlining</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Virtual Functions</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Multiple Inheritance</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Virtual Base Classes</td>
+<td>Often</td>
+<td>Sometimes</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>RTTI</td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+<h3
+id="item-25-virtualizing-constructors-and-non-member-functions.">Item
+25: Virtualizing constructors and non-member functions.</h3>
+<ul>
+<li>A <em>virtual constructor</em> is a function that creates different
+types of objects depending on the input it is given.</li>
+<li>A <em>virtual copy constructor</em> returns a pointer to a new copy
+of the object invoking the function. It just calls its real copy
+constructor.</li>
+<li>Virtual copy constructors can take advantage of a relaxation in the
+rules for virtual function return types: no longer must a derived
+class's redefinition of a base class's virtual function declare the same
+return type. Instead, if the function's return type is a pointer (or a
+reference) to a base class, the derived class's function may return a
+pointer (or reference) to a class derived from that base class.</li>
+<li>Making non-member functions act virtual: you write virtual functions
+to do the work, then write a non-virtual function that does nothing but
+call the virtual function. To avoid incurring the cost of a function
+call for this syntactic sleight-of-hand, of course, you inline the
+non-virtual function.</li>
+</ul>
+<h3 id="item-26-limiting-the-number-of-objects-of-a-class.">Item 26:
+Limiting the number of objects of a class.</h3>
+<ul>
+<li><p>Zero object: declare the constructors of that class
+private.</p></li>
+<li><p>One object:</p>
+<ul>
+<li>private constructors</li>
+<li>a global function declared a friend of the class (or static member
+function)</li>
+<li>a static object inside that function</li>
+</ul>
+<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Printer</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="type">static</span> Printer&amp; <span class="title">thePrinter</span><span class="params">()</span></span>;</span><br><span class="line">	...</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="built_in">Printer</span>();</span><br><span class="line">	<span class="built_in">Printer</span>(<span class="type">const</span> Printer&amp; rhs);</span><br><span class="line">	...</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">Printer&amp; <span class="title">Printer::thePrinter</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">static</span> Printer p;</span><br><span class="line">	<span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p></li>
+<li><p>An object that's static in a class is, for all intents and
+purposes, always constructed (and destructed), even if it's never used.
+In contrast, an object that's static in a function is created the first
+time through the function, so if the function is never called, the
+object is never created. (You do, however, pay for a check each time the
+function is called to see whether the object needs to be
+created.)</p></li>
+<li><p>C++ offers certain guarantees regarding the order of
+initialization of statics within a particular translation unit (i.e., a
+body of source code that yields a single object file), but it says
+nothing about the initialization order of static objects in different
+translation units.</p></li>
+<li><p>If you create an inline non-member function containing a local
+static object, you may end up with <strong>more than one copy</strong>
+of the static object in your program! So don't create inline non-member
+functions that contain local static data.</p></li>
+<li><p>Classes with private constructors can't be used as base classes,
+nor can they be embedded inside other objects (in the absence of friend
+declarations).</p></li>
+<li><p>Allowing objects to come and go (i.e. only limiting the number of
+objects at a time):</p>
+<ul>
+<li>private constructors (to only allow objects to exist on their
+own)</li>
+<li>a static member function returning a pointer to a unique object</li>
+<li>object-counting</li>
+</ul>
+<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Printer</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="keyword">class</span> <span class="title class_">TooManyObjects</span>&#123;&#125;;</span><br><span class="line">	<span class="comment">// pseudo-constructors</span></span><br><span class="line">	<span class="function"><span class="type">static</span> Printer* <span class="title">makePrinter</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="type">static</span> Printer* <span class="title">makePrinter</span><span class="params">(<span class="type">const</span> Printer&amp; rhs)</span></span>;</span><br><span class="line"></span><br><span class="line">	~<span class="built_in">Printer</span>();</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">submitJob</span><span class="params">(<span class="type">const</span> PrintJob&amp; job)</span></span>;</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">reset</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">performSelfTest</span><span class="params">()</span></span>;</span><br><span class="line">	...</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="type">static</span> <span class="type">size_t</span> numObjects;</span><br><span class="line">	<span class="type">static</span> <span class="type">const</span> <span class="type">size_t</span> maxObjects = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">Printer</span>();</span><br><span class="line">	<span class="built_in">Printer</span>(<span class="type">const</span> Printer&amp; rhs);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Obligatory definitions of class statics</span></span><br><span class="line"><span class="type">size_t</span> Printer::numObjects = <span class="number">0</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">size_t</span> Printer::maxObjects;</span><br><span class="line"></span><br><span class="line">Printer::<span class="built_in">Printer</span>()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (numObjects &gt;= maxObjects) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="built_in">TooManyObjects</span>();</span><br><span class="line">	&#125;</span><br><span class="line">	proceed with normal object construction here;</span><br><span class="line">	++numObjects;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Printer::<span class="built_in">Printer</span>(<span class="type">const</span> Printer&amp; rhs)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (numObjects &gt;= maxObjects) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="built_in">TooManyObjects</span>();</span><br><span class="line">	&#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">Printer* <span class="title">Printer::makePrinter</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123; <span class="keyword">return</span> <span class="keyword">new</span> Printer; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function">Printer * <span class="title">Printer::makePrinter</span><span class="params">(<span class="type">const</span> Printer&amp; rhs)</span></span></span><br><span class="line"><span class="function"></span>&#123; <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Printer</span>(rhs); &#125;</span><br></pre></td></tr></table></figure></p></li>
+<li><p>An object-counting base class:</p>
+<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">BeingCounted</span>&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Counted</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="keyword">class</span> <span class="title class_">TooManyObjects</span>&#123;&#125;;</span><br><span class="line">	<span class="function"><span class="type">static</span> <span class="type">int</span> <span class="title">objectCount</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> numObjects; &#125;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">	<span class="built_in">Counted</span>();</span><br><span class="line">	<span class="built_in">Counted</span>(<span class="type">const</span> Counted&amp; rhs);</span><br><span class="line">	~<span class="built_in">Counted</span>() &#123; --numObjects; &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="type">static</span> <span class="type">int</span> numObjects;</span><br><span class="line">	<span class="type">static</span> <span class="type">const</span> <span class="type">size_t</span> maxObjects;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">init</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">BeingCounted</span>&gt;</span><br><span class="line"><span class="type">int</span> Counted&lt;BeingCounted&gt;::numObjects = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">BeingCounted</span>&gt;</span><br><span class="line">Counted&lt;BeingCounted&gt;::<span class="built_in">Counted</span>()</span><br><span class="line">&#123; <span class="built_in">init</span>(); &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">BeingCounted</span>&gt;</span><br><span class="line">Counted&lt;BeingCounted&gt;::<span class="built_in">Counted</span>(<span class="type">const</span> Counted&lt;BeingCounted&gt;&amp;)</span><br><span class="line">&#123; <span class="built_in">init</span>(); &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">BeingCounted</span>&gt;</span><br><span class="line"><span class="type">void</span> Counted&lt;BeingCounted&gt;::<span class="built_in">init</span>()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (numObjects &gt;= maxObjects) <span class="keyword">throw</span> <span class="built_in">TooManyObjects</span>();</span><br><span class="line">	++numObjects;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Printer</span>: <span class="keyword">private</span> Counted&lt;Printer&gt; &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="comment">// pseudo-constructors</span></span><br><span class="line">	<span class="function"><span class="type">static</span> Printer * <span class="title">makePrinter</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="type">static</span> Printer * <span class="title">makePrinter</span><span class="params">(<span class="type">const</span> Printer&amp; rhs)</span></span>;</span><br><span class="line"></span><br><span class="line">	~<span class="built_in">Printer</span>();</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">submitJob</span><span class="params">(<span class="type">const</span> PrintJob&amp; job)</span></span>;</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">reset</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">performSelfTest</span><span class="params">()</span></span>;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">using</span> Counted&lt;Printer&gt;::objectCount;</span><br><span class="line">	<span class="keyword">using</span> Counted&lt;Printer&gt;::TooManyObjects;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="built_in">Printer</span>();</span><br><span class="line">	<span class="built_in">Printer</span>(<span class="type">const</span> Printer&amp; rhs);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">size_t</span> Counted&lt;Printer&gt;::maxObjects = <span class="number">10</span>;</span><br></pre></td></tr></table></figure></p></li>
+</ul>
+<h3 id="item-27-requiring-or-prohibiting-heap-based-objects.">Item 27:
+Requiring or prohibiting heap-based objects.</h3>
+<ul>
+<li><p>To limit object creation to the heap, make the destructor private
+and the constructors public, then introduce a privileged
+pseudo-destructor function that has access to the real destructor.</p>
+<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">UPNumber</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">UPNumber</span>();</span><br><span class="line">	<span class="built_in">UPNumber</span>(<span class="type">int</span> initValue);</span><br><span class="line">	<span class="built_in">UPNumber</span>(<span class="type">double</span> initValue);</span><br><span class="line">	<span class="built_in">UPNumber</span>(<span class="type">const</span> UPNumber&amp; rhs);</span><br><span class="line">	<span class="comment">// pseudo-destructor (a const member function, because even const objects may be destroyed)</span></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">destroy</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">delete</span> <span class="keyword">this</span>; &#125;</span><br><span class="line">	...</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	~<span class="built_in">UPNumber</span>();</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">UPNumber *p = <span class="keyword">new</span> UPNumber;</span><br><span class="line">p-&gt;<span class="built_in">destroy</span>();</span><br></pre></td></tr></table></figure></p>
+<p>The inheritance problem can be solved by making UPNumber's destructor
+protected (while keeping its constructors public), and classes that need
+to contain objects of type UPNumber can be modified to contain pointers
+to UPNumber objects instead.</p></li>
+<li><p>There is no easy way to enforce the restriction that all UPNumber
+objects - even base class parts of more derived objects - must be on the
+heap. It is not possible for a UPNumber constructor to determine whether
+it's being invoked as the base class part of a heap-based
+object.</p></li>
+<li><p>Not all pointers to things on the heap can be safely deleted
+(e.g. a pointer to a member of a heap-based object). It's easier to
+determine whether it's safe to delete a pointer than to determine
+whether a pointer points to something on the heap: operator new adds
+entries to a collection of allocated addresses, operator delete removes
+entries, and isSafeToDelete does a lookup in the collection to see if a
+particular address is there.</p></li>
+<li><p>An <em>abstract mixin base class</em> that offers derived classes
+the ability to determine whether a pointer was allocated from operator
+new:</p>
+<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">HeapTracked</span> &#123;		<span class="comment">// mixin class; keeps track of ptrs returned from op. new</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="keyword">class</span> <span class="title class_">MissingAddress</span>&#123;&#125;;</span><br><span class="line">	<span class="keyword">virtual</span> ~<span class="built_in">HeapTracked</span>() = <span class="number">0</span>;</span><br><span class="line">	<span class="function"><span class="type">static</span> <span class="type">void</span> *<span class="keyword">operator</span> <span class="title">new</span><span class="params">(<span class="type">size_t</span> size)</span></span>;</span><br><span class="line">	<span class="function"><span class="type">static</span> <span class="type">void</span> <span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="type">void</span> *ptr)</span></span>;</span><br><span class="line">	<span class="function"><span class="type">bool</span> <span class="title">isOnHeap</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="keyword">typedef</span> <span class="type">const</span> <span class="type">void</span>* RawAddress;</span><br><span class="line">	<span class="type">static</span> list&lt;RawAddress&gt; addresses;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// mandatory definition of static class member</span></span><br><span class="line">list&lt;RawAddress&gt; HeapTracked::addresses;</span><br><span class="line"></span><br><span class="line">HeapTracked::~<span class="built_in">HeapTracked</span>() &#123;&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> * HeapTracked::<span class="keyword">operator</span> <span class="title">new</span><span class="params">(<span class="type">size_t</span> size)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">void</span> *memPtr = ::<span class="keyword">operator</span> <span class="built_in">new</span>(size);</span><br><span class="line">	addresses.<span class="built_in">push_front</span>(memPtr);</span><br><span class="line">	<span class="keyword">return</span> memPtr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> HeapTracked::<span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="type">void</span> *ptr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	list&lt;RawAddress&gt;::iterator it =</span><br><span class="line">		<span class="built_in">find</span>(addresses.<span class="built_in">begin</span>(), addresses.<span class="built_in">end</span>(), ptr);</span><br><span class="line">	<span class="keyword">if</span> (it != addresses.<span class="built_in">end</span>()) &#123;</span><br><span class="line">		addresses.<span class="built_in">erase</span>(it);</span><br><span class="line">		::<span class="function"><span class="keyword">operator</span> <span class="title">delete</span><span class="params">(ptr)</span></span>;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="built_in">MissingAddress</span>();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">HeapTracked::isOnHeap</span><span class="params">()</span> <span class="type">const</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// dynamic_casting a pointer to void* yields a pointer to the</span></span><br><span class="line">	<span class="comment">// beginning of the memory for the object pointed to by the pointer</span></span><br><span class="line">	<span class="type">const</span> <span class="type">void</span> *rawAddress = <span class="built_in">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">void</span>*&gt;(<span class="keyword">this</span>);</span><br><span class="line">	list&lt;RawAddress&gt;::iterator it =</span><br><span class="line">		<span class="built_in">find</span>(addresses.<span class="built_in">begin</span>(), addresses.<span class="built_in">end</span>(), rawAddress);</span><br><span class="line">	<span class="keyword">return</span> it != addresses.<span class="built_in">end</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p></li>
+<li><p>Prohibiting heap-based objects:</p>
+<ul>
+<li>For objects that are directly instantiated: declare operator new
+(operator new[]) and operator delete (operator delete[]) private.</li>
+<li>For objects instantiated as base class parts of derived class
+objects: if operator new/delete aren't declared public in a derived
+class, that class inherits the private versions declared in its
+base(s).</li>
+<li>For objects embedded inside other objects: there is no portable
+way.</li>
+</ul></li>
+</ul>
+<h3 id="item-28-smart-pointers.">Item 28: Smart pointers.</h3>
+<ul>
+<li>Because object ownership is transferred when auto_ptr's copy
+constructor is called, passing auto_ptrs by value is often a very bad
+idea.</li>
+<li>auto_ptr objects are modified if they are copied or are the source
+of an assignment.</li>
+<li>The return type of operator* function is a
+<strong>reference</strong>. It would be disastrous to return an
+<strong>object</strong> instead, though compilers will let you do
+it.</li>
+<li>There are only two things operator-&gt; can return: a dumb pointer
+to an object or another smart pointer object. Most of the time, you'll
+want to return an ordinary dumb pointer.</li>
+<li>There is a middle ground that allows you to offer a reasonable
+syntactic form for testing for nullness while minimizing the chances of
+accidentally comparing smart pointers of different types. It is to
+overload operator! for your smart pointer classes so that operator!
+returns true if and only if the smart pointer on which it's invoked is
+null.</li>
+<li>Don't provide implicit conversion operators to dumb pointers unless
+there is a compelling reason to do so.</li>
+<li>Use <em>member function templates</em> to generate conversion
+functions, then use casts in those cases where ambiguity results.</li>
+<li>Have each smart pointer-to-T class publicly inherit from a
+corresponding smart pointer-to-const-T class.</li>
+</ul>
+<h3 id="item-29-reference-counting.">Item 29: Reference counting.</h3>
+<ul>
+<li><p>Two common motivations for the technique:</p>
+<ul>
+<li>Reference counting eliminates the burden of tracking object
+ownership, which constitutes a simple form of garbage collection.</li>
+<li>It's better to let all the objects with that value share its
+representation. Doing so not only saves memory, it also leads to
+faster-</li>
+<li>running programs, because there's no need to construct and destruct
+redundant copies of the same object value.</li>
+</ul></li>
+<li><p>A reference-counted String:</p>
+<ul>
+<li><p>Create a class to store reference counts and the values they
+track, and nest it inside String's private section.</p>
+<blockquote>
+<p>Nesting a struct in the private part of a class is a convenient way
+to give access to the struct to all the members of the class, but to
+deny access to everybody else (except, of course, friends of the
+class).</p>
+</blockquote></li>
+<li><p>Ensure that the reference count for a String's StringValue object
+is exactly one any time we return a reference to a character inside that
+StringValue object.</p>
+<blockquote>
+<p>There is no way for C++ compilers to tell us whether a particular use
+of operator[] is for a read or a write, so we must be pessimistic and
+assume that <strong>all</strong> calls to the non-const operator[] are
+for writes. (Proxy classes can help us differentiate reads from writes -
+see Item 30.)</p>
+</blockquote></li>
+<li><p>Add a flag to each StringValue object indicating whether that
+object is shareable. Turn the flag on initially, but turn it off
+whenever the non-const operator[] is invoked on the value represented by
+that object. Once the flag is set to false, it stays that way
+forever.</p></li>
+</ul></li>
+<li><p>A reference-counting base class:</p>
+<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// template class for smart pointers-to-T objects;</span></span><br><span class="line"><span class="comment">// T must inherit from RCObject</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RCPtr</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">RCPtr</span>(T* realPtr = <span class="number">0</span>);</span><br><span class="line">	<span class="built_in">RCPtr</span>(<span class="type">const</span> RCPtr&amp; rhs);</span><br><span class="line">	~<span class="built_in">RCPtr</span>();</span><br><span class="line">	RCPtr&amp; <span class="keyword">operator</span>=(<span class="type">const</span> RCPtr&amp; rhs);</span><br><span class="line">	T* <span class="keyword">operator</span>-&gt;() <span class="type">const</span>;</span><br><span class="line">	T&amp; <span class="keyword">operator</span>*() <span class="type">const</span>;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	T *pointee;</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">init</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// base class for reference-counted objects</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RCObject</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">addReference</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">removeReference</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">markUnshareable</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="type">bool</span> <span class="title">isShareable</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line">	<span class="function"><span class="type">bool</span> <span class="title">isShared</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">	<span class="built_in">RCObject</span>();</span><br><span class="line">	<span class="built_in">RCObject</span>(<span class="type">const</span> RCObject&amp; rhs);</span><br><span class="line">	RCObject&amp; <span class="keyword">operator</span>=(<span class="type">const</span> RCObject&amp; rhs);</span><br><span class="line">	<span class="keyword">virtual</span> ~<span class="built_in">RCObject</span>() = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="type">int</span> refCount;</span><br><span class="line">	<span class="type">bool</span> shareable;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// class to be used by application developers</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">String</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">String</span>(<span class="type">const</span> <span class="type">char</span> *value = <span class="string">&quot;&quot;</span>);</span><br><span class="line">	<span class="type">const</span> <span class="type">char</span>&amp; <span class="keyword">operator</span>[](<span class="type">int</span> index) <span class="type">const</span>;</span><br><span class="line">	<span class="type">char</span>&amp; <span class="keyword">operator</span>[](<span class="type">int</span> index);</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="comment">// class representing string values</span></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">StringValue</span>: <span class="keyword">public</span> RCObject &#123;</span><br><span class="line">		<span class="type">char</span> *data;</span><br><span class="line">		<span class="built_in">StringValue</span>(<span class="type">const</span> <span class="type">char</span> *initValue);</span><br><span class="line">		<span class="built_in">StringValue</span>(<span class="type">const</span> StringValue&amp; rhs);</span><br><span class="line">		<span class="function"><span class="type">void</span> <span class="title">init</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *initValue)</span></span>;</span><br><span class="line">		~<span class="built_in">StringValue</span>();</span><br><span class="line">	&#125;;</span><br><span class="line"></span><br><span class="line">	RCPtr&lt;StringValue&gt; value;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// implementation of RCObject</span></span><br><span class="line">RCObject::<span class="built_in">RCObject</span>() : <span class="built_in">refCount</span>(<span class="number">0</span>), <span class="built_in">shareable</span>(<span class="literal">true</span>) &#123;&#125;</span><br><span class="line">RCObject::<span class="built_in">RCObject</span>(<span class="type">const</span> RCObject&amp;) : <span class="built_in">refCount</span>(<span class="number">0</span>), <span class="built_in">shareable</span>(<span class="literal">true</span>) &#123;&#125;</span><br><span class="line">RCObject&amp; RCObject::<span class="keyword">operator</span>=(<span class="type">const</span> RCObject&amp;) &#123; <span class="keyword">return</span> *<span class="keyword">this</span>; &#125;</span><br><span class="line">RCObject::~<span class="built_in">RCObject</span>() &#123;&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">RCObject::addReference</span><span class="params">()</span> </span>&#123; ++refCount; &#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">RCObject::removeReference</span><span class="params">()</span> </span>&#123; <span class="keyword">if</span> (--refCount == <span class="number">0</span>) <span class="keyword">delete</span> <span class="keyword">this</span>; &#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">RCObject::markUnshareable</span><span class="params">()</span> </span>&#123; shareable = <span class="literal">false</span>; &#125;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">RCObject::isShareable</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> shareable; &#125;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">RCObject::isShared</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> refCount &gt; <span class="number">1</span>; &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// implementation of RCPtr</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line"><span class="type">void</span> RCPtr&lt;T&gt;::<span class="built_in">init</span>()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (pointee == <span class="number">0</span>) <span class="keyword">return</span>;</span><br><span class="line">	<span class="keyword">if</span> (pointee-&gt;<span class="built_in">isShareable</span>() == <span class="literal">false</span>) &#123;</span><br><span class="line">		pointee = <span class="keyword">new</span> <span class="built_in">T</span>(*pointee);</span><br><span class="line">	&#125;</span><br><span class="line">	pointee-&gt;<span class="built_in">addReference</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line">RCPtr&lt;T&gt;::<span class="built_in">RCPtr</span>(T* realPtr) : <span class="built_in">pointee</span>(realPtr) &#123; <span class="built_in">init</span>(); &#125;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line">RCPtr&lt;T&gt;::<span class="built_in">RCPtr</span>(<span class="type">const</span> RCPtr&amp; rhs) : <span class="built_in">pointee</span>(rhs.pointee) &#123; <span class="built_in">init</span>(); &#125;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line">RCPtr&lt;T&gt;::~<span class="built_in">RCPtr</span>() &#123; <span class="keyword">if</span> (pointee) pointee-&gt;<span class="built_in">removeReference</span>(); &#125;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line">RCPtr&lt;T&gt;&amp; RCPtr&lt;T&gt;::<span class="keyword">operator</span>=(<span class="type">const</span> RCPtr&amp; rhs)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (pointee != rhs.pointee) &#123;</span><br><span class="line">		<span class="keyword">if</span> (pointee) pointee-&gt;<span class="built_in">removeReference</span>();</span><br><span class="line">		pointee = rhs.pointee;</span><br><span class="line">		<span class="built_in">init</span>();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line">T* RCPtr&lt;T&gt;::<span class="keyword">operator</span>-&gt;() <span class="type">const</span> &#123; <span class="keyword">return</span> pointee; &#125;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line">T&amp; RCPtr&lt;T&gt;::<span class="keyword">operator</span>*() <span class="type">const</span> &#123; <span class="keyword">return</span> *pointee; &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// implementation of String::StringValue</span></span><br><span class="line"><span class="type">void</span> String::StringValue::<span class="built_in">init</span>(<span class="type">const</span> <span class="type">char</span> *initValue)</span><br><span class="line">&#123;</span><br><span class="line">	data = <span class="keyword">new</span> <span class="type">char</span>[<span class="built_in">strlen</span>(initValue) + <span class="number">1</span>];</span><br><span class="line">	<span class="built_in">strcpy</span>(data, initValue);</span><br><span class="line">&#125;</span><br><span class="line">String::StringValue::<span class="built_in">StringValue</span>(<span class="type">const</span> <span class="type">char</span> *initValue) &#123; <span class="built_in">init</span>(initValue); &#125;</span><br><span class="line">String::StringValue::<span class="built_in">StringValue</span>(<span class="type">const</span> StringValue&amp; rhs) &#123; <span class="built_in">init</span>(rhs.data); &#125;</span><br><span class="line">String::StringValue::~<span class="built_in">StringValue</span>() &#123; <span class="keyword">delete</span> [] data; &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// implementation of String</span></span><br><span class="line">String::<span class="built_in">String</span>(<span class="type">const</span> <span class="type">char</span> *initValue) : <span class="built_in">value</span>(<span class="keyword">new</span> <span class="built_in">StringValue</span>(initValue)) &#123;&#125;</span><br><span class="line"><span class="type">const</span> <span class="type">char</span>&amp; String::<span class="keyword">operator</span>[](<span class="type">int</span> index) <span class="type">const</span> &#123; <span class="keyword">return</span> value-&gt;data[index]; &#125;</span><br><span class="line"><span class="type">char</span>&amp; String::<span class="keyword">operator</span>[](<span class="type">int</span> index)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (value-&gt;<span class="built_in">isShared</span>()) &#123;</span><br><span class="line">		value = <span class="keyword">new</span> <span class="built_in">StringValue</span>(value-&gt;data);</span><br><span class="line">	&#125;</span><br><span class="line">	value-&gt;<span class="built_in">markUnshareable</span>();</span><br><span class="line">	<span class="keyword">return</span> value-&gt;data[index];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p></li>
+<li><p>Reference counting can also be added to existing classes (e.g.
+some class Widget that's in a library we can't modify).</p>
+<blockquote>
+<p>Most problems in Computer Science can be solved with an additional
+level of indirection.</p>
+</blockquote></li>
+<li><p>Reference counting is most useful for improving efficiency under
+the following conditions:</p>
+<ul>
+<li>Relatively few values are shared by relatively many objects.</li>
+<li>Object values are expensive to create or destroy, or they use lots
+of memory.</li>
+</ul></li>
+<li><p>If you find yourself weighed down with uncertainty over who's
+allowed to delete what, reference counting could be just the technique
+you need to ease your burden.</p></li>
+</ul>
+<h3 id="item-30-proxy-classes.">Item 30: Proxy classes.</h3>
+<ul>
+<li><p>Objects that stand for other objects are often called <em>proxy
+objects</em>, and the classes that give rise to proxy objects are often
+called <em>proxy classes</em>.</p></li>
+<li><p>Proxies can be employed to:</p>
+<ul>
+<li><p>implement classes whose instances act like multidimensional
+arrays.</p>
+<blockquote>
+<p>Array1D is a proxy class. Each Array1D object stands for a
+one-dimensional array that is absent from the conceptual model used by
+clients of Array2D.</p>
+</blockquote></li>
+<li><p>prevent single-argument constructors from being used to perform
+unwanted type conversions. (See Item5)</p></li>
+<li><p>help distinguish reads from writes through operator[].</p>
+<blockquote>
+<p>We can treat reads differently from writes if we delay our
+lvalue-versus-rvalue actions until we see how the result of operator[]
+is used. A proxy class allows us to buy the time we need, because we can
+modify operator[] to return a proxy for a string character instead of a
+string character itself. We can then wait to see how the proxy is used.
+If it's read, we can belatedly treat the call to operator[] as a read.
+If it's written, we must treat the call to operator[] as a write.</p>
+</blockquote></li>
+</ul></li>
+<li><p>Proxy classes have disadvantages:</p>
+<ul>
+<li>As function return values, proxy objects are temporaries, so they
+must be created and destroyed.</li>
+<li>The very existence of proxy classes increases the complexity of
+software systems that employ them.</li>
+<li>Shifting from a class that works with real objects to a class that
+works with proxies often changes the semantics of the class.</li>
+</ul></li>
+</ul>
+<h3
+id="item-31-making-functions-virtual-with-respect-to-more-than-one-object.">Item
+31: Making functions virtual with respect to more than one object.</h3>
+<ul>
+<li>Using virtual functions and RTTI: need to determine the type of only
+one of the objects involved in the collision. The other object is *this,
+and its type is determined by the virtual function mechanism.</li>
+<li>Using virtual functions only: implement double-dispatching as two
+single dispatches, i.e., as two separate virtual function calls. The
+first determines the dynamic type of the first object, the second
+determines that of the second object.</li>
+<li>Emulating virtual function tables: create an associative array that,
+given a class name, yields the appropriate member function pointer.</li>
+</ul>
+<h3 id="item-32-program-in-the-future-tense.">Item 32: Program in the
+future tense.</h3>
+<ul>
+<li>Express design constraints in C++ instead of (or in addition to)
+comments or other documentation.</li>
+<li>Determine the meaning of a function and whether it makes sense to
+let it be redefined in derived classes. If it does, declare it virtual,
+even if nobody redefines it right away. If it doesn't, declare it
+nonvirtual, and don't change it later just because it would be
+convenient for someone; make sure the change makes sense in the context
+of the entire class and the abstraction it represents.</li>
+<li>Handle assignment and copy construction in every class, even if
+"nobody ever does those things." If these functions are difficult to
+implement, declare them private.</li>
+<li>Strive to provide classes whose operators and functions have a
+natural syntax and an intuitive semantics. Preserve consistency with the
+behavior of the built-in types: when in doubt, do as the ints do.</li>
+<li>Recognize that anything somebody <strong>can</strong> do, they
+<strong>will</strong> do. Make your classes easy to use correctly and
+hard to use incorrectly. Accept that clients will make mistakes, and
+design your classes so you can prevent, detect, or correct such
+errors.</li>
+<li>Strive for portable code.</li>
+<li>Design your code so that when changes are necessary, the impact is
+localized. Encapsulate as much as you can; make implementation details
+private. Where applicable, use unnamed namespaces or file-static objects
+and functions. Try to avoid designs that lead to virtual base classes.
+Avoid RTTI-based designs that make use of cascading if-then-else
+statements.</li>
+<li>Instead of asking how a class is used now, it asks how the class is
+<strong>designed</strong> to be used.</li>
+<li>Provide complete classes, even if some parts aren't currently
+used.</li>
+<li>If there is no great penalty for generalizing your code, generalize
+it.</li>
+</ul>
+<h3 id="item-33-make-non-leaf-classes-abstract.">Item 33: Make non-leaf
+classes abstract.</h3>
+<ul>
+<li>Non-leaf classes should be abstract.</li>
+<li>Declaring a function pure virtual doesn't mean it has no
+implementation, it means:
+<ul>
+<li>the current class is abstract, and</li>
+<li>any concrete class inheriting from the current class must declare
+the function as a "normal" virtual function (i.e., without the
+"=0").</li>
+</ul></li>
+<li>Implementing pure virtual functions may be uncommon in general, but
+for pure virtual destructors, it's not just common, it's mandatory. Pure
+virtual destructors <strong>must</strong> be implemented, because they
+are called whenever a derived class destructor is invoked. Furthermore,
+they often perform useful tasks, such as releasing resources or logging
+messages.</li>
+<li>Replacement of a concrete base class with an abstract base class
+yields benefits as follows:
+<ul>
+<li>make the behavior of operator= easier to understand</li>
+<li>reduce the chances that you'll try to treat arrays polymorphically
+(see Item 3)</li>
+<li>make you create new abstract classes for useful concepts, even if
+you aren't aware of the fact that the useful concepts exist.</li>
+</ul></li>
+<li>Useful abstractions are those that are needed in more than one
+context. That is, they correspond to classes that are useful in their
+own right (i.e., it is useful to have objects of that type) and that are
+also useful for purposes of one or more derived classes. This is
+precisely why the transformation from concrete base class to abstract
+base class is useful: it forces the introduction of a new abstract class
+only when an existing concrete class is about to be used as a base
+class, i.e., when the class is about to be (re)used in a new
+context.</li>
+</ul>
+<h3
+id="item-34-understand-how-to-combine-c-and-c-in-the-same-program.">Item
+34: Understand how to combine C++ and C in the same program.</h3>
+<p>If you want to mix C++ and C in the same program, remember the
+following simple guidelines:</p>
+<ul>
+<li>Make sure the C++ and C compilers produce compatible object
+files.</li>
+<li>Declare functions to be used by both languages extern "C".</li>
+<li>If at all possible, write main in C++.</li>
+<li>Always use delete with memory from new; always use free with memory
+from malloc.</li>
+<li>Limit what you pass between the two languages to data structures
+that compile under C; the C++ version of structs may contain non-virtual
+member functions.</li>
+</ul>
+<h3 id="item-35-familiarize-yourself-with-the-language-standard.">Item
+35: Familiarize yourself with the language standard.</h3>
+<ul>
+<li>STL is very simple. It is just a collection of class and function
+templates that adhere to a set of conventions. The STL collection
+classes provide functions like begin and end that return iterator
+objects of types defined by the classes. The STL algorithm functions
+move through collections of objects by using iterator objects over STL
+collections. STL iterators act like pointers. That's really all there is
+to it. There's no big inheritance hierarchy, no virtual functions, none
+of that stuff. Just some class and function templates and a set of
+conventions to which they all subscribe.</li>
+<li>STL is extensible. You can add your own collections, algorithms, and
+iterators to the STL family. As long as you follow the STL conventions,
+the standard STL collections will work with your algorithms and your
+collections will work with the standard STL algorithms.</li>
+<li>Before you can use the library effectively, you must learn more
+about it than I've had room to summarize, and before you can write your
+own STL-compliant templates, you must learn more about the conventions
+of the STL.</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Yuheng Ding WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Yuheng Ding Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/C-C/" rel="tag"># C/C++</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/02/16/effective-cpp/" rel="prev" title="[Note] Effective C++">
+                  <i class="fa fa-chevron-left"></i> [Note] Effective C++
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/10/06/effective-modern-cpp/" rel="next" title="[Note] Effective Modern C++">
+                  [Note] Effective Modern C++ <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yuheng Ding</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Symbols count total: </span>
+    <span title="Symbols count total">370k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>Reading time total &asymp;</span>
+    <span title="Reading time total">5:37</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"timdyh","repo":"gitalk-comments","client_id":"0babcb65af364dd08a90","client_secret":"22090e837380d49040a73f2ed1db4f9541b29379","admin_user":"timdyh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"235f5e6323f1f52337e82bd275120f8c"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

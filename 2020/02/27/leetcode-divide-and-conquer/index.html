@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="null//null" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="x_9IHIiVX0aZQfKSCtN7gy8_1UhN7guVmZAmA4gv1EE">
+  <meta name="msvalidate.01" content="AC8F448726B8A8742C6DFFA7640E7DBF">
+  <meta name="baidu-site-verification" content="code-2qEdijyCxz">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="分而治之：基于递归，将一个复杂的问题分解成两个或更多相似的子问题，直到子问题足够简单可以直接解决，最后将子问题的解合并得到原问题的解。 先自顶向下分解，后自底向上合并。 重叠子问题可以通过记忆化进行优化。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Leetcode 刷题笔记——分治">
+<meta property="og:url" content="http://example.com/2020/02/27/leetcode-divide-and-conquer/index.html">
+<meta property="og:site_name" content="TimDyh">
+<meta property="og:description" content="分而治之：基于递归，将一个复杂的问题分解成两个或更多相似的子问题，直到子问题足够简单可以直接解决，最后将子问题的解合并得到原问题的解。 先自顶向下分解，后自底向上合并。 重叠子问题可以通过记忆化进行优化。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-02-27T14:49:17.000Z">
+<meta property="article:modified_time" content="2022-05-15T09:49:51.014Z">
+<meta property="article:author" content="Yuheng Ding">
+<meta property="article:tag" content="Algorithm">
+<meta property="article:tag" content="Divide and Conquer">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2020/02/27/leetcode-divide-and-conquer/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2020/02/27/leetcode-divide-and-conquer/","path":"2020/02/27/leetcode-divide-and-conquer/","title":"Leetcode 刷题笔记——分治"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Leetcode 刷题笔记——分治 | TimDyh</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">TimDyh</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E6%95%B0%E5%85%83%E7%B4%A0"><span class="nav-number">1.</span> <span class="nav-text">169.
+多数元素</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BC%82%E4%BA%AE%E6%95%B0%E7%BB%84"><span class="nav-number">2.</span> <span class="nav-text">932.
+漂亮数组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A9%E9%99%85%E7%BA%BF%E9%97%AE%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">218.
+天际线问题</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yuheng Ding"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Yuheng Ding</p>
+  <div class="site-description" itemprop="description">Per aspera, ad astra.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/timdyh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dyh0701@gmail.com" title="E-Mail → mailto:dyh0701@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/tim_dyh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;tim_dyh" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/timdyh" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/27/leetcode-divide-and-conquer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Leetcode 刷题笔记——分治 | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Leetcode 刷题笔记——分治
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-02-27 22:49:17" itemprop="dateCreated datePublished" datetime="2020-02-27T22:49:17+08:00">2020-02-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Coding/" itemprop="url" rel="index"><span itemprop="name">Coding</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>3.8k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>3 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<ul>
+<li>分而治之：基于递归，将一个复杂的问题分解成两个或更多相似的子问题，直到子问题足够简单可以直接解决，最后将子问题的解合并得到原问题的解。</li>
+<li>先自顶向下分解，后自底向上合并。</li>
+<li>重叠子问题可以通过记忆化进行优化。</li>
+</ul>
+</blockquote>
+<span id="more"></span>
+<h2
+id="多数元素"><a href="https://leetcode-cn.com/problems/majority-element/" target="_blank">169.
+多数元素</a></h2>
+<blockquote>
+<p>给定一个大小为 n
+的数组，找到其中的多数元素。多数元素是指在数组中出现次数大于 ⌊ n/2 ⌋
+的元素。</p>
+</blockquote>
+<p>将数组一分为二，分别找出左右两段子区间的众数。如果二者相同，显然整段的众数也是该数；如果不相同，则需要遍历整个区间统计二者出现的次数哪个更多。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">majorityElement</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> _majorityElement(nums, <span class="number">0</span>, nums.length - <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> <span class="title function_">_majorityElement</span><span class="params">(<span class="type">int</span>[] nums, <span class="type">int</span> lo, <span class="type">int</span> hi)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (lo == hi) <span class="keyword">return</span> nums[lo];</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="variable">mid</span> <span class="operator">=</span> lo + ((hi - lo) &gt;&gt; <span class="number">1</span>);</span><br><span class="line">        <span class="type">int</span> <span class="variable">leftMaj</span> <span class="operator">=</span> _majorityElement(nums, lo, mid);</span><br><span class="line">        <span class="type">int</span> <span class="variable">rightMaj</span> <span class="operator">=</span> _majorityElement(nums, mid + <span class="number">1</span>, hi);</span><br><span class="line">        <span class="keyword">if</span> (leftMaj == rightMaj) <span class="keyword">return</span> leftMaj;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="variable">leftCnt</span> <span class="operator">=</span> count(nums, leftMaj, lo, hi);</span><br><span class="line">        <span class="type">int</span> <span class="variable">rightCnt</span> <span class="operator">=</span> count(nums, rightMaj, lo, hi);</span><br><span class="line">        <span class="keyword">return</span> leftCnt &gt; rightCnt ? leftMaj : rightMaj;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> <span class="title function_">count</span><span class="params">(<span class="type">int</span>[] nums, <span class="type">int</span> key, <span class="type">int</span> lo, <span class="type">int</span> hi)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">cnt</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> lo; i &lt;= hi; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (nums[i] == key) cnt++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> cnt;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2
+id="漂亮数组"><a href="https://leetcode-cn.com/problems/beautiful-array/" target="_blank">932.
+漂亮数组</a></h2>
+<blockquote>
+<p>对于某些固定的 N，如果数组 A 是整数 1, 2, ..., N
+组成的排列，使得：</p>
+<p>对于每个 i &lt; j，都不存在 k 满足 i &lt; k &lt; j 使得 A[k] * 2 =
+A[i] + A[j]。</p>
+<p>那么数组 A 是漂亮数组。</p>
+<p>给定 N，返回任意漂亮数组 A（保证存在一个）。</p>
+</blockquote>
+<p>首先给出一个重要的性质：如果某个数组 <span
+class="math inline">\([a_1,a_2,\cdots,a_n]\)</span>
+是漂亮的，那么对这个数组进行仿射变换，得到的新数组 <span
+class="math inline">\([ka_1+b,ka_2+b,\cdots,ka_n+b]\)</span>
+也是漂亮的（其中 <span class="math inline">\(k\neq0\)</span>
+）。证明略。</p>
+<p>我们将数组分为 <code>left</code> 和 <code>right</code>
+两部分，只要能保证左右两段分别是漂亮数组，且不存在 <span
+class="math inline">\(A[k]*2=A[i]+A[j]\)</span>（其中 <span
+class="math inline">\(A[i],A[j]\)</span> 分别属于 <code>left</code> 和
+<code>right</code>），那么整个数组就是一个漂亮数组。我们发现等式右边是个偶数，那么只需要让
+<code>left</code> 中都是奇数，<code>right</code>
+中都是偶数，就可以满足条件。</p>
+<p>因此，我们先求解减小了一半规模的子问题，然后将已经成为漂亮数组的左右两部分分别映射为奇数和偶数，从而得到整个漂亮数组。注意使用记忆化避免相同子问题的重复计算。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    HashMap&lt;Integer, <span class="type">int</span>[]&gt; memo = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[] beautifulArray(<span class="type">int</span> N) &#123;</span><br><span class="line">        <span class="keyword">if</span> (N == <span class="number">1</span>) <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">int</span>[]&#123;<span class="number">1</span>&#125;;</span><br><span class="line">        <span class="keyword">if</span> (memo.containsKey(N)) <span class="keyword">return</span> memo.get(N);</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span>[] arr = <span class="keyword">new</span> <span class="title class_">int</span>[N];</span><br><span class="line">        <span class="type">int</span>[] left = beautifulArray((N + <span class="number">1</span>) / <span class="number">2</span>);</span><br><span class="line">        <span class="type">int</span>[] right = beautifulArray(N / <span class="number">2</span>);</span><br><span class="line">        <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> e : left) arr[i++] = <span class="number">2</span> * e - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> e : right) arr[i++] = <span class="number">2</span> * e;</span><br><span class="line">        memo.put(N, arr);</span><br><span class="line">        <span class="keyword">return</span> arr;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2
+id="天际线问题"><a href="https://leetcode-cn.com/problems/the-skyline-problem/" target="_blank">218.
+天际线问题</a></h2>
+<blockquote>
+<p>城市的天际线是从远处观看该城市中所有建筑物形成的轮廓的外部轮廓。现在，假设您获得了城市风光照片（图A）上显示的所有建筑物的位置和高度，请编写一个程序以输出由这些建筑物形成的天际线（图B）。</p>
+<p>每个建筑物的几何信息用三元组 [Li，Ri，Hi] 表示，其中 Li 和 Ri
+分别是第 i 座建筑物左右边缘的 x 坐标，Hi 是其高度。可以保证 0 ≤ Li, Ri ≤
+INT_MAX, 0 &lt; Hi ≤ INT_MAX 和 Ri - Li &gt;
+0。您可以假设所有建筑物都是在绝对平坦且高度为 0 的表面上的完美矩形。</p>
+<p>输出是以 [ [x1,y1], [x2, y2], [x3, y3], ... ]
+格式的“关键点”（图B中的红点）的列表，它们唯一地定义了天际线。关键点是水平线段的左端点。请注意，最右侧建筑物的最后一个关键点仅用于标记天际线的终点，并始终为零高度。此外，任何两个相邻建筑物之间的地面都应被视为天际线轮廓的一部分。</p>
+</blockquote>
+<p>由于输入是按 <code>Li</code> 升序排序的，我们可以递归地将建筑物按
+<code>Li</code>
+分为两部分，分别求出左右两段独立的天际线，然后设法将其合并成一条。当划分到只有一座建筑物的时候，返回
+<code>[[Li, Hi], [Ri, 0]]</code> 即可。</p>
+<p>合并的过程类似于归并排序，我们用两个指针分别指向左右两段当前的点，将
+<code>x</code> 坐标更小的先加入结果列表。而对于 <code>y</code>
+坐标，还应考虑另一段中最后一个进入结果列表的点的高度，取其与自身高度之间的最大值。此外，在加入结果列表之前，要先与列表最后一个点的高度作比较，如果高度相同，则说明在一条水平线上，应舍弃后一个点。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;	<span class="comment">// 这题用C++写能简洁很多，用Java写太反人类了</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">getSkyline</span>(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; &amp;buildings) &#123;</span><br><span class="line">        <span class="keyword">if</span> (buildings.<span class="built_in">size</span>() == <span class="number">0</span>) <span class="keyword">return</span> &#123;&#125;;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">getSubSkyline</span>(buildings, <span class="number">0</span>, buildings.<span class="built_in">size</span>() - <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">getSubSkyline</span>(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; &amp;buildings, <span class="type">int</span> lo, <span class="type">int</span> hi) &#123;</span><br><span class="line">        <span class="keyword">if</span> (lo == hi) &#123;</span><br><span class="line">            <span class="keyword">return</span> &#123;&#123;buildings[lo][<span class="number">0</span>], buildings[lo][<span class="number">2</span>]&#125;, </span><br><span class="line">                    &#123;buildings[lo][<span class="number">1</span>], <span class="number">0</span>&#125;&#125;;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> mid = lo + ((hi - lo) &gt;&gt; <span class="number">1</span>);</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; left = <span class="built_in">getSubSkyline</span>(buildings, lo, mid);</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; right = <span class="built_in">getSubSkyline</span>(buildings, mid + <span class="number">1</span>, hi);</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> lh_prev = <span class="number">0</span>, rh_prev = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> i = <span class="number">0</span>, j = <span class="number">0</span>;</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; temp;</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; res;</span><br><span class="line">        <span class="keyword">while</span> (i &lt; left.<span class="built_in">size</span>() &amp;&amp; j &lt; right.<span class="built_in">size</span>()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (left[i][<span class="number">0</span>] &lt; right[j][<span class="number">0</span>]) &#123;</span><br><span class="line">                temp = &#123;left[i][<span class="number">0</span>], <span class="built_in">max</span>(left[i][<span class="number">1</span>], rh_prev)&#125;;</span><br><span class="line">                lh_prev = left[i++][<span class="number">1</span>];</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (left[i][<span class="number">0</span>] &gt; right[j][<span class="number">0</span>]) &#123;</span><br><span class="line">                temp = &#123;right[j][<span class="number">0</span>], <span class="built_in">max</span>(right[j][<span class="number">1</span>], lh_prev)&#125;;</span><br><span class="line">                rh_prev = right[j++][<span class="number">1</span>];</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                temp = &#123;left[i][<span class="number">0</span>], <span class="built_in">max</span>(left[i][<span class="number">1</span>], right[j][<span class="number">1</span>])&#125;;</span><br><span class="line">                lh_prev = left[i++][<span class="number">1</span>];</span><br><span class="line">                rh_prev = right[j++][<span class="number">1</span>];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (res.<span class="built_in">size</span>() == <span class="number">0</span> || res[res.<span class="built_in">size</span>()<span class="number">-1</span>][<span class="number">1</span>] != temp[<span class="number">1</span>]) &#123;</span><br><span class="line">                res.<span class="built_in">push_back</span>(temp);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span> (i &lt; left.<span class="built_in">size</span>()) res.<span class="built_in">push_back</span>(left[i++]);</span><br><span class="line">        <span class="keyword">while</span> (j &lt; right.<span class="built_in">size</span>()) res.<span class="built_in">push_back</span>(right[j++]);</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Yuheng Ding WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Yuheng Ding Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Algorithm/" rel="tag"># Algorithm</a>
+              <a href="/tags/Divide-and-Conquer/" rel="tag"># Divide and Conquer</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/02/14/leetcode-dynamic-programming/" rel="prev" title="Leetcode 刷题笔记——动态规划">
+                  <i class="fa fa-chevron-left"></i> Leetcode 刷题笔记——动态规划
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/03/11/leetcode-tree/" rel="next" title="Leetcode 刷题笔记——树">
+                  Leetcode 刷题笔记——树 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yuheng Ding</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Symbols count total: </span>
+    <span title="Symbols count total">370k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>Reading time total &asymp;</span>
+    <span title="Reading time total">5:37</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"timdyh","repo":"gitalk-comments","client_id":"0babcb65af364dd08a90","client_secret":"22090e837380d49040a73f2ed1db4f9541b29379","admin_user":"timdyh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"65fb0ab0692db91e8cb9a5c6b5f03c14"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

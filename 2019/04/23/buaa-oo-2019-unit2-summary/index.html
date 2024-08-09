@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="null//null" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="x_9IHIiVX0aZQfKSCtN7gy8_1UhN7guVmZAmA4gv1EE">
+  <meta name="msvalidate.01" content="AC8F448726B8A8742C6DFFA7640E7DBF">
+  <meta name="baidu-site-verification" content="code-2qEdijyCxz">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="第五次作业 本次作业，需要完成的任务为单部多线程傻瓜调度（FAFS）电梯的模拟。 设计策略 先来先服务的单电梯是一个标准的&quot;生产者-消费者&quot;模型。虽然在本次作业中调度器似乎是不必要的，但为了更好地应用&quot;生产者-消费者&quot;模型，并方便下一次作业的扩展，还是应该保留了调度器的概念，将其作为&quot;托盘&quot;来存放还未服务的请求。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BUAA-OO-2019 第二单元总结">
+<meta property="og:url" content="http://example.com/2019/04/23/buaa-oo-2019-unit2-summary/index.html">
+<meta property="og:site_name" content="TimDyh">
+<meta property="og:description" content="第五次作业 本次作业，需要完成的任务为单部多线程傻瓜调度（FAFS）电梯的模拟。 设计策略 先来先服务的单电梯是一个标准的&quot;生产者-消费者&quot;模型。虽然在本次作业中调度器似乎是不必要的，但为了更好地应用&quot;生产者-消费者&quot;模型，并方便下一次作业的扩展，还是应该保留了调度器的概念，将其作为&quot;托盘&quot;来存放还未服务的请求。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-161436.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-161445.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-161555.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-161612.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-161616.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-161620.jpg">
+<meta property="article:published_time" content="2019-04-23T07:15:00.000Z">
+<meta property="article:modified_time" content="2022-12-16T11:59:05.296Z">
+<meta property="article:author" content="Yuheng Ding">
+<meta property="article:tag" content="OOP">
+<meta property="article:tag" content="Concurrency">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-161436.jpg">
+
+
+<link rel="canonical" href="http://example.com/2019/04/23/buaa-oo-2019-unit2-summary/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2019/04/23/buaa-oo-2019-unit2-summary/","path":"2019/04/23/buaa-oo-2019-unit2-summary/","title":"BUAA-OO-2019 第二单元总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>BUAA-OO-2019 第二单元总结 | TimDyh</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">TimDyh</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AC%A1%E4%BD%9C%E4%B8%9A"><span class="nav-number">1.</span> <span class="nav-text">第五次作业</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E7%AD%96%E7%95%A5"><span class="nav-number">1.1.</span> <span class="nav-text">设计策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84"><span class="nav-number">1.2.</span> <span class="nav-text">程序结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Ebug"><span class="nav-number">1.3.</span> <span class="nav-text">关于BUG</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E5%85%AD%E6%AC%A1%E4%BD%9C%E4%B8%9A"><span class="nav-number">2.</span> <span class="nav-text">第六次作业</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E7%AD%96%E7%95%A5-1"><span class="nav-number">2.1.</span> <span class="nav-text">设计策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84-1"><span class="nav-number">2.2.</span> <span class="nav-text">程序结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Ebug-1"><span class="nav-number">2.3.</span> <span class="nav-text">关于BUG</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%83%E6%AC%A1%E4%BD%9C%E4%B8%9A"><span class="nav-number">3.</span> <span class="nav-text">第七次作业</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E7%AD%96%E7%95%A5-2"><span class="nav-number">3.1.</span> <span class="nav-text">设计策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84-2"><span class="nav-number">3.2.</span> <span class="nav-text">程序结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Ebug-2"><span class="nav-number">3.3.</span> <span class="nav-text">关于BUG</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%83%E5%BE%97%E4%BD%93%E4%BC%9A"><span class="nav-number">4.</span> <span class="nav-text">心得体会</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yuheng Ding"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Yuheng Ding</p>
+  <div class="site-description" itemprop="description">Per aspera, ad astra.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/timdyh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dyh0701@gmail.com" title="E-Mail → mailto:dyh0701@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/tim_dyh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;tim_dyh" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/timdyh" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/04/23/buaa-oo-2019-unit2-summary/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="BUAA-OO-2019 第二单元总结 | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          BUAA-OO-2019 第二单元总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2019-04-23 15:15:00" itemprop="dateCreated datePublished" datetime="2019-04-23T15:15:00+08:00">2019-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Project/" itemprop="url" rel="index"><span itemprop="name">Project</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>2.7k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>2 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="第五次作业">第五次作业</h2>
+<p>本次作业，需要完成的任务为<strong>单部多线程傻瓜调度（FAFS）电梯</strong>的模拟。</p>
+<h3 id="设计策略">设计策略</h3>
+<p>先来先服务的单电梯是一个标准的<strong>"生产者-消费者"模型</strong>。虽然在本次作业中调度器似乎是不必要的，但为了更好地应用"生产者-消费者"模型，并方便下一次作业的扩展，还是应该保留了调度器的概念，将其作为"托盘"来存放还未服务的请求。</p>
+<span id="more"></span>
+<p>显然，读取输入并解析为请求就成为了生产者，而电梯就成为了消费者，而在本次作业中调度器其实只起到了存放共享数据的作用，并没有做任何真正意义上的调度。生产者将请求推入位于调度器里的请求队列里，另一边电梯按照<strong>先来先服务</strong>的傻瓜调度算法将请求一个个取出来并执行。为了保证访问请求队列的线程安全性，推入和取出请求的方法必须用<strong>synchronized</strong>关键字上锁。</p>
+<p>输入和电梯各是一个线程。当请求队列为空时，电梯wait()，直到一个新的请求被推入请求队列，电梯被唤醒。</p>
+<h3 id="程序结构">程序结构</h3>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-161436.jpg" /></p>
+<p>本次作业结构比较简单，一共四个类：输入、调度器、电梯和主类。输入和电梯两个线程通过调度器中共享数据的方式进行通信。</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-161445.jpg" /></p>
+<p>在度量上可以看出整体比较均衡，没有出现个别方法复杂度过大的情况。</p>
+<h3 id="关于bug">关于BUG</h3>
+<p>记得应该是一遍过了，没有发现自己程序的bug。</p>
+<p>菜鸡如我也不会测别人的bug，互测摸了。</p>
+<h2 id="第六次作业">第六次作业</h2>
+<p>本次作业，需要完成的任务为<strong>单部多线程可捎带调度（ALS）电梯</strong>的模拟。</p>
+<h3 id="设计策略-1">设计策略</h3>
+<p>这次的电梯依然只有一个，但要求支持捎带。要实现捎带，就涉及到<strong>主请求</strong>和<strong>捎带请求</strong>这两个概念。当电梯处于空闲状态时，尝试从请求队列中取出一个请求，作为主请求。在该请求被完成之前，电梯运行路径上遇到的所有<strong>目标方向与电梯运行方向相同的请求</strong>均被作为捎带请求，存入位于调度器中的<strong>捎带请求队列</strong>中。当主请求被完成后，从捎带请求队列中取出一个请求，成为新的主请求。</p>
+<p>以上取请求的操作依然遵循先来先服务的原则，但有了捎带功能后，某些请求可以被顺带提前满足，电梯的运送效率得到了极大的提升。</p>
+<p>设计模式上仍然采用"生产者-消费者"的基本模型，但这次调度器有了些实际作用，用于管理主请求和捎带请求之间的转换关系。</p>
+<h3 id="程序结构-1">程序结构</h3>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-161555.jpg" /></p>
+<p>由于仍然是单电梯，仅仅是增加了捎带功能，而模型没有变，所以程序结构大体上和上一次类似。</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-161612.jpg" /></p>
+<p>这次代码写得比较急，有些该封装的地方没封装，该复用的地方没复用，所以导致某些方法比较冗长。比如电梯线程的run()方法中，将细节都暴露了出来，有不少重复的语句，现在我自己理解起来都有些吃力。有时间还是应该把代码风格优化一下。</p>
+<h3 id="关于bug-1">关于BUG</h3>
+<p>彻底崩盘。要怪只能怪没有做好足够的本地测试（其实也不会测），结果公测和互测都爆炸了，而原因仅仅是从-1层到1层有个地方忘了处理。就因为这一个小细节，整个作业的努力白费，算是一个很大的教训了。下次不能再这么佛系地对待测试，也绝不能对自己的程序抱有莫名的自信。</p>
+<h2 id="第七次作业">第七次作业</h2>
+<p>本次作业，需要完成的任务为<strong>多部多线程智能（SS）调度电梯</strong>的模拟。</p>
+<h3 id="设计策略-2">设计策略</h3>
+<p>终于来了，传说中OO作业的难度峰值。</p>
+<p>相比前两次，最主要的区别就是由单电梯变成了多电梯，那么如何处理三个电梯之间的协作关系就成了主要问题。而事实上，所谓的协作关系也只是保证线程安全性，在这个基础上采用电梯间相互争抢的模式，即谁先到达某个请求的出发楼层，谁就服务这个请求。这种策略简单暴力，调度器不需要分配请求，而效率最后被证明也很好。</p>
+<p>在电梯调度算法方面，我采用了<strong>LOOK算法</strong>，并进行了一定的优化：电梯每达到一层，检查请求队列中是否有可以满足的请求，若无则wait()，若有则根据现在电梯内是否有人分两种情况移动：</p>
+<ol type="1">
+<li>电梯内有人，保持原来的运行方向，由下至上再由上至下循环扫描所有能到达的楼层；</li>
+<li>电梯内没人，若当前方向上没有可以满足的请求，则调转方向，否则保持原方向移动。</li>
+</ol>
+<p>通过使用wait()和notifyAll()，电梯在空闲时不会无脑疯狂调转方向，从而更贴近真实情况。</p>
+<p>此外，本次作业对电梯增加了更多的限制条件，如轿厢容量、可停靠楼层等。对于单个电梯无法满足的请求，需要由调度器将其拆分成两个请求，然后先把第一个请求放进请求队列。这里我利用了<strong>HashMap</strong>结构，将第一个请求作为键，第二个请求作为值存储起来。每当一个请求被完成后，就在HashMap中查找是否有对应的第二个请求，若有就放进请求队列中。</p>
+<h3 id="程序结构-2">程序结构</h3>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-161616.jpg" /></p>
+<p>本次作业新增了Request类和Floor类。Request继承了PersonRequest，以实现请求的拆分重新创建，并加入状态位status，用来标记某个请求当前正处于未被服务的状态，还是已经在某个电梯内部了。Floor作为电梯的构造参数之一，作用是管理电梯的楼层信息，包括可达楼层、最高最低层、判断某个楼层是否可达。包括Floor在内的所有电梯属性都可以在主类中显式地修改，避免硬编码，降低耦合度。</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-05-11-161620.jpg" /></p>
+<p>我在最后一遍提交前已经把整个程序结构优化了一遍，封装了很多过程，让方法长度尽可能的均衡，然而现在看来貌似还是有些差强人意。这个方面还得再下功夫……</p>
+<h3 id="关于bug-2">关于BUG</h3>
+<p>这次我深刻吸取了上次的教训，不会测bug就虚心请教大佬，要来了评测姬。正所谓不测不知道，一测吓一跳。结果果然显示有严重的bug，一个是拆分请求后第二个请求推入时间过早，导致乘客还没从第一个电梯出来就进了第二个电梯；另一个问题是某些情况下电梯wait()后就再也醒不过来了，原因在于notifyAll()的逻辑不太对。</p>
+<p>多线程debug的确比较难受，不过好在我向来就习惯用print大法，在每个转向、睡眠、唤醒等关键环节都print出相关信息，所以还是可以比较快地定位到有问题的代码片段。</p>
+<p>这样一来强测点稳妥全过，性能分也不赖。互测也很方便，直接用评测姬跑一遍就行，虽然最后只发现了别人的一处bug，果然A组都是大佬orz。</p>
+<h2 id="心得体会">心得体会</h2>
+<p>这三次作业层层递进的，难度也一次次加大，尤其是第三次的多电梯，对设计架构的要求很高，如果在最开始没有把各个类之间的关系梳理清楚，那么功能实现起来就会重重受阻，甚至面临全盘重构的可能。</p>
+<p>然而，这三次作业也是有共性的。对于我来说，输入推入请求，电梯取出请求，这种"生产者-消费者"模型的核心没有变。只要能设计好架构，让耦合度降到最低，那么任意电梯数量、各种限制要求都可以轻松地满足。调度算法也应该封装起来，想用哪种算法单独替换即可，不要因为算法而改变架构本身。</p>
+<p>通过这个单元的训练，我对多线程编程有了深入的了解，掌握了线程间通信、同步、互斥的方法，保证线程的安全性。更重要的一方面是，设计架构的能力有了不小的提升，明白如何才能设计出高内聚、低耦合的程序，这对以后可能的企业工作将有巨大的帮助。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Yuheng Ding WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Yuheng Ding Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/OOP/" rel="tag"># OOP</a>
+              <a href="/tags/Concurrency/" rel="tag"># Concurrency</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/03/26/buaa-oo-2019-unit1-summary/" rel="prev" title="BUAA-OO-2019 第一单元总结">
+                  <i class="fa fa-chevron-left"></i> BUAA-OO-2019 第一单元总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/05/22/buaa-oo-2019-unit3-summary/" rel="next" title="BUAA-OO-2019 第三单元总结">
+                  BUAA-OO-2019 第三单元总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yuheng Ding</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Symbols count total: </span>
+    <span title="Symbols count total">370k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>Reading time total &asymp;</span>
+    <span title="Reading time total">5:37</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"timdyh","repo":"gitalk-comments","client_id":"0babcb65af364dd08a90","client_secret":"22090e837380d49040a73f2ed1db4f9541b29379","admin_user":"timdyh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"fd72741080c39ed167040b845ff266bf"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

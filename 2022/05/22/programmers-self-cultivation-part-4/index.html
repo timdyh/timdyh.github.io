@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="null//null" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="x_9IHIiVX0aZQfKSCtN7gy8_1UhN7guVmZAmA4gv1EE">
+  <meta name="msvalidate.01" content="AC8F448726B8A8742C6DFFA7640E7DBF">
+  <meta name="baidu-site-verification" content="code-2qEdijyCxz">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="第 10 章 内存 程序的内存布局   栈：用于维护函数调用的上下文 动态链接库映射区：用于映射装载的动态链接库 堆：用来容纳应用程序动态分配的内存区域，一般比栈大很多 可执行文件映像：存储可执行文件在内存里的映像 保留区：对内存中受到保护而禁止访问的内存区域的总称，例如 NULL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Note] 程序员的自我修养——第 4 部分 库与运行库">
+<meta property="og:url" content="http://example.com/2022/05/22/programmers-self-cultivation-part-4/index.html">
+<meta property="og:site_name" content="TimDyh">
+<meta property="og:description" content="第 10 章 内存 程序的内存布局   栈：用于维护函数调用的上下文 动态链接库映射区：用于映射装载的动态链接库 堆：用来容纳应用程序动态分配的内存区域，一般比栈大很多 可执行文件映像：存储可执行文件在内存里的映像 保留区：对内存中受到保护而禁止访问的内存区域的总称，例如 NULL">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-11-06-074959.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-11-19-070333.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-11-19-070343.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-11-19-070348.jpg">
+<meta property="article:published_time" content="2022-05-22T01:49:55.000Z">
+<meta property="article:modified_time" content="2022-12-16T14:55:45.161Z">
+<meta property="article:author" content="Yuheng Ding">
+<meta property="article:tag" content="OS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-11-06-074959.jpg">
+
+
+<link rel="canonical" href="http://example.com/2022/05/22/programmers-self-cultivation-part-4/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/05/22/programmers-self-cultivation-part-4/","path":"2022/05/22/programmers-self-cultivation-part-4/","title":"[Note] 程序员的自我修养——第 4 部分 库与运行库"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[Note] 程序员的自我修养——第 4 部分 库与运行库 | TimDyh</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">TimDyh</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC-10-%E7%AB%A0-%E5%86%85%E5%AD%98"><span class="nav-number">1.</span> <span class="nav-text">第 10 章 内存</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80"><span class="nav-number">1.1.</span> <span class="nav-text">程序的内存布局</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%88%E4%B8%8E%E8%B0%83%E7%94%A8%E6%83%AF%E4%BE%8B"><span class="nav-number">1.2.</span> <span class="nav-text">栈与调用惯例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A0%86%E4%B8%8E%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">1.3.</span> <span class="nav-text">堆与内存管理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC-11-%E7%AB%A0-%E8%BF%90%E8%A1%8C%E5%BA%93"><span class="nav-number">2.</span> <span class="nav-text">第 11 章 运行库</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%A5%E5%8F%A3%E5%87%BD%E6%95%B0%E5%92%8C%E7%A8%8B%E5%BA%8F%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.1.</span> <span class="nav-text">入口函数和程序初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cc-%E8%BF%90%E8%A1%8C%E5%BA%93"><span class="nav-number">2.2.</span> <span class="nav-text">C&#x2F;C++ 运行库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E5%BA%93%E4%B8%8E%E5%A4%9A%E7%BA%BF%E7%A8%8B"><span class="nav-number">2.3.</span> <span class="nav-text">运行库与多线程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#c-%E5%85%A8%E5%B1%80%E6%9E%84%E9%80%A0%E4%B8%8E%E6%9E%90%E6%9E%84"><span class="nav-number">2.4.</span> <span class="nav-text">C++ 全局构造与析构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#msvc-%E7%9A%84-fread-%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.5.</span> <span class="nav-text">MSVC 的 fread 实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC-12-%E7%AB%A0-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E4%B8%8E-api"><span class="nav-number">3.</span> <span class="nav-text">第 12 章 系统调用与 API</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E4%BB%8B%E7%BB%8D"><span class="nav-number">3.1.</span> <span class="nav-text">系统调用介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E5%8E%9F%E7%90%86"><span class="nav-number">3.2.</span> <span class="nav-text">系统调用原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#windows-api"><span class="nav-number">3.3.</span> <span class="nav-text">Windows API</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC-13-%E7%AB%A0-%E8%BF%90%E8%A1%8C%E5%BA%93%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.</span> <span class="nav-text">第 13 章 运行库实现</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yuheng Ding"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Yuheng Ding</p>
+  <div class="site-description" itemprop="description">Per aspera, ad astra.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/timdyh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dyh0701@gmail.com" title="E-Mail → mailto:dyh0701@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/tim_dyh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;tim_dyh" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/timdyh" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/05/22/programmers-self-cultivation-part-4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[Note] 程序员的自我修养——第 4 部分 库与运行库 | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [Note] 程序员的自我修养——第 4 部分 库与运行库
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-05-22 09:49:55" itemprop="dateCreated datePublished" datetime="2022-05-22T09:49:55+08:00">2022-05-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Note/" itemprop="url" rel="index"><span itemprop="name">Note</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>7.1k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>6 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="第-10-章-内存">第 10 章 内存</h3>
+<h4 id="程序的内存布局">程序的内存布局</h4>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-11-06-074959.jpg" style="zoom: 50%;" /></p>
+<ul>
+<li>栈：用于维护函数调用的上下文</li>
+<li>动态链接库映射区：用于映射装载的动态链接库</li>
+<li>堆：用来容纳应用程序动态分配的内存区域，一般比栈大很多</li>
+<li>可执行文件映像：存储可执行文件在内存里的映像</li>
+<li>保留区：对内存中受到保护而禁止访问的内存区域的总称，例如 NULL</li>
+</ul>
+<span id="more"></span>
+<h4 id="栈与调用惯例">栈与调用惯例</h4>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-11-19-070333.jpg" style="zoom:50%;" /></p>
+<ul>
+<li><p>栈保存了一个函数调用所需要的维护信息，称为堆栈帧（Stack
+Frame）或活动记录（Activate Record），包括：</p>
+<ul>
+<li>函数的返回地址和参数</li>
+<li>临时变量：包括函数的非静态局部变量以及编译器自动生成的其他临时变量</li>
+<li>保存的上下文：包括在函数调用前后需要保持不变的寄存器</li>
+</ul></li>
+<li><p>esp
+寄存器始终指向栈的顶部，同时也就指向了当前函数的活动记录的顶部</p></li>
+<li><p>ebp 寄存器指向函数活动记录的一个固定位置，又被称为帧指针（Frame
+Pointer）</p></li>
+<li><p>一个 i386 下的函数调用：</p>
+<ul>
+<li>把所有或一部分参数压入栈中，如果有其他参数没有入栈，那么使用某些特定的寄存器传递</li>
+<li>把当前指令的下一条指令的地址压入栈中，跳转到函数体执行（call
+指令）</li>
+</ul></li>
+<li><p>i386 函数体的“标准”开头：</p>
+<ul>
+<li><code>push ebp</code>：把 ebp 压入栈中（称为 old
+ebp），便于在返回时恢复以前的 ebp 值</li>
+<li><code>mov ebp, esp</code>： ebp = esp（这时 ebp
+指向栈顶，而此时栈顶就是 old ebp）</li>
+<li><code>sub esp, x</code>：【可选】在栈上分配 x 字节的临时空间</li>
+<li><code>push xxx</code>：【可选】保存名为 xxx
+寄存器（可重复多个）</li>
+</ul></li>
+<li><p>函数返回时的“标准”结尾与“标准”开头正好相反：</p>
+<ul>
+<li><code>pop xxx</code>：【可选】恢复保存过的寄存器（可重复多个）</li>
+<li><code>mov esp, ebp</code>：恢复 esp 同时回收局部变量空间</li>
+<li><code>pop ebp</code>：从栈中恢复保存的 ebp 值</li>
+<li><code>ret</code>：从栈中取得返回地址，并跳转到该位置</li>
+</ul></li>
+<li><p>VC 在 Debug 模式下会将栈空间的每一个字节都初始化为 0xCC（0xCCCC
+的汉字编码就是“烫”），有助于判断一个变量是否没有初始化</p></li>
+<li><p>调用惯例（Calling Convention）</p>
+<ul>
+<li>函数参数的传递顺序和方式：通过栈还是寄存器传递，参数从左至右还是从右至左压栈</li>
+<li>栈的维护方式：参数的弹出由函数调用方还是函数本身完成</li>
+<li>名字修饰（Name-mangling）策略：为了链接时对调用惯例进行区分</li>
+</ul>
+<table>
+<colgroup>
+<col style="width: 7%" />
+<col style="width: 9%" />
+<col style="width: 56%" />
+<col style="width: 26%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>调用惯例</th>
+<th>出栈方</th>
+<th>参数传递</th>
+<th>名字修饰</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cdecl</td>
+<td>函数调用方</td>
+<td>从右至左的顺序压参数入栈</td>
+<td>下划线+函数名</td>
+</tr>
+<tr class="even">
+<td>stdcall</td>
+<td>函数本身</td>
+<td>从右至左的顺序压参数入栈</td>
+<td>下划线+函数名+@+参数的字节数</td>
+</tr>
+<tr class="odd">
+<td>fastcall</td>
+<td>函数本身</td>
+<td>头两个 DWORD（4
+字节）类型或<br/>占更少字节的参数被放入寄存器，<br/>其他剩下的参数按从右到左的顺序压入栈</td>
+<td>@+函数名+@+参数的字节数</td>
+</tr>
+<tr class="even">
+<td>pascal</td>
+<td>函数本身</td>
+<td>从左至右的顺序压参数入栈</td>
+<td>较为复杂，参见 pascal 文档</td>
+</tr>
+</tbody>
+</table></li>
+<li><p>cdecl 是 C 语言默认的调用惯例</p></li>
+<li><p>naked call
+调用惯例用在特殊的场合，其特点是编译器不产生任何保护寄存器的代码</p></li>
+<li><p>C++
+由于支持函数重载以及命名空间和成员函数等，有更加复杂的名字修饰策略；C++
+自己还有一种特殊的调用惯例 thiscall，专用于类成员函数的调用：</p>
+<ul>
+<li>对于 VC，this 指针存放于 ecx 寄存器，参数从右到左压栈</li>
+<li>对于 gcc，thiscall 和 cdecl 完全一样，只是将 this
+看作是函数的第一个参数</li>
+</ul></li>
+<li><p>函数返回值传递</p>
+<ul>
+<li>小等于 4 字节：通过 eax 传递</li>
+<li>5~8 字节：eax 存储低 4 字节，edx 存储高 1~4 字节</li>
+<li>大于 8
+字节：调用方在栈上开辟空间作为传递返回值的临时对象，将其地址作为隐藏参数传递给被调函数，后者将数据拷贝给临时对象并将其地址用
+eax 传出，返回后调用方将 eax
+指向的临时对象的内容再拷贝到存储返回值的对象里（其中一种实现，不可移植）</li>
+</ul>
+<blockquote>
+<p>C++ 返回值优化（Return Value Optimization,
+RVO）：直接将对象构造在传出时使用的临时对象上，减少一次拷贝</p>
+</blockquote></li>
+</ul>
+<h4 id="堆与内存管理">堆与内存管理</h4>
+<ul>
+<li>运行库向操作系统“批发”一块较大的堆空间，然后“零售”给程序用，当全部“售完”或程序有大量的内存需求时，再根据实际需求向操作系统“进货”，通过堆的分配算法来管理堆空间</li>
+<li>Linux 进程堆管理
+<ul>
+<li>提供两种堆空间分配的方式，即两个系统调用：<code>brk()</code> 和
+<code>mmap()</code></li>
+<li><code>brk()</code>
+通过设置进程数据段的结束地址来扩大或者缩小数据段</li>
+<li><code>mmap()</code>
+向操作系统申请一段虚拟地址空间（最初的作用是将其映射到某个文件），当该空间不被映射到文件时又称为匿名空间，可以用来作为堆空间，其起始地址和大小都必须是系统页大小的整数倍</li>
+<li>glibc 的 <code>malloc</code> 函数实现
+<ul>
+<li>对于小于 128KB
+的请求，在现有的堆空间里按照堆分配算法分配一块空间并返回</li>
+<li>对于大于 128KB 的请求，使用 <code>mmap()</code>
+分配一块匿名空间，然后在其中为用户分配空间</li>
+</ul></li>
+</ul></li>
+<li>Windows 进程堆管理
+<ul>
+<li>提供 <code>VirtualAlloc()</code> 用来向系统申请空间，与 Linux 下的
+<code>mmap</code> 非常相似</li>
+<li>分配算法的实现位于堆管理器（Heap Manager），提供一套 API
+用来创建、分配、释放和销毁堆空间，<code>malloc</code>
+则是对这些函数的包装</li>
+<li>进程在创建时有一个默认堆（1MB），如果用户申请的空间超过
+1MB，堆管理器会通过 <code>VirtualAlloc</code>
+向系统申请更多的空间，扩展堆的大小</li>
+<li>由于 Windows
+的堆空间不连续，当一个堆的空间无法再扩展时，则会创建一个新的堆</li>
+</ul></li>
+<li>堆分配算法
+<ul>
+<li><strong>空闲链表（Free List）</strong>
+<ul>
+<li>把堆中各个空闲的块按照链表的方式连接起来，当用户请求一块空间时，遍历整个链表直到找到合适大小的块并且将它拆分，当用户释放空间时将它合并到空闲链表中</li>
+<li>缺点：一旦链表被破坏，整个堆就无法正常工作</li>
+</ul></li>
+<li><strong>位图（Bitmap）</strong>
+<ul>
+<li>将整个堆划分为大量大小相同的块（block），当用户请求内存时总是分配整数个块的空间，第一个块称为已分配区域的头（Head），其余的称为已分配区域的主体（Body），使用一个整数数组记录块的使用情况，由于每个块只有头/主体/空闲三种状态，因此仅需要两位即可表示一个块</li>
+<li>优点
+<ul>
+<li>速度快：由于整个堆的空闲信息存储在一个数组内，因此访问该数组时 cache
+容易命中</li>
+<li>稳定性好：为了避免用户越界读写破坏数据，只须简单地备份一下位图即可，即使部分数据被破坏，也不会导致整个堆无法工作</li>
+<li>块不需要额外信息，易于管理</li>
+</ul></li>
+<li>缺点
+<ul>
+<li>分配内存的时候容易产生碎片</li>
+<li>如果堆很大或一个块很小（可以减少碎片），那么位图将会很大，可能失去
+cache 命中率高的优势，而且也会浪费一定的空间</li>
+</ul></li>
+</ul></li>
+<li><strong>对象池</strong>
+<ul>
+<li>如果每次分配的空间大小都一样，就以该大小作为单位把整个堆空间划分为大量的小块，每次请求时只需要找到一个小块即可</li>
+<li>对象池的管理方法可以采用空闲链表或位图，与它们的区别仅仅在于假定了每次请求的大小固定，因此实现起来很容易</li>
+<li>对于被分配对象的大小较为固定的场合更为高效</li>
+</ul></li>
+<li>实际的堆分配算法往往采取多种算法复合而成，比如 glibc
+<ul>
+<li>对于小于 64 字节的空间申请，采用类似于对象池的方法</li>
+<li>对于大于 512 字节的空间申请，采用最佳适配算法</li>
+<li>对于大于 64 字节而小于 512
+字节的，根据情况采取上述方法中的最佳折中策略</li>
+<li>对于大于 128KB 的申请，使用 <code>mmap</code>
+机制直接向操作系统申请空间</li>
+</ul></li>
+</ul></li>
+</ul>
+<h3 id="第-11-章-运行库">第 11 章 运行库</h3>
+<h4 id="入口函数和程序初始化">入口函数和程序初始化</h4>
+<ul>
+<li>程序的入口函数或入口点（Entry
+Point）是一个程序的初始化和结束部分，往往是运行库的一部分</li>
+<li>典型的程序运行步骤
+<ul>
+<li>操作系统在创建进程后，把控制权交给程序的入口</li>
+<li>入口函数对运行库和程序运行环境进行初始化，包括堆、I/O、线程、全局变量构造等</li>
+<li>入口函数在完成初始化后，调用 main
+函数，正式开始执行程序主体部分</li>
+<li>main
+函数执行完毕后，返回到入口函数进行清理工作，包括全局变量析构、堆销毁、关闭
+I/O 等，然后进行系统调用结束进程</li>
+</ul></li>
+<li>入口函数的实现
+<ul>
+<li>Glibc:
+<code>_start -&gt; __libc_start_main -&gt; exit -&gt; _exit</code></li>
+<li>MSVC CRT:
+<code>mainCRTStartup -&gt; _heap_init(), I/O 初始化</code></li>
+</ul></li>
+<li>C 语言通过 FLLE 结构的指针来操作文件，对应操作系统层面的句柄，在
+Linux 里叫做描述符（File Descriptor），在 Windows
+里叫做句柄（Handle），用于防止用户随意读写操作系统内核的文件对象</li>
+<li>在 Linux 中，值为 0、1、2的 fd
+分别代表标准输入、标准输出和标准错误输出，在程序中打开文件得到的 fd 从 3
+开始增长。内核中每一个进程都有一个私有的“打开文件表”（指针数组），每一个元素都指向一个内核的打开文件对象，而
+fd 就是表的下标。由于该表处于内核，用户无法访问到，因此用户即使拥有
+fd，也无法得到打开文件对象的地址，只能够通过系统提供的函数来操作</li>
+<li>Windows 中的句柄与 Linux 中的 fd
+大同小异，不过是打开文件表的下标经过某种线性变换之后的结果</li>
+<li>I/O 初始化函数在用户空间中建立 stdin、stdout、stderr 及其对应的 FILE
+结构，使得程序进入 main 之后可以直接使用 printf、scanf 等函数</li>
+<li>MSVC 的 I/O 初始化工作
+<ul>
+<li>建立打开文件表</li>
+<li>如果能够继承自父进程，那么从父进程获取继承的句柄</li>
+<li>初始化标准输入输出</li>
+</ul></li>
+</ul>
+<h4 id="cc-运行库">C/C++ 运行库</h4>
+<ul>
+<li>C 语言运行库（CRT）大致包含如下功能：
+<ul>
+<li>启动与退出：包括入口函数及入口函数所依赖的其他函数等</li>
+<li>标准函数：由 C 语言标准规定的 C 语言标准库所拥有的函数实现</li>
+<li>I/O：I/O 功能的封装和实现</li>
+<li>堆：堆的封装和实现</li>
+<li>语言实现：语言中一些特殊功能的实现</li>
+<li>调试：实现调试功能的代码</li>
+</ul></li>
+<li>运行库是平台相关的，是 C
+语言程序和不同操作系统平台之间的抽象层，它将不同的操作系统 API
+抽象成相同的库函数</li>
+<li>有时需要绕过 C 语言运行库直接调用操作系统 API
+或使用其他的库（如用户的权限控制、操作系统线程创建等都不属于标准 C
+语言运行库），Linux 和 Windows 平台下的两个主要 C 语言运行库分别为
+glibc（GNU C Library）和 MSVCRT（Microsoft Visual C Run-time）</li>
+<li>glibc
+的发布版本主要由两部分组成：一部分是头文件，往往位于/usr/include；另外一部分则是库的二进制文件，主要是
+C 语言标准库，有静态和动态两个版本，前者位于/usr/lib/libc.a，后者位于
+/lib/libc.so.6</li>
+<li>MSVC CRT 静态版位于 MSVC 安装目录下的
+lib/；动态版一般有两个文件，一个用于链接的 .lib 文件，一个用于运行时的
+.dll 动态链接库</li>
+</ul>
+<h4 id="运行库与多线程">运行库与多线程</h4>
+<ul>
+<li><p>线程私有存储空间</p>
+<ul>
+<li>栈（尽管并非完全无法被其他线程访问）</li>
+<li>线程局部存储（Thread Local Storage, TLS），通常尺寸很有限</li>
+<li>寄存器（包括 PC 寄存器）</li>
+</ul></li>
+<li><p>从 C 程序员的角度看数据在线程之间是否私有</p>
+<table>
+<colgroup>
+<col style="width: 37%" />
+<col style="width: 62%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>线程私有</th>
+<th>线程之间共享（进程所有）</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>局部变量<br/>函数的参数<br/>TLS 数据</td>
+<td>全局变量<br/>堆上的数据<br/>函数里的静态变量<br/>程序代码，任何线程都有权利读取并执行任何代码<br/>打开文件，A
+线程打开的文件可以由 B 线程读写</td>
+</tr>
+</tbody>
+</table></li>
+<li><p>线程相关内容不属于 C/C++ 标准库运行库，而属于系统相关库：</p>
+<ul>
+<li>Windows：MSVC CRT 提供
+<code>_beginthread()</code>、<code>_endthread()</code> 等函数</li>
+<li>Linux：glibc 提供可选的线程库 pthread（POSIX Thread），包括
+<code>pthread_create()</code>、 <code>pthread_exit()</code> 等函数</li>
+</ul></li>
+<li><p>多线程版本的运行库</p>
+<ul>
+<li>使用 TLS：<code>errno</code> 成为各个线程的私有成员，定义为宏
+<code>#define errno (*__errno_location())</code></li>
+<li>加锁：线程不安全的函数内部自动加锁（如
+<code>malloc</code>、<code>printf</code>），并解决多线程异常处理冲突的问题</li>
+<li>改进函数调用方式：修改线程不安全函数的参数列表成为线程安全的版本，如
+<code>strtok() -&gt; strtok_r()</code></li>
+</ul></li>
+<li><p>线程局部存储</p>
+<ul>
+<li>每个线程都会拥有变量的一个副本，任何线程对该变量的修改都不会影响其他线程中该变量的副本</li>
+<li>定义一个全局变量为 TLS 类型只需在定义前加上相应的关键字，对于 GCC 是
+<code>__thread</code>，对于 MSVC 是 <code>__declspec(thread)</code></li>
+<li>Windows TLS 的实现
+<ul>
+<li>编译器将 TLS 变量放到 PE 文件的 .tls
+段中，当系统启动一个新的线程时，从进程的堆中分配一块足够大小的空间，然后把
+.tls 段中的内容复制过去，于是每个线程都有自己独立的一个 .tls 副本</li>
+<li>TLS 表位于 PE 文件的 .rdata 段中，保存了所有 TLS
+变量的构造函数和析构函数的地址，Windows 系统根据 TLS
+表中的内容，在每次线程启动或退出时对 TLS 变量进行构造和析构</li>
+<li>对于每个 Windows 线程，系统都会建立一个线程环境块（TEB, Thread
+Environment Block），保存线程的堆栈地址、线程 ID
+等相关信息，其中一个域是 TLS 数组，线程通过该数组中的地址来访问 TLS
+变量</li>
+</ul></li>
+</ul></li>
+</ul>
+<h4 id="c-全局构造与析构">C++ 全局构造与析构</h4>
+<ul>
+<li>Glibc 全局构造与析构
+<ul>
+<li><code>_start -&gt; __libc_start_main -&gt; __libc_csu_init -&gt; _init -&gt; __do_global_ctors_aux</code></li>
+<li>对于每个编译单元(.cpp)，GCC
+会遍历其中所有的全局对象，生成一个特殊函数对本编译单元里的所有全局对象进行初始化，并在目标文件(.o)的
+.ctors 段里放置指向该函数的指针</li>
+<li>链接器将每个目标文件的 .ctors
+段合并为一个函数指针数组，每一个元素都指向一个目标文件的全局构造函数</li>
+<li>编译器对每个编译单元的全局对象，都会生成一个特殊函数来调用析构函数，其调用顺序与调用构造函数的顺序刚好相反</li>
+</ul></li>
+<li>MSVC CRT 的全局构造和析构
+<ul>
+<li><code>mainCRTStartup -&gt; _initterm</code></li>
+<li>实现机制与 Glibc 基本相似，略</li>
+</ul></li>
+</ul>
+<h4 id="msvc-的-fread-实现">MSVC 的 fread 实现</h4>
+<ul>
+<li>最终调用 Windows 系统 API 的 <code>ReadFile()</code> 函数</li>
+<li>缓冲（Buffer）
+<ul>
+<li>频繁进行系统调用严重影响程序和系统的性能</li>
+<li>将连续的多次写入放在一个数组里，等到数组被填满之后再一次性完成系统调用写入，系统崩溃或进程意外退出有可能导致数据丢失</li>
+<li>读取数据时，如果缓冲中有数据就直接从缓冲中取；如果缓冲是空的，CRT
+就通过操作系统一次性读取文件一块较大的内容填充缓冲</li>
+<li>flush
+将缓冲内的数据全部写入实际的文件，并将缓冲清空，保证文件处于最新的状态</li>
+<li>缓冲模式
+<ul>
+<li>无缓冲：不适用任何缓冲</li>
+<li>行缓冲（Line
+Buffer）：仅对文本模式打开的文件有效，每收到一个换行符就将缓冲 flush
+掉</li>
+<li>全缓冲（Full Buffer）：除用户手动调用 flush 外，仅当缓冲满时才进行
+flush</li>
+</ul></li>
+</ul></li>
+<li><code>fread -&gt; fread_s -&gt; _fread_nolock_s -&gt; _read -&gt; ReadFile</code></li>
+</ul>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-11-19-070343.jpg" style="zoom: 50%;" /></p>
+<h3 id="第-12-章-系统调用与-api">第 12 章 系统调用与 API</h3>
+<h4 id="系统调用介绍">系统调用介绍</h4>
+<ul>
+<li>系统调用（System Call）是应用程序与操作系统内核之间的接口</li>
+<li>为了让应用程序有能力访问系统资源，或借助操作系统做一些必须由操作系统支持的行为，每个操作系统都会提供一套接口以供应用程序使用，这些接口往往通过中断来实现</li>
+<li>在 Linux x86 下，系统调用由 0x80
+中断完成，各个通用寄存器用于传递参数，EAX
+寄存器用于表示系统调用的接口号；当系统调用返回时，EAX
+又作为调用结果的返回值</li>
+<li>系统调用的弊端
+<ul>
+<li>使用不便，接口过于原始，需要了解很多与操作系统相关的细节</li>
+<li>各个操作系统之间系统调用不兼容</li>
+</ul></li>
+<li>运行库作为系统调用与程序之间的抽象层，将不同操作系统的系统调用包装为统一固定的接口，使用简便，形式统一（标准库）</li>
+</ul>
+<h4 id="系统调用原理">系统调用原理</h4>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2022-11-19-070348.jpg" style="zoom:50%;" /></p>
+<ul>
+<li>特权级别
+<ul>
+<li>用户模式/用户态（User Mode）</li>
+<li>内核模式/内核态（Kernel Mode）</li>
+</ul></li>
+<li>操作系统可以让不同的代码运行在不同的模式上，以限制它们的权力，提高稳定性和安全性</li>
+<li>系统调用运行在内核态；普通应用程序运行在用户态，诸多操作将受到限制，包括访问硬件设备、开关中断、改变特权模式等</li>
+<li>操作系统一般通过中断 （Interrupt）从用户态切换到内核态</li>
+<li>不同的中断具有不同的中断号（从0开始），一个中断处理程序（Interrupt
+Service Routine, ISR）对应一个中断号</li>
+<li>在内核中，中断向量表（Interrupt Vector Table）的第 n 项包含了指向第
+n 号中断的中断处理程序的指针</li>
+<li>当中断到来时，CPU
+会暂停当前执行的代码，根据中断号在中断向量表中找到对应的中断处理程序并调用它，完成之后继续执行之前的代码</li>
+<li>中断的两种类型
+<ul>
+<li>硬件中断：自于硬件的异常或其他事件的发生，如电源掉电、键盘被按下等</li>
+<li>软件中断：通常是一条指令，带有一个参数记录中断号，使用这条指令用户可以手动触发某个中断并执行其中断处理程序，例如
+i386 下 Windows 系统调用由 <code>int 0x2e</code> 触发，Linux 则由
+<code>int 0x80</code> 触发</li>
+</ul></li>
+<li>系统调用都有一个系统调用号，通常是其在系统调用表中的位置，在执行 int
+指令前被放置在某个固定的寄存器里，中断服务程序会取得这个系统调用号，进而调用对应的函数</li>
+<li>基于 int 的 Linux 的经典系统调用实现
+<ol type="1">
+<li>触发中断</li>
+<li>将程序的当前栈由用户栈切换为内核栈</li>
+<li>中断处理程序调用系统调用函数</li>
+</ol></li>
+<li>Linux 的新型系统调用机制：由于基于 int 指令的系统调用在奔腾 4
+代处理器上性能不佳，Linux 在 2.5
+版本起开始支持一种新型的系统调用机制，这种新机制使用 Intel 在奔腾 2
+代处理器就开始支持的一组专门针对系统调用的指令——<code>sysenter</code> 和
+<code>sysexit</code></li>
+</ul>
+<h4 id="windows-api">Windows API</h4>
+<ul>
+<li>Windows API 是指 Windows
+操作系统提供给应用程序开发者的最底层的、最直接与 Windows
+打交道的接口</li>
+<li>微软并没有将 Windows 的系统调用公开，程序员只能调用 API
+层的函数，而不是如 Linux 一般直接使用系统调用</li>
+<li>Windows API 作为 CRT
+和系统调用之间的中间层，防止内核系统调用层发生变化导致用户程序也必须随之变化</li>
+<li>Windows 子系统（Subsystem）是架设在 API
+和应用程序之间的另一个中间层，用来为各种不同平台的应用程序创建与它们兼容的运行环境</li>
+</ul>
+<h3 id="第-13-章-运行库实现">第 13 章 运行库实现</h3>
+<p><strong>略</strong></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Yuheng Ding WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Yuheng Ding Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/OS/" rel="tag"># OS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/04/29/programmers-self-cultivation-part-3/" rel="prev" title="[Note] 程序员的自我修养——第 3 部分 装载与动态链接">
+                  <i class="fa fa-chevron-left"></i> [Note] 程序员的自我修养——第 3 部分 装载与动态链接
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/06/25/custom-deleter-for-unique_ptr/" rel="next" title="std::unique_ptr 的自定义删除器">
+                  std::unique_ptr 的自定义删除器 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yuheng Ding</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Symbols count total: </span>
+    <span title="Symbols count total">370k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>Reading time total &asymp;</span>
+    <span title="Reading time total">5:37</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"timdyh","repo":"gitalk-comments","client_id":"0babcb65af364dd08a90","client_secret":"22090e837380d49040a73f2ed1db4f9541b29379","admin_user":"timdyh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"2316b55b890c2bc6d24310c647d76908"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

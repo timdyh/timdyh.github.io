@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="null//null" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="x_9IHIiVX0aZQfKSCtN7gy8_1UhN7guVmZAmA4gv1EE">
+  <meta name="msvalidate.01" content="AC8F448726B8A8742C6DFFA7640E7DBF">
+  <meta name="baidu-site-verification" content="code-2qEdijyCxz">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本文为《C++ 中的内存对齐》系列之下篇，上篇介绍内存对齐的理论基础，建议优先食用~  TL;DR  编译器可能会在结构体中填充字节，以满足所有成员的对齐要求； 可以通过预处理指令 #pragma pack 及 alignas 标识符自定义内存对齐； 对于栈上及静态变量，编译器保证遵循其类型的对齐要求； 对于堆上构造的对象，只有在 C++17 后才能保证任何情况下动态申请的内存都满足对齐要求。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++ 中的内存对齐——实践篇">
+<meta property="og:url" content="http://example.com/2022/08/28/memory-alignment-in-cpp-practice/index.html">
+<meta property="og:site_name" content="TimDyh">
+<meta property="og:description" content="本文为《C++ 中的内存对齐》系列之下篇，上篇介绍内存对齐的理论基础，建议优先食用~  TL;DR  编译器可能会在结构体中填充字节，以满足所有成员的对齐要求； 可以通过预处理指令 #pragma pack 及 alignas 标识符自定义内存对齐； 对于栈上及静态变量，编译器保证遵循其类型的对齐要求； 对于堆上构造的对象，只有在 C++17 后才能保证任何情况下动态申请的内存都满足对齐要求。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-08-28T08:16:30.000Z">
+<meta property="article:modified_time" content="2022-11-19T07:17:48.846Z">
+<meta property="article:author" content="Yuheng Ding">
+<meta property="article:tag" content="C&#x2F;C++">
+<meta property="article:tag" content="Memory">
+<meta property="article:tag" content="Compiler">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2022/08/28/memory-alignment-in-cpp-practice/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/08/28/memory-alignment-in-cpp-practice/","path":"2022/08/28/memory-alignment-in-cpp-practice/","title":"C++ 中的内存对齐——实践篇"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>C++ 中的内存对齐——实践篇 | TimDyh</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">TimDyh</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#tldr"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%88%E4%B8%8A%E5%8F%8A%E9%9D%99%E6%80%81%E5%8F%98%E9%87%8F%E5%AF%B9%E9%BD%90"><span class="nav-number">2.</span> <span class="nav-text">栈上及静态变量对齐</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E9%BD%90%E8%A6%81%E6%B1%82"><span class="nav-number">2.1.</span> <span class="nav-text">对齐要求</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93%E7%9A%84%E5%AF%B9%E9%BD%90%E8%A7%84%E5%88%99"><span class="nav-number">2.2.</span> <span class="nav-text">结构体的对齐规则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90"><span class="nav-number">2.3.</span> <span class="nav-text">自定义内存对齐</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#alignas-%E7%9A%84%E5%B1%80%E9%99%90"><span class="nav-number">2.4.</span> <span class="nav-text">alignas 的局限</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A0%86%E5%86%85%E5%AD%98%E7%9A%84%E5%AF%B9%E9%BD%90"><span class="nav-number">3.</span> <span class="nav-text">堆内存的对齐</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%B3%E8%AF%B7%E5%AF%B9%E9%BD%90%E7%9A%84%E5%86%85%E5%AD%98"><span class="nav-number">3.1.</span> <span class="nav-text">申请对齐的内存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-new-%E6%9E%84%E9%80%A0%E5%AF%B9%E9%BD%90%E7%9A%84%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.2.</span> <span class="nav-text">使用 new
+构造对齐的对象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B0%86%E4%B8%80%E5%88%87%E4%BA%A4%E7%BB%99%E7%BC%96%E8%AF%91%E5%99%A8%E5%90%A7"><span class="nav-number">3.3.</span> <span class="nav-text">将一切交给编译器吧</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#references"><span class="nav-number">4.</span> <span class="nav-text">References</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yuheng Ding"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Yuheng Ding</p>
+  <div class="site-description" itemprop="description">Per aspera, ad astra.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/timdyh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dyh0701@gmail.com" title="E-Mail → mailto:dyh0701@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/tim_dyh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;tim_dyh" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/timdyh" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/28/memory-alignment-in-cpp-practice/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="C++ 中的内存对齐——实践篇 | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C++ 中的内存对齐——实践篇
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-08-28 16:16:30" itemprop="dateCreated datePublished" datetime="2022-08-28T16:16:30+08:00">2022-08-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Essay/" itemprop="url" rel="index"><span itemprop="name">Essay</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>6.2k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>6 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>本文为《C++ 中的内存对齐》系列之下篇，<a
+target="_blank" rel="noopener" href="https://timdyh.github.io/2022/07/30/memory-alignment-in-cpp-theory/">上篇</a>介绍内存对齐的理论基础，建议优先食用~</p>
+</blockquote>
+<h3 id="tldr">TL;DR</h3>
+<ul>
+<li>编译器可能会在结构体中填充字节，以满足所有成员的对齐要求；</li>
+<li>可以通过预处理指令 <code>#pragma pack</code> 及 <code>alignas</code>
+标识符自定义内存对齐；</li>
+<li>对于栈上及静态变量，编译器保证遵循其类型的对齐要求；</li>
+<li>对于堆上构造的对象，只有在 C++17
+后才能保证任何情况下动态申请的内存都满足对齐要求。</li>
+</ul>
+<span id="more"></span>
+<p>通过上一篇文章我们已经了解到，访问未对齐的内存轻则导致性能损失，重则引发
+CPU 异常，甚至静默地访问错误的地址，导致数据错误。虽然近几年来有些 CPU
+已经支持访问未对齐内存且不会带来性能影响，但考虑到程序的可移植性，在实践中还是应当尽量避免访问未对齐内存的行为。</p>
+<p>所幸，C++
+的内存对齐机制已经自动为我们屏蔽了这些底层细节，在绝大部分情况下不必担心访问到未对齐的内存。然而在开发过程中，有时依然需要手动控制内存对齐的细节，或是为了追求更高的性能，抑或是源于某些外部硬件或嵌入式系统的特殊要求。因此作为程序员，有必要了解
+C++
+究竟默默在背后为我们做了什么，以及在特定情况下我们能做什么来改变其默认的行为。</p>
+<h3 id="栈上及静态变量对齐">栈上及静态变量对齐</h3>
+<h4 id="对齐要求">对齐要求</h4>
+<p>每一个完整的对象类型都有一个叫做<strong>对齐要求（alignment
+requirement）</strong>的属性，也称为<strong>对齐值</strong>。它是一个
+<code>size_t</code>
+类型的整数值，表示可以分配此类对象的连续地址之间的字节数。换句话说，对象的起始地址必须是其类型的对齐值的整数倍。有效的对齐值是
+2 的非负整数幂。我们可以通过 <code>_Alignof</code> 或
+<code>alignof</code> 获得某个类型的对齐值。</p>
+<p>然而编译器是如何计算对齐值的呢？这里先介绍几个概念：</p>
+<ul>
+<li>基本类型的<strong>自身对齐值</strong>：基本类型自身所占的空间大小，即
+<code>sizeof()</code> 值</li>
+<li>结构体或类的<strong>自身对齐值</strong>：其所有成员中的<strong>最大对齐值</strong></li>
+<li><strong>指定对齐值</strong>：使用 <code>#pragma pack(n)</code>
+时指定的对齐值 <code>n</code> (1,2,4,8,16...)</li>
+<li><strong>有效对齐值</strong>：<strong>自身对其值</strong>和<strong>指定对其值</strong>中的较小者，实际对齐时取该值</li>
+</ul>
+<h4 id="结构体的对齐规则">结构体的对齐规则</h4>
+<p>为了让结构体（或类，下同）满足所有成员的对齐要求，编译器需要在某些成员之后插入填充（Padding）。</p>
+<p>基于前述对齐值的概念，结构体的对齐规则如下：</p>
+<ol type="1">
+<li>结构体变量的起始地址能够被其有效对齐值整除；</li>
+<li>每个成员相对于结构体首地址的偏移都能被有效对齐值整除，如不能则在前一个成员后填充字节；</li>
+<li>结构体的总大小为有效对齐值的整数倍，如不能则在最后面填充字节。</li>
+</ol>
+<p>例如，对于如下结构体 <code>struct x_</code>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">x_</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">char</span> a;    <span class="comment">// 1 byte</span></span><br><span class="line">    <span class="type">int</span> b;     <span class="comment">// 4 bytes</span></span><br><span class="line">    <span class="type">short</span> c;   <span class="comment">// 2 bytes</span></span><br><span class="line">    <span class="type">char</span> d;    <span class="comment">// 1 byte</span></span><br><span class="line">&#125; bar[<span class="number">3</span>];</span><br></pre></td></tr></table></figure>
+<p>编译器通过 padding 使得该结构体的实际内存布局如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">x_</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">char</span> a;           <span class="comment">// 1 byte</span></span><br><span class="line">    <span class="type">char</span> _pad0[<span class="number">3</span>];    <span class="comment">// padding to put &#x27;b&#x27; on 4-byte boundary</span></span><br><span class="line">    <span class="type">int</span> b;            <span class="comment">// 4 bytes</span></span><br><span class="line">    <span class="type">short</span> c;          <span class="comment">// 2 bytes</span></span><br><span class="line">    <span class="type">char</span> d;           <span class="comment">// 1 byte</span></span><br><span class="line">    <span class="type">char</span> _pad1[<span class="number">1</span>];    <span class="comment">// padding to make sizeof(x_) multiple of 4</span></span><br><span class="line">&#125; bar[<span class="number">3</span>];</span><br></pre></td></tr></table></figure>
+<p>两种声明得到的 <code>sizeof(x_)</code> 值均为 12 bytes，同时
+<code>alignof(x_)</code> 值均为 4 bytes。</p>
+<h4 id="自定义内存对齐">自定义内存对齐</h4>
+<p>前文提到，我们可以使用 <code>#pragma pack (n)</code>
+设定一个全局的对齐值上限，该功能经常被用于告诉编译器不要对结构体成员进行对齐。例如当
+n = 1 时，编译器不做任何
+Padding，结构体中的成员紧密地排列在一起，此时整个结构体的大小等于所有成员大小之和。当你在使用硬件内存映射接口、需要准确控制各个成员所在位置时，很可能会用到它，但这往往以牺牲访存速度作为代价。</p>
+<p>然而，一枚硬币有两面。从另一个角度来看，自定义内存对齐有时也能起到提升性能的作用。</p>
+<p><code>alignas</code> 类型说明符是一种可移植的 C++
+标准方法，用于指定变量和自定义类型的对齐方式，可以在定义
+class、struct、union 或声明变量时使用。如果遇到多个 <code>alignas</code>
+说明符，编译器会选择最严格的那个（最大对齐值）。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">alignas</span>(<span class="number">16</span>) Bar</span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> i;      <span class="comment">// 4 bytes</span></span><br><span class="line">    <span class="type">int</span> n;      <span class="comment">// 4 bytes</span></span><br><span class="line">    <span class="built_in">alignas</span>(<span class="number">4</span>) <span class="type">char</span> arr[<span class="number">3</span>];</span><br><span class="line">    <span class="type">short</span> s;    <span class="comment">// 2 bytes</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="built_in">alignof</span>(Bar) &lt;&lt; std::endl; <span class="comment">// output: 16</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>内存对齐可以使处理器更好地利用 cache，包括减少 cache line
+访问，以及避免多核一致性问题引发的 cache
+miss。具体来说，在多线程程序中，一种常用的优化手段是将需要高频并发访问的数据按
+cache line 大小（通常为 64 字节）对齐。一方面，对于小于 64
+字节的数据可以做到只触及一个 cache
+line，减少访存次数；另一方面，相当于独占了整个 cache
+line，避免其他数据可能修改同一 cache line 导致其他核 cache miss
+的开销。更多原理细节请移步<a
+target="_blank" rel="noopener" href="https://ata.alibaba-inc.com/articles/243681">理论篇</a>。</p>
+<p>当然，在更多情况下，不需要追求那样极致的性能。你可能只是想让结构的内存布局尽量紧凑一些，但又不至于干涉编译器的默认对齐行为。那么你可以在声明结构时，按照大小的递增/递减顺序排列成员，这样可以最小化需要填充的字节，提高内存利用率。</p>
+<h4 id="alignas-的局限"><code>alignas</code> 的局限</h4>
+<p><code>alignas</code> 并不是万能的，我们要清楚它不能做什么。</p>
+<p>首先，对数组使用
+<code>alignas</code>，对齐的是数组的首地址，而不是每个数组元素。也就是说，下面这个数组并不是每个
+int 都占 64 字节。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">alignas</span>(<span class="number">64</span>) <span class="type">int</span> array[<span class="number">128</span>];</span><br></pre></td></tr></table></figure>
+<p>如果一定要让每个元素都对齐，可以这样实现：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">alignas</span>(<span class="number">64</span>) S &#123; <span class="type">int</span> a; &#125;;</span><br><span class="line">S array[<span class="number">10</span>];</span><br></pre></td></tr></table></figure>
+<p>其次，编译器不保证拷贝后的数据依然保留原来的对齐属性。例如，<code>memcpy</code>
+可以拷贝一个带有 <code>alignas</code> 的结构到任何地址。</p>
+<p>同样，你也不能对函数参数指定对齐。当你在堆栈上按值传递具有对齐属性的数据时，其对齐方式由调用过程控制。如果数据对齐在被调用函数中很重要，可以在使用前将参数复制到正确对齐的内存中。</p>
+<p>最后，对一个类型指定对齐属性，仅意味着其所有的静态和栈上对象按指定值进行对齐，对于堆上构造的对象则未必。因此，一般的分配器（如
+<code>malloc</code>、<code>operator new</code>
+等）返回的内存地址可能不满足 <code>alignas</code> 的要求。</p>
+<h3 id="堆内存的对齐">堆内存的对齐</h3>
+<h4 id="申请对齐的内存">申请对齐的内存</h4>
+<p><code>malloc</code>
+返回的指针与原始数据类型的最大大小对齐，该值由编译器定义，通常在 32
+位机器上为 8 字节，在 64 机器上为 16
+字节。如果要求更大的对齐值，则需要用到特殊的内存分配函数。</p>
+<p>C++11 提供了一个标准函数，但笔者使用 g++ 和 clang 实测均在 C++17
+及以后才支持：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> *<span class="title">aligned_alloc</span><span class="params">(<span class="type">size_t</span> alignment, <span class="type">size_t</span> size)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>如果你的编译器暂时还不支持，也可以考虑平台特定的方案。</p>
+<p>在 Window 上，可以使用 MSVC 提供的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> *_aligned_malloc(<span class="type">size_t</span> size, <span class="type">size_t</span> alignment);</span><br></pre></td></tr></table></figure>
+<p>在 Linux 上，可以使用 glibc 的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> *<span class="title">memalign</span><span class="params">(<span class="type">size_t</span> alignment, <span class="type">size_t</span> size)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">posix_memalign</span><span class="params">(<span class="type">void</span> **memptr, <span class="type">size_t</span> alignment, <span class="type">size_t</span> size)</span></span>;</span><br></pre></td></tr></table></figure>
+<h4 id="使用-new-构造对齐的对象">使用 <code>new</code>
+构造对齐的对象</h4>
+<p>我们来看这样一段代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">class</span> <span class="title">alignas</span><span class="params">(<span class="number">32</span>)</span> Vec3d </span>&#123; </span><br><span class="line">    <span class="type">double</span> x, y, z;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;sizeof(Vec3d) is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(Vec3d) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;alignof(Vec3d) is &quot;</span> &lt;&lt; <span class="built_in">alignof</span>(Vec3d) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> Vec = Vec3d&#123;&#125;;</span><br><span class="line">    <span class="keyword">auto</span> pVec = <span class="keyword">new</span> Vec3d[<span class="number">10</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">reinterpret_cast</span>&lt;<span class="type">uintptr_t</span>&gt;(&amp;Vec) % <span class="built_in">alignof</span>(Vec3d) == <span class="number">0</span>)</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;Vec is aligned to alignof(Vec3d)!\n&quot;</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;Vec is not aligned to alignof(Vec3d)!\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">reinterpret_cast</span>&lt;<span class="type">uintptr_t</span>&gt;(pVec) % <span class="built_in">alignof</span>(Vec3d) == <span class="number">0</span>)</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;pVec is aligned to alignof(Vec3d)!\n&quot;</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;pVec is not aligned to alignof(Vec3d)!\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">delete</span>[] pVec;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 C++11/14 下，结果为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sizeof(Vec3d) is 32</span><br><span class="line">alignof(Vec3d) is 32</span><br><span class="line">Vec is aligned to alignof(Vec3d)!</span><br><span class="line">pVec is not aligned to alignof(Vec3d)!</span><br></pre></td></tr></table></figure>
+<p>在 C++17 下，结果为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sizeof(Vec3d) is 32</span><br><span class="line">alignof(Vec3d) is 32</span><br><span class="line">Vec is aligned to alignof(Vec3d)!</span><br><span class="line">pVec is aligned to alignof(Vec3d)!</span><br></pre></td></tr></table></figure>
+<p>在两个结果中，栈上对象的地址均为 32
+字节对齐，符合预期。然而，对于堆上对象，C++11/14
+不保证其内存地址一定遵循类型的对齐要求。</p>
+<p>但在 C++17 中，新标准保证了 new
+出来的那个对象也是对齐的。这是如何做到的呢？</p>
+<p>原来，C++17 增加了 <code>operator new</code> 的重载函数，带有一个新的
+<code>std::align_val_t</code> 类型的入参：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span>* <span class="keyword">operator</span> <span class="title">new</span><span class="params">(std::<span class="type">size_t</span> count, std::<span class="type">align_val_t</span> al)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>那么假设现在有如下两条语句，编译器如何决定选择哪个重载函数呢？</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> p = <span class="keyword">new</span> <span class="type">int</span>&#123;&#125;;</span><br><span class="line"><span class="keyword">auto</span> pVec = <span class="keyword">new</span> Vec3&#123;&#125;;</span><br></pre></td></tr></table></figure>
+<p>如前所述，编译器默认采用 16 字节对齐（64 位机器）。在 C++17
+中，我们可以通过新增的预定义宏来查看默认值：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__STDCPP_DEFAULT_NEW_ALIGNMENT__</span><br></pre></td></tr></table></figure>
+<p>当你申请内存的对齐要求大于此默认值时，编译器就会使用带有对齐参数的
+<code>operator new</code> 函数，其内部实际调用的正是前文介绍的
+<code>aligned_alloc</code> 之类的内存分配函数。</p>
+<p>上面举的例子都是按类型的 <code>alignas</code>
+标识符所指定的值进行对齐。事实上，你甚至还可以在调用 new
+的时候动态指定对齐，只不过在释放内存时需要手动析构，然后显式调用对应的
+<code>operator delete</code> 函数。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> pAlignedType = <span class="built_in">new</span> (std::<span class="type">align_val_t</span>&#123;<span class="number">32</span>&#125;) MyType;</span><br><span class="line">pAlignedType-&gt;~<span class="built_in">MyType</span>();</span><br><span class="line">::<span class="function"><span class="keyword">operator</span> <span class="title">delete</span><span class="params">(pAlignedType, std::<span class="type">align_val_t</span>&#123;<span class="number">32</span>&#125;)</span></span>;</span><br></pre></td></tr></table></figure>
+<h4 id="将一切交给编译器吧">将一切交给编译器吧</h4>
+<p>动态内存分配并不仅限于上述手动调用 <code>malloc</code> 或
+<code>new</code> 的情况，很多时候还存在于我们看不到的地方，例如
+STL、库函数等。能否确保在所有这些情况下，内存分配都能按照我们指定的要求自动对齐呢？</p>
+<p>答案是，只要<strong>在 C++17 下使用足够高版本的编译器</strong>（如
+GCC&gt;=7, clang&gt;=5,
+MSVC&gt;=19.12），那么所有内存对齐相关的细节都可以放心地交给编译器。</p>
+<p>举个例子，考虑这段使用了前文定义的 <code>Vec3d</code>（32
+字节对齐）的代码， <code>vector</code>
+内部申请的内存也能确保是正确对齐的。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">std::vector&lt;Vec3d&gt; vec;</span><br><span class="line">vec.<span class="built_in">push_back</span>(&#123;&#125;);</span><br><span class="line">vec.<span class="built_in">push_back</span>(&#123;&#125;);</span><br><span class="line">vec.<span class="built_in">push_back</span>(&#123;&#125;);</span><br><span class="line"><span class="built_in">assert</span>(<span class="built_in">reinterpret_cast</span>&lt;<span class="type">uintptr_t</span>&gt;(vec.<span class="built_in">data</span>()) % <span class="built_in">alignof</span>(Vec3d) == <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<p>此外，现在你也可以直接使用 <code>vector</code> 来存放 SIMD
+类型而不必手动分配对齐的内存：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">std::vector&lt;__m256&gt; <span class="title">vec</span><span class="params">(<span class="number">10</span>)</span></span>;</span><br><span class="line">vec.<span class="built_in">push_back</span>(_mm256_set_ps(<span class="number">0.1f</span>, <span class="number">0.2f</span>, <span class="number">0.3f</span>, <span class="number">0.4f</span>, <span class="number">0.5f</span>, <span class="number">0.6f</span>, <span class="number">0.7f</span>, <span class="number">0.8f</span>));</span><br><span class="line"><span class="built_in">assert</span>(<span class="built_in">reinterpret_cast</span>&lt;<span class="type">uintptr_t</span>&gt;(vec.<span class="built_in">data</span>()) % <span class="built_in">alignof</span>(__m256) == <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<p>是时候拥抱 C++17 了！</p>
+<h3 id="references">References</h3>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://linux.die.net/man/3/memalign">https://linux.die.net/man/3/memalign</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://en.cppreference.com/w/c/language/object">https://en.cppreference.com/w/c/language/object</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/memory/new/align_val_t">https://en.cppreference.com/w/cpp/memory/new/align_val_t</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/cpp/cpp/align-cpp?view=msvc-170">https://docs.microsoft.com/en-us/cpp/cpp/align-cpp?view=msvc-170</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/cpp/cpp/alignment-cpp-declarations?view=msvc-170">https://docs.microsoft.com/en-us/cpp/cpp/alignment-cpp-declarations?view=msvc-170</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/aligned-malloc?view=msvc-170">https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/aligned-malloc?view=msvc-170</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/30007037">https://zhuanlan.zhihu.com/p/30007037</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/Arthurian/p/8855117.html">https://www.cnblogs.com/Arthurian/p/8855117.html</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.cppstories.com/2019/08/newnew-align/">https://www.cppstories.com/2019/08/newnew-align/</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://stackoverflow.com/questions/3318410/pragma-pack-effect">https://stackoverflow.com/questions/3318410/pragma-pack-effect</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.geeksforgeeks.org/structure-member-alignment-padding-and-data-packing/">https://www.geeksforgeeks.org/structure-member-alignment-padding-and-data-packing/</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Yuheng Ding WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Yuheng Ding Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/C-C/" rel="tag"># C/C++</a>
+              <a href="/tags/Memory/" rel="tag"># Memory</a>
+              <a href="/tags/Compiler/" rel="tag"># Compiler</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/07/30/memory-alignment-in-cpp-theory/" rel="prev" title="C++ 中的内存对齐——理论篇">
+                  <i class="fa fa-chevron-left"></i> C++ 中的内存对齐——理论篇
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/12/16/char-device-driver/" rel="next" title="一个简单的字符设备驱动">
+                  一个简单的字符设备驱动 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yuheng Ding</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Symbols count total: </span>
+    <span title="Symbols count total">370k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>Reading time total &asymp;</span>
+    <span title="Reading time total">5:37</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"timdyh","repo":"gitalk-comments","client_id":"0babcb65af364dd08a90","client_secret":"22090e837380d49040a73f2ed1db4f9541b29379","admin_user":"timdyh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"49665e527ffba4ccb8d6c9795b1857ef"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

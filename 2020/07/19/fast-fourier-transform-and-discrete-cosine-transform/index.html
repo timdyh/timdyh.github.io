@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="null//null" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="x_9IHIiVX0aZQfKSCtN7gy8_1UhN7guVmZAmA4gv1EE">
+  <meta name="msvalidate.01" content="AC8F448726B8A8742C6DFFA7640E7DBF">
+  <meta name="baidu-site-verification" content="code-2qEdijyCxz">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="图像的正交变换在数字图像的处理与分析中起着很重要的作用，被广泛应用于图像增强、去噪、压缩编码等众多领域。本文手工实现了二维离散傅里叶变换和二维离散余弦变换算法，并在多个图像样本上进行测试，以探究二者的变换效果。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python 实现图像快速傅里叶变换和离散余弦变换">
+<meta property="og:url" content="http://example.com/2020/07/19/fast-fourier-transform-and-discrete-cosine-transform/index.html">
+<meta property="og:site_name" content="TimDyh">
+<meta property="og:description" content="图像的正交变换在数字图像的处理与分析中起着很重要的作用，被广泛应用于图像增强、去噪、压缩编码等众多领域。本文手工实现了二维离散傅里叶变换和二维离散余弦变换算法，并在多个图像样本上进行测试，以探究二者的变换效果。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024106.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024114.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024119.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-023959.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024003.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024005.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024009.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024134.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024141.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024010.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024017.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024019.jpg">
+<meta property="og:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024020.jpg">
+<meta property="article:published_time" content="2020-07-19T02:53:00.000Z">
+<meta property="article:modified_time" content="2022-12-16T11:58:45.354Z">
+<meta property="article:author" content="Yuheng Ding">
+<meta property="article:tag" content="Image Processing">
+<meta property="article:tag" content="Algorithm">
+<meta property="article:tag" content="Divide and Conquer">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024106.jpg">
+
+
+<link rel="canonical" href="http://example.com/2020/07/19/fast-fourier-transform-and-discrete-cosine-transform/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2020/07/19/fast-fourier-transform-and-discrete-cosine-transform/","path":"2020/07/19/fast-fourier-transform-and-discrete-cosine-transform/","title":"Python 实现图像快速傅里叶变换和离散余弦变换"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Python 实现图像快速傅里叶变换和离散余弦变换 | TimDyh</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">TimDyh</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2"><span class="nav-number">1.</span> <span class="nav-text">1. 傅里叶变换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E5%8E%9F%E7%90%86"><span class="nav-number">1.1.</span> <span class="nav-text">实验原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.2.</span> <span class="nav-text">算法步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E4%BB%A3%E7%A0%81"><span class="nav-number">1.3.</span> <span class="nav-text">主要代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C"><span class="nav-number">1.4.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%99%E5%BC%A6%E5%8F%98%E6%8D%A2"><span class="nav-number">2.</span> <span class="nav-text">2. 余弦变换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E5%8E%9F%E7%90%86-1"><span class="nav-number">2.1.</span> <span class="nav-text">实验原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%AD%A5%E9%AA%A4-1"><span class="nav-number">2.2.</span> <span class="nav-text">算法步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E4%BB%A3%E7%A0%81-1"><span class="nav-number">2.3.</span> <span class="nav-text">主要代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C-1"><span class="nav-number">2.4.</span> <span class="nav-text">运行结果</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yuheng Ding"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Yuheng Ding</p>
+  <div class="site-description" itemprop="description">Per aspera, ad astra.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/timdyh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dyh0701@gmail.com" title="E-Mail → mailto:dyh0701@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/tim_dyh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;tim_dyh" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/timdyh" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;timdyh" rel="noopener" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/07/19/fast-fourier-transform-and-discrete-cosine-transform/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Yuheng Ding">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TimDyh">
+      <meta itemprop="description" content="Per aspera, ad astra.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Python 实现图像快速傅里叶变换和离散余弦变换 | TimDyh">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Python 实现图像快速傅里叶变换和离散余弦变换
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-07-19 10:53:00" itemprop="dateCreated datePublished" datetime="2020-07-19T10:53:00+08:00">2020-07-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Project/" itemprop="url" rel="index"><span itemprop="name">Project</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>2.5k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>2 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>图像的正交变换在数字图像的处理与分析中起着很重要的作用，被广泛应用于图像增强、去噪、压缩编码等众多领域。本文手工实现了<strong>二维离散傅里叶变换</strong>和<strong>二维离散余弦变换</strong>算法，并在多个图像样本上进行测试，以探究二者的变换效果。</p>
+<span id="more"></span>
+<h2 id="傅里叶变换">1. 傅里叶变换</h2>
+<h3 id="实验原理">实验原理</h3>
+<p>对一幅图像进行<strong>离散傅里叶变换</strong>（DFT），可以得到图像信号的傅里叶频谱。二维
+DFT 的变换及逆变换公式如下：</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024106.jpg" alt="dft" style="zoom: 50%;" /></p>
+<p>DFT
+尽管解决了频域离散化的问题，但运算量太大。从公式中可以看到，有两个嵌套的求和符号，显然直接计算的复杂度为
+<span class="math inline">\(O(n^2)\)</span>
+。为了加快傅里叶变换的运算速度，后人提出<strong>快速傅里叶变换</strong>（FFT），即蝶形算法，将计算
+DFT 的复杂度降低到了 <span class="math inline">\(O(n\log
+n)\)</span>。</p>
+<p>FFT 利用傅里叶变换的数学性质，采用分治的思想，将一个 <span
+class="math inline">\(N\)</span> 点的 FFT，变成两个 <span
+class="math inline">\(N/2\)</span> 点的 FFT。以一维 FFT
+为例，可以表示如下：</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024114.jpg" alt="X=G+WH" style="zoom: 50%;" /></p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024119.jpg" alt="当" style="zoom: 50%;" /></p>
+<p>其中，<span class="math inline">\(G(k)\)</span> 是 <span
+class="math inline">\(x(k)\)</span> 的偶数点的 <span
+class="math inline">\(N/2\)</span> 点的 FFT，<span
+class="math inline">\(H(k)\)</span> 是 <span
+class="math inline">\(x(k)\)</span> 的奇数点的 <span
+class="math inline">\(N/2\)</span> 点的 FFT。</p>
+<p>这样，通过将原问题不断分解为两个一半规模的子问题，然后计算相应的蝶形运算单元，最终得以完成整个
+FFT。</p>
+<h3 id="算法步骤">算法步骤</h3>
+<p>本次实验中，一维 FFT 采用递归实现，且仅支持长度为 2
+的整数幂的情况。</p>
+<p>算法步骤如下：</p>
+<ol type="1">
+<li>检查图像的尺寸，如果不是 2 的整数幂则直接退出。</li>
+<li>对图像的灰度值进行归一化。</li>
+<li>对图像的每一行执行一维 FFT，并保存为中间结果。</li>
+<li>对上一步结果中的每一列执行一维 FFT，返回变换结果。</li>
+<li>将零频分量移到频谱中心，并求绝对值进行可视化。</li>
+<li>对中心化后的结果进行对数变换，以改善视觉效果。</li>
+</ol>
+<h3 id="主要代码">主要代码</h3>
+<p><strong>一维 FFT</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">fft</span>(<span class="params">x</span>):</span><br><span class="line">    n = <span class="built_in">len</span>(x)</span><br><span class="line">    <span class="keyword">if</span> n == <span class="number">2</span>:</span><br><span class="line">        <span class="keyword">return</span> [x[<span class="number">0</span>] + x[<span class="number">1</span>], x[<span class="number">0</span>] - x[<span class="number">1</span>]]</span><br><span class="line">    </span><br><span class="line">    G = fft(x[::<span class="number">2</span>])</span><br><span class="line">    H = fft(x[<span class="number">1</span>::<span class="number">2</span>])</span><br><span class="line">    W = np.exp(-<span class="number">2j</span> * np.pi * np.arange(n//<span class="number">2</span>) / n)</span><br><span class="line">    WH = W * H</span><br><span class="line">    X = np.concatenate([G + WH, G - WH])</span><br><span class="line">    <span class="keyword">return</span> X</span><br></pre></td></tr></table></figure>
+<p><strong>二维 FFT</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">fft2</span>(<span class="params">img</span>):</span><br><span class="line">    h, w = img.shape</span><br><span class="line">    <span class="keyword">if</span> ((h-<span class="number">1</span>) &amp; h) <span class="keyword">or</span> ((w-<span class="number">1</span>) &amp; w):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;Image size not a power of 2&#x27;</span>)</span><br><span class="line">        <span class="keyword">return</span> img</span><br><span class="line">    </span><br><span class="line">    img = normalize(img)</span><br><span class="line">    res = np.zeros([h, w], <span class="string">&#x27;complex128&#x27;</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(h):</span><br><span class="line">        res[i, :] = fft(img[i, :])</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(w):</span><br><span class="line">        res[:, j] = fft(res[:, j])</span><br><span class="line">    <span class="keyword">return</span> res</span><br></pre></td></tr></table></figure>
+<p><strong>零频分量中心化</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">fftshift</span>(<span class="params">img</span>):</span><br><span class="line">    <span class="comment"># swap the first and third quadrants, and the second and fourth quadrants</span></span><br><span class="line">    h, w = img.shape</span><br><span class="line">    h_mid, w_mid = h//<span class="number">2</span>, w//<span class="number">2</span></span><br><span class="line">    res = np.zeros([h, w], <span class="string">&#x27;complex128&#x27;</span>)</span><br><span class="line">    res[:h_mid, :w_mid] = img[h_mid:, w_mid:]</span><br><span class="line">    res[:h_mid, w_mid:] = img[h_mid:, :w_mid]</span><br><span class="line">    res[h_mid:, :w_mid] = img[:h_mid, w_mid:]</span><br><span class="line">    res[h_mid:, w_mid:] = img[:h_mid, :w_mid]</span><br><span class="line">    <span class="keyword">return</span> res</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果">运行结果</h3>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-023959.jpg"
+alt="lena_fft" />
+<figcaption aria-hidden="true">lena_fft</figcaption>
+</figure>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024003.jpg"
+alt="baboon_fft" />
+<figcaption aria-hidden="true">baboon_fft</figcaption>
+</figure>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024005.jpg"
+alt="circle_fft" />
+<figcaption aria-hidden="true">circle_fft</figcaption>
+</figure>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024009.jpg"
+alt="avicii_fft" />
+<figcaption aria-hidden="true">avicii_fft</figcaption>
+</figure>
+<h2 id="余弦变换">2. 余弦变换</h2>
+<h3 id="实验原理-1">实验原理</h3>
+<p>当一个函数为偶函数时，其傅立叶变换的虚部为零，因而不需要计算，只计算余弦项变换，这就是余弦变换。<strong>离散余弦变换</strong>（DCT）的变换核为实数的余弦函数，因而计算速度比变换核为指数的
+DFT 要快得多。</p>
+<p>一维离散余弦变换与离散傅里叶变换具有相似性，对离散傅里叶变换进行下式的修改：</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024134.jpg" alt="dct" style="zoom: 50%;" /></p>
+<p>式中</p>
+<p><img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024141.jpg" alt="f(x)" style="zoom: 50%;" /></p>
+<p>由上式可见，<span
+class="math inline">\(\sum\limits_{x=0}^{2M-1}f_e(x)e^{\frac{-j2ux\pi}{2M}}\)</span>
+是 <span class="math inline">\(2M\)</span>
+个点的傅里叶变换，因此在做离散余弦变换时，可将其拓展为 <span
+class="math inline">\(2M\)</span>
+个点，然后对其做离散傅里叶变换，取傅里叶变换的实部就是所要的离散余弦变换。</p>
+<h3 id="算法步骤-1">算法步骤</h3>
+<p>基于上述原理，二维 DCT 的实现重用了上文中的一维 FFT
+函数，并根据公式做了一些修改。</p>
+<p>算法步骤如下：</p>
+<ol type="1">
+<li>检查图像的尺寸，如果不是 2 的整数幂则直接退出。</li>
+<li>对图像的灰度值进行归一化。</li>
+<li>对图像的每一行进行延拓，执行一维 FFT
+后取实部，乘以公式中的系数，并保存为中间结果。</li>
+<li>对上一步结果中的每一列进行延拓，执行一维 FFT
+后取实部，乘以公式中的系数，返回变换结果。</li>
+<li>对结果求绝对值，并进行对数变换，以改善视觉效果。</li>
+</ol>
+<h3 id="主要代码-1">主要代码</h3>
+<p><strong>二维 DCT</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">dct2</span>(<span class="params">img</span>):</span><br><span class="line">    h, w = img.shape</span><br><span class="line">    <span class="keyword">if</span> ((h-<span class="number">1</span>) &amp; h) <span class="keyword">or</span> ((w-<span class="number">1</span>) &amp; w):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;Image size not a power of 2&#x27;</span>)</span><br><span class="line">        <span class="keyword">return</span> img</span><br><span class="line">    </span><br><span class="line">    img = normalize(img)</span><br><span class="line">    res = np.zeros([h, w], <span class="string">&#x27;complex128&#x27;</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(h):</span><br><span class="line">        res[i, :] = fft(np.concatenate([img[i, :], np.zeros(w)]))[:w]</span><br><span class="line">        res[i, :] = np.real(res[i, :]) * np.sqrt(<span class="number">2</span> / w)</span><br><span class="line">        res[i, <span class="number">0</span>] /= np.sqrt(<span class="number">2</span>)</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(w):</span><br><span class="line">        res[:, j] = fft(np.concatenate([res[:, j], np.zeros(h)]))[:h]</span><br><span class="line">        res[:, j] = np.real(res[:, j]) * np.sqrt(<span class="number">2</span> / h)</span><br><span class="line">        res[<span class="number">0</span>, j] /= np.sqrt(<span class="number">2</span>)</span><br><span class="line">    <span class="keyword">return</span> res</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-1">运行结果</h3>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024010.jpg"
+alt="lena_dct" />
+<figcaption aria-hidden="true">lena_dct</figcaption>
+</figure>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024017.jpg"
+alt="baboon_dct" />
+<figcaption aria-hidden="true">baboon_dct</figcaption>
+</figure>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024019.jpg"
+alt="circle_dct" />
+<figcaption aria-hidden="true">circle_dct</figcaption>
+</figure>
+<figure>
+<img data-src="https://ipichub.oss-cn-hangzhou.aliyuncs.com/2020-07-19-024020.jpg"
+alt="avicii_dct" />
+<figcaption aria-hidden="true">avicii_dct</figcaption>
+</figure>
+<p><strong>完整源码请见
+<a href="https://github.com/TimDyh/orthogonal-transformation" target="_blank">GitHub
+仓库</a></strong></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Yuheng Ding WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Yuheng Ding Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Image-Processing/" rel="tag"># Image Processing</a>
+              <a href="/tags/Algorithm/" rel="tag"># Algorithm</a>
+              <a href="/tags/Divide-and-Conquer/" rel="tag"># Divide and Conquer</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/07/19/grayscale-histogram-equalization-and-linear-transformation/" rel="prev" title="图像灰度直方图均衡和线性变换">
+                  <i class="fa fa-chevron-left"></i> 图像灰度直方图均衡和线性变换
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/07/19/virtual-virus-analysis-and-removal-method/" rel="next" title="虚拟病毒分析与清除方法">
+                  虚拟病毒分析与清除方法 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yuheng Ding</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Symbols count total: </span>
+    <span title="Symbols count total">370k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>Reading time total &asymp;</span>
+    <span title="Reading time total">5:37</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"timdyh","repo":"gitalk-comments","client_id":"0babcb65af364dd08a90","client_secret":"22090e837380d49040a73f2ed1db4f9541b29379","admin_user":"timdyh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"3b7427aeb2f01dda6ef200a44142f0a3"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>
